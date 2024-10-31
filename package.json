@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:circuit:compile": "mkdir -p build/circuits && npx circom2 circuits/register.circom --r1cs --wasm --sym -o build/circuits",
+    "build:circuit:info": "npx snarkjs r1cs info build/circuits/register.r1cs",
+    "build:circuit":"npm run build:circuit:compile && npm run build:circuit:info"
   },
   "author": "",
   "license": "ISC",
@@ -18,6 +21,8 @@
   },
   "dependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.8",
+    "circom2": "^0.2.19",
+    "circomlib": "^2.0.5",
     "circomlibjs": "^0.1.7",
     "crypto": "^1.0.1",
     "dotenv": "^16.4.5",

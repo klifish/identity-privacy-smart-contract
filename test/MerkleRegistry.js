@@ -6,26 +6,9 @@ const circomlibjs = require("circomlibjs");
 const ffjavascript = require("ffjavascript");
 const crypto = require('crypto')
 
-const registry_contract = require("../artifacts/contracts/MerkleRegistry.sol/MerkleRegistry.json");
 const { toHex } = require("thirdweb");
-const exp = require("constants");
 
 const SEED = "mimcsponge";
-
-function buff2hex(buff) {
-    function i2hex(i) {
-      return ('0' + i.toString(16)).slice(-2);
-    }
-    return Array.from(buff).map(i2hex).join('');
-}
-
-const toFixedHex = (number, length = 32) =>
-    '0x' +
-    BigInt(number)
-      .toString(16)
-      .padStart(length * 2, '0')
-
-const rbigint = nbytes => ffjavascript.utils.leBuff2int(crypto.randomBytes(nbytes))
 
 describe('Registry Smart Contract', function () {
     async function fixture(){
@@ -45,10 +28,6 @@ describe('Registry Smart Contract', function () {
         const MERKLE_TREE_LEVEL = process.env.MERKLE_TREE_LEVEL
         const RegistryContract = await ethers.getContractFactory("MerkleRegistry")    
         const registry = await RegistryContract.deploy(MERKLE_TREE_LEVEL, hasherAddress);
-        const registryAddress = await registry.getAddress();
-
-        // const signers = await ethers.getSigners();
-        // const signer = signers[0];
         return {signer, registry, pedersen, babyjub};
     }
 
