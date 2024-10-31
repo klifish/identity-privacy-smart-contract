@@ -26,8 +26,8 @@ async function downloadFile({ url, path }) {
 (
     async () => {
         try {
-            const ptauUrl = 'https://storage.googleapis.com/zkevm/ptau/powersOfTau28_hez_final_13.ptau'
-            const ptau_final = "powersOfTau28_hez_final_13.ptau";
+            const ptauUrl = "https://storage.googleapis.com/zkevm/ptau/powersOfTau28_hez_final_16.ptau"
+            const ptau_final = "powersOfTau28_hez_final_16.ptau";
             const ptau_path = path.resolve(__dirname, circuitsPath, ptau_final);
             console.log(`Downloading ptau file ...`)
             await downloadFile({
@@ -37,7 +37,7 @@ async function downloadFile({ url, path }) {
             
             console.log('Plonk setup...')
             const r1cs_file = "build/circuits/register.r1cs";
-            await snarkjs.plonk.setup(r1cs_file, ptau_path, "build/circuits/calculate_hash_final.zkey", console);
+            await snarkjs.plonk.setup(r1cs_file, ptau_path, "build/circuits/register_final.zkey", console);
 
             process.exit(0);
 
