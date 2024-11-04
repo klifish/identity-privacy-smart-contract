@@ -10,7 +10,7 @@
     "build:circuit:setup": "node scripts/plonk_trust_setup.js",
     "build:circuit:export:verificationkey": "npx snarkjs zkey export verificationkey build/circuits/register_final.zkey build/circuits/register_vk.json ",
     "build:circuit:export:solidityverifier": "mkdir -p build/contracts && npx snarkjs zkey export solidityverifier build/circuits/register_final.zkey contracts/RegisterPlonkVerifier.sol",
-    "build:circuit":"npm run build:circuit:compile && npm run build:circuit:info && npm run build:circuit:setup && npm run build:circuit:export:verificationkey && npm run build:circuit:export:solidityverifier"
+    "build:circuit": "npm run build:circuit:compile && npm run build:circuit:info && npm run build:circuit:setup && npm run build:circuit:export:verificationkey && npm run build:circuit:export:solidityverifier"
   },
   "author": "",
   "license": "ISC",
@@ -29,6 +29,7 @@
     "circomlibjs": "^0.1.7",
     "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
+    "fixed-merkle-tree": "^0.7.3",
     "snarkjs": "^0.7.5"
   }
 }
