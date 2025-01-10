@@ -36,8 +36,11 @@ async function downloadFile({ url, path }) {
             })
             
             console.log('Plonk setup...')
-            const r1cs_file = "build/circuits/register.r1cs";
-            await snarkjs.plonk.setup(r1cs_file, ptau_path, "build/circuits/register_final.zkey", console);
+            const r1cs_file_register = "build/circuits/register.r1cs";
+            await snarkjs.plonk.setup(r1cs_file_register, ptau_path, "build/circuits/register_final.zkey", console);
+
+            const r1cs_file_commitment = "build/circuits/commitment.r1cs";
+            await snarkjs.plonk.setup(r1cs_file_commitment, ptau_path, "build/circuits/commitment_final.zkey", console);
 
             process.exit(0);
 
