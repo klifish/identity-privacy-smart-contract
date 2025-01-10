@@ -23,6 +23,7 @@
     "mocha": "^10.7.3"
   },
   "dependencies": {
+    "@account-abstraction/contracts": "^0.7.0",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.8",
     "circom2": "^0.2.19",
     "circomlib": "^2.0.5",

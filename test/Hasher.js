@@ -1,5 +1,5 @@
 const circomlibjs = require("circomlibjs");
-
+const { expect } = require("chai");
 const SEED = "mimcsponge";
 describe("MiMC Sponge Smart contract test", () => {
     let mimc;
@@ -13,8 +13,7 @@ describe("MiMC Sponge Smart contract test", () => {
     });
 
     it("Should deploy the contract", async () => {
-        // signer = await ethers.getSigners()[0];
-        // console.log("Signer: ", signer);
+    
         const bytecode = circomlibjs.mimcSpongecontract.createCode(SEED, 220);
         const abi = circomlibjs.mimcSpongecontract.abi;
         const C = new ethers.ContractFactory(
@@ -24,20 +23,23 @@ describe("MiMC Sponge Smart contract test", () => {
           );
 
         mimc = await C.deploy();
+
+        const contractAddress = await mimc.getAddress();
+        expect(contractAddress).to.be.properAddress;
+
     });
 
     it("Shold calculate the mimc correctly", async () => {
 
-        const res = await mimc.MiMCSponge(1,2, 220);
+        const input1 = 1;
+        const input2 = 2;
+        const rounds = 220;
 
-        // console.log("Cir: " + bigInt(res.toString(16)).toString(16));
+        const contractResult = await mimc.MiMCSponge(input1, input2, rounds);
+        const jsResult = mimcJS.hash(input1, input2, rounds);
 
-        const res2 = mimcJS.hash(1,2, 220);
-        // console.log("Ref: " + bigInt(res2).toString(16));
-        console.log(res.xL.toString())
-        console.log(mimcJS.F.toString(res2.xL))
-        // assert.equal(res.xL.toString(), mimcJS.F.toString(res2.xL));
-        // assert.equal(res.xR.toString(), mimcJS.F.toString(res2.xR));
+        expect(contractResult.xL.toString()).to.equal(mimcJS.F.toString(jsResult.xL));
+        expect(contractResult.xR.toString()).to.equal(mimcJS.F.toString(jsResult.xR));
 
     });
 });
