@@ -16,6 +16,7 @@ contract MyAccount is BaseAccount, Initializable {
     IVerifier private immutable _verifier;
 
     event MyAccountInitialized(IEntryPoint indexed entryPoint, uint256 indexed commitmentModule);
+    event OwnershipVerified(bool indexed isValid);
 
     constructor(IEntryPoint anEntryPoint, IVerifier aVerifier) {
         _entryPoint = anEntryPoint;
@@ -28,9 +29,23 @@ contract MyAccount is BaseAccount, Initializable {
         return _entryPoint;
     }
 
+    function CommitmentModule() public view virtual returns (Commitment) {
+        return commitmentModule;
+    }
+
+    function GetCommitment() public view virtual returns (uint256) {
+        return commitmentModule.GetCommitment();
+    }
+
     modifier onlyVerified(uint256[24] calldata proof) {
         require(commitmentModule.verify(proof), "Proof verification failed");
         _;
+    }
+
+    function verifyOwnership(uint256[24] calldata proof) external {
+        bool isValid = commitmentModule.verify(proof);
+        emit OwnershipVerified(isValid);
+
     }
 
         /**

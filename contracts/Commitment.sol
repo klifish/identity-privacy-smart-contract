@@ -20,6 +20,10 @@ contract Commitment {
         commitment = _commitment;
     }
 
+    function GetCommitment() public view returns (uint256) {
+        return commitment;
+    }
+
     function verify(uint256[24] calldata _proof) public returns (bool) {
         return verifier.verifyProof(_proof, [commitment]);
     }

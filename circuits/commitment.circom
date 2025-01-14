@@ -10,13 +10,14 @@ template Claim() {
     component commitmentHasher = Pedersen(256);
 
     component secretBits = Num2Bits(256);
+    // log(secret);
     secretBits.in <== secret;
 
     for (var i = 0; i < 256; i++) {
         commitmentHasher.in[i] <== secretBits.out[i];
     }
 
-    commitment <== commitmentHasher.out[0];
+    commitment <== commitmentHasher.out[1];
     // commitment[1] <== commitmentHasher.out[1];
 }
 

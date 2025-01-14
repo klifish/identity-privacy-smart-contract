@@ -1,9 +1,14 @@
+const path = require("path");
+const snarkjs = require("snarkjs");
+
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-const {fillUserOpDefaults, parseProof} = require("../scripts/utils");
+const ffjavascript = require("ffjavascript");
+const { fillUserOpDefaults, parseProof, computePedersenHash } = require("../scripts/utils");
 
 describe('MyAccount Smart Contract', function () {
     const commitmentValue = 42;
+    const secret = "secret";
     const salt = 1;
     let accounts;
     let entryPoint;
@@ -19,7 +24,7 @@ describe('MyAccount Smart Contract', function () {
     });
 
     it("Should deploy the Verifier", async () => {
-        const VerifierContract = await ethers.getContractFactory("PlonkVerifier");
+        const VerifierContract = await ethers.getContractFactory("CommitmentPlonkVerifier");
         verifier = await VerifierContract.deploy();
 
         const verifierAddress = await verifier.getAddress();
@@ -56,7 +61,10 @@ describe('MyAccount Smart Contract', function () {
     });
 
     it("Should create a new MyAccount", async () => {
-        await myAccountFactory.createAccount(commitmentValue, salt);
+
+        const commitment = await computePedersenHash(secret);
+        // console.log("Commitment:", commitment);
+        await myAccountFactory.createAccount(commitment, salt);
 
         const filter = myAccountFactory.filters.AccountCreated();
         const events = await myAccountFactory.queryFilter(filter);
@@ -67,11 +75,42 @@ describe('MyAccount Smart Contract', function () {
 
         const MyAccount = await ethers.getContractFactory("MyAccount");
         myAccount = MyAccount.attach(events[0].args.accountAddress);
+        // const commitmentValue = await myAccount.GetCommitment();
+        // console.log("Commitment Value:", commitmentValue);
 
         const entryPointAddress = await myAccount.entryPoint();
         expect(entryPointAddress).to.be.equal(entryPoint);
 
     });
+
+    it("Should be able to verify the owneeship of the account", async () => {
+
+        const commitmentValue = await myAccount.GetCommitment();
+        // console.log("Commitment Value:", commitmentValue);
+
+        wasm = path.join(__dirname, "..", "build", "circuits", "commitment_js", "commitment.wasm");
+        zkey = path.join(__dirname, "..", "build", "circuits", "commitment_final.zkey");
+
+        const encodedMessage = new TextEncoder().encode(secret);
+        const encodedMessageBigInt = ffjavascript.utils.leBuff2int(encodedMessage);
+
+        const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.plonk.fullProve({ secret: encodedMessageBigInt }, wasm, zkey);
+        // console.log("publicInputs:", publicInputs);
+        const parsedpProof = parseProof(proofJson);
+        const tx = await myAccount.verifyOwnership(parsedpProof);
+        const receipt = await tx.wait();
+
+
+        const filter = myAccount.filters.OwnershipVerified();
+        const events = await myAccount.queryFilter(filter);
+        // console.log(events[0].args.isValid);
+        expect(events[0].args.isValid).to.be.true;
+
+        // const event = receipt.events.find(e => e.event === "OwnershipVerified");
+        // expect(event).to.not.be.undefined;
+        // console.log(`OwnershipVerified Event Emitted: isValid = ${event.args.isValid}`);
+
+    })
 
     it('Should be able to call transfer', async () => {
 
@@ -109,7 +148,6 @@ describe('MyAccount Smart Contract', function () {
         tx = await myAccount.execute(ethers.ZeroAddress, ethers.parseEther("0"), '0x60806040526040516105d83803806105d8833981810160405281019061002591906100f0565b804210610067576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161005e906101a0565b60405180910390fd5b8060008190555033600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550506101c0565b600080fd5b6000819050919050565b6100cd816100ba565b81146100d857600080fd5b50565b6000815190506100ea816100c4565b92915050565b600060208284031215610106576101056100b5565b5b6000610114848285016100db565b91505092915050565b600082825260208201905092915050565b7f556e6c6f636b2074696d652073686f756c6420626520696e207468652066757460008201527f7572650000000000000000000000000000000000000000000000000000000000602082015250565b600061018a60238361011d565b91506101958261012e565b604082019050919050565b600060208201905081810360008301526101b98161017d565b9050919050565b610409806101cf6000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c8063251c1aa3146100465780633ccfd60b146100645780638da5cb5b1461006e575b600080fd5b61004e61008c565b60405161005b919061024a565b60405180910390f35b61006c610092565b005b61007661020b565b60405161008391906102a6565b60405180910390f35b60005481565b6000544210156100d7576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016100ce9061031e565b60405180910390fd5b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614610167576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161015e9061038a565b60405180910390fd5b7fbf2ed60bd5b5965d685680c01195c9514e4382e28e3a5a2d2d5244bf59411b9347426040516101989291906103aa565b60405180910390a1600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166108fc479081150290604051600060405180830381858888f19350505050158015610208573d6000803e3d6000fd5b50565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b6000819050919050565b61024481610231565b82525050565b600060208201905061025f600083018461023b565b92915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061029082610265565b9050919050565b6102a081610285565b82525050565b60006020820190506102bb6000830184610297565b92915050565b600082825260208201905092915050565b7f596f752063616e27742077697468647261772079657400000000000000000000600082015250565b60006103086016836102c1565b9150610313826102d2565b602082019050919050565b60006020820190508181036000830152610337816102fb565b9050919050565b7f596f75206172656e277420746865206f776e6572000000000000000000000000600082015250565b60006103746014836102c1565b915061037f8261033e565b602082019050919050565b600060208201905081810360008301526103a381610367565b9050919050565b60006040820190506103bf600083018561023b565b6103cc602083018461023b565b939250505056fea2646970667358221220488c28f1fa110705ab71261ede6a2b498d9639ecca7369dd0a6300704d7f642164736f6c634300081b00330000000000000000000000000000000000000000000000000000000070dbd880');
         receipt = await tx.wait();
 
-        console.log(receipt);
     });
 
     describe("#validateUserOp", () => {

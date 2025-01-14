@@ -21,7 +21,7 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
-contract PlonkVerifier {
+contract RegisterPlonkVerifier {
     // Omega
     uint256 constant w1 = 421743594562400382753388642386256516545992082196004333756405989743524594615;    
     // Scalar field size
