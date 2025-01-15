@@ -32,7 +32,7 @@ describe('Registry Smart Contract', function () {
 
     before(async function () {
         hasher = await setupHasher();
-        RegisterVerifierContract = await ethers.getContractFactory("PlonkVerifier");
+        RegisterVerifierContract = await ethers.getContractFactory("RegisterPlonkVerifier");
         RegistryContract = await ethers.getContractFactory("MerkleRegistry")
         pedersen = await circomlibjs.buildPedersenHash();
         babyjub = await circomlibjs.buildBabyjub();
