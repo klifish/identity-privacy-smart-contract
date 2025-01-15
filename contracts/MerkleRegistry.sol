@@ -15,7 +15,7 @@ contract MerkleRegistry is MerkleTreeWithHistory {
 
     // Function to register a new user by inserting a new leaf into the Merkle tree
     function registerUser(bytes32 _leaf) external {
-        // console.log("Registering leaf: %s", _leaf);
+        // console.log("Registering leaf:", uint256(_leaf));
 
         uint32 index = _insert(_leaf);
         // console.log("Leaf inserted at index:", index);
