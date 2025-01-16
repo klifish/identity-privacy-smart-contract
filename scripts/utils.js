@@ -33,6 +33,17 @@ const ffjavascript = require("ffjavascript");
 
 let pedersenInstance; 
 
+function address2Uint8Array32(address) {
+  addressBigInt = BigInt(address)
+  addressBuff = ffjavascript.utils.leInt2Buff(addressBigInt)
+
+  ret = new Uint8Array(32);
+  for (let i = 0; i < addressBuff.length; i++) {
+    ret[i+12] = addressBuff[i]
+  }
+  return ret;
+}
+
 async function computePedersenHash(message) {
   try {
     if (typeof message !== "string" || message.length === 0) {
@@ -130,5 +141,6 @@ function fillUserOpDefaults(op, defaults) {
 module.exports = {
   parseProof,
   fillUserOpDefaults,
-  computePedersenHash
+  computePedersenHash,
+  address2Uint8Array32
 };
