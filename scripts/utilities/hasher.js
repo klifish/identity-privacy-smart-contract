@@ -9,7 +9,10 @@ async function setupHasher() {
 
 const hashLeftRight = (hasher, left, right) => {
     const leftValue = BigInt(left);
+    console.log("leftValue:", leftValue);
+    
     const rightValue = BigInt(right);
+    console.log("rightValue:", rightValue);
 
     if (leftValue >= FIELD_SIZE) throw new Error("_left should be inside the field");
     if (rightValue >= FIELD_SIZE) throw new Error("_right should be inside the field");
@@ -25,8 +28,32 @@ const hashLeftRight = (hasher, left, right) => {
     ({ xL, xR } = hasher.hash(xL, xR, 220));
     xL = ffjavascript.utils.unstringifyBigInts(hasher.F.toString(xL));
     xR = ffjavascript.utils.unstringifyBigInts(hasher.F.toString(xR));
+    console.log("hashValue:", xL);
 
     return xL;
 };
 
-module.exports = { setupHasher, hashLeftRight };
+const hashLeftRightNew = (hasher, left, right) => {
+    const leftBigInt = BigInt(left);
+    const rightBigInt = BigInt(right);
+    const Fr = hasher.F;
+
+    // Initialize MiMC Sponge with 2 inputs, 220 rounds, and key=0
+    // const mimcSponge = await circomlibjs.buildMimcSponge();
+
+    // Hash the inputs
+    const hashArray = hasher.multiHash([leftBigInt, rightBigInt], 0, 220);
+    const firstHash = Fr.toObject(hashArray[0])
+    // console.log("hasher.multiHash([leftBigInt, rightBigInt], 0, 220):", hasher.multiHash([leftBigInt, rightBigInt], 0, 220)[0])
+    const hash = hasher.F.toObject(
+        hasher.multiHash([leftBigInt, rightBigInt], 0, 220)
+    );
+
+    console.log("leftValue:", leftBigInt.toString());
+    console.log("rightValue:", rightBigInt.toString());
+    console.log("hashValue:", firstHash.toString());
+
+    return firstHash; // Return the hash as BigInt
+};
+
+module.exports = { setupHasher, hashLeftRight,hashLeftRightNew };

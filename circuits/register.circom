@@ -45,11 +45,13 @@ template WalletAndSecretHasher() {
     component WSHasher = Pedersen(256*3);
     for (var i = 0; i < 256; i++) {
         WSHasher.in[i] <== smartContractWalletAddressBits.out[i];
+        // log(smartContractWalletAddressBits.out[i]);
         WSHasher.in[i + 256] <== secretBits.out[i];
         WSHasher.in[i + 512] <== nullifierBits.out[i];
     }
     
-    commitment <== WSHasher.out[0];
+    commitment <== WSHasher.out[1];
+    
 }
 
 // Verifies that commitment that corresponds to given secret and nullifier is included in the merkle tree of deposits
@@ -81,7 +83,9 @@ template Register(levels) {
 
     component tree = MerkleTreeChecker(levels);
     tree.leaf <== leafCommitmentHasher.commitment;
+    log(leafCommitmentHasher.commitment);
     tree.root <== root;
+    log(root);
     for (var i = 0; i < levels; i++) {
         tree.pathElements[i] <== pathElements[i];
         tree.pathIndices[i] <== pathIndices[i];
@@ -100,4 +104,5 @@ template Register(levels) {
     refundSquare <== refund * refund;
 }
 
-component main {public [root, nullifierHash]}= Register(20);
+component main {public [root, nullifierHash]}= Register(2);
+// component main = WalletAndSecretHasher();

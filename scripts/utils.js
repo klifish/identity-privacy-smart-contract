@@ -33,14 +33,96 @@ const ffjavascript = require("ffjavascript");
 
 let pedersenInstance; 
 
+async function pedersenHashMultipleInputs(inputs) {
+  if (!Array.isArray(inputs)) {
+      throw new Error("Inputs must be an array.");
+  }
+
+  // 1. 初始化 Pedersen 哈希函数
+  const pedersen = await circomlibjs.buildPedersenHash();
+
+  // 2. 将所有输入标准化为 32 字节 Uint8Array 格式
+  const buffers = inputs.map(input => {
+      const bigintInput = BigInt(input); // 确保输入为 BigInt
+      return ffjavascript.utils.leInt2Buff(bigintInput, 32); // 转换为 32 字节 Uint8Array
+  });
+
+  // 3. 拼接所有 Uint8Array
+  const concatenatedBuffer = new Uint8Array(buffers.reduce((totalLength, buffer) => totalLength + buffer.length, 0));
+  let offset = 0;
+  for (const buffer of buffers) {
+      concatenatedBuffer.set(buffer, offset);
+      offset += buffer.length;
+  }
+
+  // 4. 计算 Pedersen 哈希
+  const hash = pedersen.hash(concatenatedBuffer);
+
+  return hash; // 返回哈希结果 Uint8Array
+}
+
+function bitsToNum(bits) {
+  if (!Array.isArray(bits)) {
+    throw new Error("Input must be an array.");
+  }
+  if (bits.some(bit => bit !== 0 && bit !== 1)) {
+    throw new Error("Bits array must contain only 0 or 1.");
+  }
+
+  let num = 0n; // Initialize the result as BigInt
+  let weight = 1n; // Start with 2^0 = 1
+
+  for (let bit of bits) {
+    if (bit === 1) {
+      num += weight; // Add the weight if the bit is 1
+    }
+    weight *= 2n; // Update the weight (2^i)
+  }
+
+  return num; // Return the resulting BigInt
+}
+
+function numToBits(inValue, n) {
+  if (typeof inValue !== "bigint") {
+    throw new Error(`Input value must be a BigInt. Received: ${typeof inValue}`);
+  }
+
+  const out = new Array(n).fill(0n); // Initialize output array as BigInt
+  let lc1 = 0n; // Use BigInt for the accumulator
+  let e2 = 1n;  // Use BigInt for the bit weights
+
+  for (let i = 0; i < n; i++) {
+    out[i] = (inValue >> BigInt(i)) & 1n; // Use BigInt-compatible right shift and bitwise AND
+    if (out[i] * (out[i] - 1n) !== 0n) { // Ensure out[i] is either 0n or 1n
+      throw new Error(`Invalid bit value at position ${i}: ${out[i]}`);
+    }
+    lc1 += out[i] * e2; // Accumulate the value
+    e2 *= 2n;          // Update the weight as a BigInt
+  }
+
+  if (lc1 !== inValue) {
+    throw new Error(`Validation failed: lc1 (${lc1}) !== inValue (${inValue})`);
+  }
+
+  return out.map(Number); // Convert the result to standard numbers if needed
+}
+
 function address2Uint8Array32(address) {
   addressBigInt = BigInt(address)
+  // console.log("addressBigInt:", addressBigInt);
+  
+  addressBits = numToBits(addressBigInt, 256)
+  // console.log("addressBits:", addressBits);
+
+  addressBigInt = bitsToNum(addressBits)
+  // console.log("addressBigInt:", addressBigInt);
   addressBuff = ffjavascript.utils.leInt2Buff(addressBigInt)
 
   ret = new Uint8Array(32);
   for (let i = 0; i < addressBuff.length; i++) {
     ret[i+12] = addressBuff[i]
   }
+  // console.log("ret:", ret);
   return ret;
 }
 
@@ -142,5 +224,8 @@ module.exports = {
   parseProof,
   fillUserOpDefaults,
   computePedersenHash,
-  address2Uint8Array32
+  address2Uint8Array32,
+  numToBits,
+  bitsToNum,
+  pedersenHashMultipleInputs
 };

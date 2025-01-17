@@ -6,6 +6,8 @@ include "../node_modules/circomlib/circuits/mimcsponge.circom";
 template HashLeftRight() {
     signal input left;
     signal input right;
+    log("left: ", left);    
+    log("right: ", right);
     signal output hash;
 
     component hasher = MiMCSponge(2, 220, 1);
@@ -13,6 +15,7 @@ template HashLeftRight() {
     hasher.ins[1] <== right;
     hasher.k <== 0;
     hash <== hasher.outs[0];
+    log("hash: ", hash);
 }
 
 // if s == 0 returns [in[0], in[1]]
