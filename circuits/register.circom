@@ -83,9 +83,7 @@ template Register(levels) {
 
     component tree = MerkleTreeChecker(levels);
     tree.leaf <== leafCommitmentHasher.commitment;
-    log(leafCommitmentHasher.commitment);
     tree.root <== root;
-    log(root);
     for (var i = 0; i < levels; i++) {
         tree.pathElements[i] <== pathElements[i];
         tree.pathIndices[i] <== pathIndices[i];
@@ -104,5 +102,5 @@ template Register(levels) {
     refundSquare <== refund * refund;
 }
 
-component main {public [root, nullifierHash]}= Register(2);
+component main {public [root, nullifierHash]}= Register(20);
 // component main = WalletAndSecretHasher();

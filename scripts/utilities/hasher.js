@@ -49,10 +49,6 @@ const hashLeftRightNew = (hasher, left, right) => {
         hasher.multiHash([leftBigInt, rightBigInt], 0, 220)
     );
 
-    console.log("leftValue:", leftBigInt.toString());
-    console.log("rightValue:", rightBigInt.toString());
-    console.log("hashValue:", firstHash.toString());
-
     return firstHash; // Return the hash as BigInt
 };
 
