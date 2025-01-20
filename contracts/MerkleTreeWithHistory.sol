@@ -117,6 +117,10 @@ contract MerkleTreeWithHistory {
       currentIndex /= 2;
     }
 
+    for (uint32 i = 0; i < 4; i++){
+      console.log(zeros(i));
+    }
+
     // console.log("currentLevelHash:", uint256(currentLevelHash));  
 
     uint32 newRootIndex = (currentRootIndex + 1) % ROOT_HISTORY_SIZE;
@@ -157,8 +161,8 @@ contract MerkleTreeWithHistory {
   /// @dev provides Zero (Empty) elements for a MiMC MerkleTree. Up to 32 levels
   function zeros(uint256 i) public pure returns (uint256) {
     if (i == 0) return uint256(0x0000000000000000000000000000000000000000000000000000000000000000);
-    else if (i == 1) return uint256(0x1ef99844e1e87694f2e16f530dbcb39c31b8fa404ef9bc3c210f5d037c4acc10);
-    else if (i == 2) return uint256(0x29e5a05bce8f48e97db682eec95bc207db5d8028e1d728aee9edc9cfed04de2a);
+    else if (i == 1) return uint256(0x2d9fea8398a61ea1997e7d748364c0fdb49412c4dbabc1578375ade642e85581);
+    else if (i == 2) return uint256(0x1234a304a6250851669d511fd01a93eef2fd88d84bbb8b089021393bd6314ace);
     else if (i == 3) return uint256(0x162f388c45785e19ed96adb29f3188b4044a5067c76be012ac58d1570dadcf7f);
     // else if (i == 4) return bytes32(0x0a89ca6ffa14cc462cfedb842c30ed221a50a3d6bf022a6a57dc82ab24c157c9);
     // else if (i == 5) return bytes32(0x24ca05c2b5cd42e890d6be94c68d0689f4f21c9cec9c0f13fe41d566dfb54959);

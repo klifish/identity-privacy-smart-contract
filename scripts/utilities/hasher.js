@@ -10,7 +10,10 @@ async function setupHasher() {
 const hashLeftRight = (hasher, left, right) => {
     const F = hasher.F;
     const leftBigInt = BigInt(left);
+    // console.log("leftBigInt", leftBigInt);
+    
     const rightBigInt = BigInt(right);
+    // console.log("rightBigInt", rightBigInt);
 
     if (leftBigInt >= FIELD_SIZE) throw new Error("_left should be inside the field");
     if (rightBigInt >= FIELD_SIZE) throw new Error("_right should be inside the field");
