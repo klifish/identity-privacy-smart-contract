@@ -2,24 +2,38 @@
 pragma solidity >=0.8.0;
 
 import "./MerkleTreeWithHistory.sol";
+import "./RegisterPlonkVerifier.sol";
 import "hardhat/console.sol";
+
+interface IVerifier {
+    function verifyProof(uint256[24] calldata _proof, uint256[2] calldata _pubSignals) external returns (bool);
+}
 
 contract MerkleRegistry is MerkleTreeWithHistory {
     mapping(bytes32 => bool) public usedNullifiers; // Track used nullifiers to prevent proof reuse
-
+    IVerifier public immutable verifier;
     // Events
-    event UserRegistered(bytes32 leaf, uint32 index);
+    event UserRegistered(uint256 leaf, uint32 index);
     // event ProofVerified(bytes32 nullifier);
 
-    constructor(uint32 _levels, IHasher _hasher) MerkleTreeWithHistory(_levels, _hasher) {}
+    constructor(uint32 _levels, IHasher _hasher, IVerifier _verifier) MerkleTreeWithHistory(_levels, _hasher) {
+        verifier = _verifier;
+    }
 
     // Function to register a new user by inserting a new leaf into the Merkle tree
-    function registerUser(bytes32 _leaf) external {
+    function registerUser(uint256 _leaf) external {
         // console.log("Registering leaf:", uint256(_leaf));
 
         uint32 index = _insert(_leaf);
         // console.log("Leaf inserted at index:", index);
         emit UserRegistered(_leaf, index);
+    }
+
+    function verify(uint256[24] calldata _proof, uint256[2] calldata _pubSignals) public returns (bool) {
+        require(isKnownRoot(_pubSignals[0]), "Invalid Merkle root");
+        bool result = verifier.verifyProof(_proof, _pubSignals);
+        console.log("Verification result:", result);
+        return result;
     }
 
     function getLevels() external view returns (uint32) {
@@ -48,7 +62,7 @@ contract MerkleRegistry is MerkleTreeWithHistory {
     //     emit ProofVerified(nullifier);
     // }
 
-    // // Function to verify the Merkle proof on-chain
+    // Function to verify the Merkle proof on-chain
     // function verifyMerkleProof(
     //     bytes32 leaf,
     //     bytes32[] memory proof,

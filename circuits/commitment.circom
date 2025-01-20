@@ -15,6 +15,7 @@ template Claim() {
 
     for (var i = 0; i < 256; i++) {
         commitmentHasher.in[i] <== secretBits.out[i];
+        // log(secretBits.out[i]);
     }
 
     commitment <== commitmentHasher.out[1];

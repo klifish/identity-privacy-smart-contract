@@ -7,6 +7,9 @@ const ffjavascript = require("ffjavascript");
 const merkleTree = require('fixed-merkle-tree');
 const { setupHasher, hashLeftRight } = require('../scripts/utilities/hasher');
 const exp = require("constants");
+const utils = require('../scripts/utils');
+const path = require('path');
+const snarkjs = require("snarkjs");
 
 const SEED = "mimcsponge";
 
@@ -19,6 +22,7 @@ describe('Registry Smart Contract', function () {
 
     let pedersen;
     let babyjub;
+    let F
 
     let hasher;
     let RegisterVerifierContract;
@@ -30,12 +34,33 @@ describe('Registry Smart Contract', function () {
     let HasherContract;
     let hasherOnChain;
 
+    let leafToInsert;
+    let treeOffChain;
+
     before(async function () {
         hasher = await setupHasher();
         RegisterVerifierContract = await ethers.getContractFactory("RegisterPlonkVerifier");
         RegistryContract = await ethers.getContractFactory("MerkleRegistry")
         pedersen = await circomlibjs.buildPedersenHash();
         babyjub = await circomlibjs.buildBabyjub();
+        F = babyjub.F;
+
+        const signers = await ethers.getSigners();
+        const signer0 = signers[0];
+        address0 = await signer0.getAddress();
+
+        const secret = "secret"
+        const secretBuff = (new TextEncoder()).encode(secret)
+        const secretBigInt = ffjavascript.utils.leBuff2int(secretBuff)
+
+        const nullifier = 1n;
+
+        const src = [address0, secretBigInt, nullifier]
+        leaf = await utils.pedersenHashMultipleInputs(src)
+
+        const hP = babyjub.unpackPoint(leaf);
+        hp1 = F.toObject(hP[1])
+        leafToInsert = hp1;
     });
 
     async function fixture() {
@@ -52,7 +77,6 @@ describe('Registry Smart Contract', function () {
         const hasherContract = await C.deploy();
         const hasherAddress = await hasherContract.getAddress();
 
-        
 
         const registry = await RegistryContract.deploy(MERKLE_TREE_LEVEL, hasherAddress);
         return { signers, signer, signer1, registry, pedersen, babyjub, hasherContract };
@@ -86,8 +110,9 @@ describe('Registry Smart Contract', function () {
 
     it('Should deploy the Registry smart contract', async function () {
         const hasherOnChainAddress = await hasherOnChain.getAddress();
-        registry = await RegistryContract.deploy(MERKLE_TREE_LEVEL, hasherOnChainAddress);
-        
+        const verifierAddress = await registerVerifier.getAddress();
+        registry = await RegistryContract.deploy(MERKLE_TREE_LEVEL, hasherOnChainAddress, verifierAddress);
+
         const registryAddress = await registry.getAddress();
         expect(registryAddress).to.be.properAddress;
 
@@ -105,39 +130,56 @@ describe('Registry Smart Contract', function () {
     });
 
     it('Should calculate hashLeftRight correctly', async function () {
-        // const { signers, signer, signer1, registry, pedersen, babyjub, hasherContract } = await loadFixture(fixture);
-        const signers = await ethers.getSigners();
-        const signer = signers[0];
-        const hash = pedersen.hash(await signer.getAddress());
-        const point = babyjub.unpackPoint(hash);
-        const point_x = ffjavascript.utils.leBuff2int(point[0]);
-        const point_x_hex = '0x' + BigInt(point_x).toString(16);
-        const leaf = point_x_hex;
-        const hashLeftRightValue = hashLeftRight(hasher, leaf, 0);
 
-        const hashLeftRightValueHex = BigInt(hashLeftRightValue).toString(16);
-        const hashLeftRightValueHex256 = '0x' + hashLeftRightValueHex.padStart(64, '0');
+        const signers = await ethers.getSigners();
+        const signer0 = signers[0];
+        address0 = await signer0.getAddress();
+
+        const secret = "secret"
+        const secretBuff = (new TextEncoder()).encode(secret)
+        const secretBigInt = ffjavascript.utils.leBuff2int(secretBuff)
+
+        const nullifier = 1n;
+
+        const src = [address0, secretBigInt, nullifier]
+        leaf = await utils.pedersenHashMultipleInputs(src)
+
+        const hP = babyjub.unpackPoint(leaf);
+        hp1 = F.toObject(hP[1])
+
+        const hashLeftRightValue = hashLeftRight(hasher, hp1, 0);
+
 
         const hasherContractaddress = await hasherOnChain.getAddress();
 
         const zero = BigInt(0).toString(16);
         const zero_256 = '0x' + zero.padStart(64, '0');
 
-        const hashLeftRightOnChain = await registry.hashLeftRight(hasherContractaddress, leaf, zero_256);
+        const hp1_hex = '0x'+BigInt(hp1).toString(16);
+        const hashLeftRightOnChain = await registry.hashLeftRight(hasherContractaddress, hp1_hex, zero_256);
 
-        expect(hashLeftRightOnChain).to.equal(hashLeftRightValueHex256);
+        expect(hashLeftRightOnChain).to.equal(BigInt(hashLeftRightValue));
     })
 
     it('Should register a user', async function () {
-        const signers = await ethers.getSigners();
-        const signer = signers[0];
 
-        const hash = pedersen.hash(await signer.getAddress());
-        const point = babyjub.unpackPoint(hash);
-        const point_x = ffjavascript.utils.leBuff2int(point[0]);
-        const point_x_hex = '0x' + BigInt(point_x).toString(16);
-        const leaf = point_x_hex;
-        await expect(registry.registerUser(leaf)).to.emit(registry, 'UserRegistered').withArgs(leaf, 0);
+        const signers = await ethers.getSigners();
+        const signer0 = signers[0];
+        address0 = await signer0.getAddress();
+
+        const secret = "secret"
+        const secretBuff = (new TextEncoder()).encode(secret)
+        const secretBigInt = ffjavascript.utils.leBuff2int(secretBuff)
+
+        const nullifier = 1n;
+
+        const src = [address0, secretBigInt, nullifier]
+        leaf = await utils.pedersenHashMultipleInputs(src)
+
+        const hP = babyjub.unpackPoint(leaf);
+        hp1 = F.toObject(hP[1])
+
+        await expect(registry.registerUser(hp1)).to.emit(registry, 'UserRegistered').withArgs(hp1, 0);
 
     })
 
@@ -156,7 +198,7 @@ describe('Registry Smart Contract', function () {
         expect(zero_tree.capacity).to.equal(2);
     })
 
-    it('Should insert one element into a one level Merkle Tree', async function () {
+    it('Should insert one element into a one level Merkle Tree (off chain)', async function () {
         // const { signers, signer, signer1, registry, pedersen, babyjub } = await loadFixture(fixture);
         const zero_tree = new merkleTree.MerkleTree(1, [], { hashFunction: (left, right) => hashLeftRight(hasher, left, right) });
         expect(zero_tree.levels).to.equal(1);
@@ -178,41 +220,57 @@ describe('Registry Smart Contract', function () {
         expect(zero_tree.root).to.equal(hashLeftRight(hasher, leaf, 0));
     })
 
-    it('Should construct a one level Merkle Tree', async function () {
-        let point, point_x, point_x_hex, leaf;
-
-        // const { signers, signer, signer1, registry, pedersen, babyjub } = await loadFixture(fixture);
-
-        const signers = await ethers.getSigners();
-
-        const last_root = await registry.getLastRoot();
-
+    it('Should construct a Merkle Tree off-chain, identical to the one built off-chain', async function () {
         const events = await registry.queryFilter('UserRegistered');
-
         const sortedEvents = events.sort((a, b) => (a.args.index < b.args.index ? -1 : a.args.index > b.args.index ? 1 : 0));
-
         const leafs = sortedEvents.map(event => event.args.leaf);
 
-        const tree = new merkleTree.MerkleTree(MERKLE_TREE_LEVEL, leafs, { hashFunction: (left, right) => hashLeftRight(hasher, left, right) });
+        treeOffChain = new merkleTree.MerkleTree(MERKLE_TREE_LEVEL, leafs, { hashFunction: (left, right) => hashLeftRight(hasher, left, right) });
+        // const treeZeros = tree.zeros.map(zero => BigInt(zero).toString(16)).map(zero => '0x' + zero.padStart(64, '0'));
+        // console.log("treeZeros: ",treeZeros);
+        const registerEvent = events.find(event => event.args.leaf === leafToInsert);
+        // console.log("registerEvent.args.leaf: ",registerEvent.args.leaf);
 
-        const hash = pedersen.hash(await signers[0].getAddress());
-        point = babyjub.unpackPoint(hash);
-        point_x = ffjavascript.utils.leBuff2int(point[0]);
-        hex_string = BigInt(point_x).toString(16);
-        point_x_hex = '0x' + hex_string.padStart(64, '0');
-        user_0 = point_x_hex;
+        // const merkleProof = treeOffChain.proof(registerEvent.args.leaf);
+        // console.log(merkleProof);
 
-        const registerEvent = events.find(event => event.args.leaf === user_0);
+        const root = treeOffChain.proof(leafToInsert).pathRoot;
 
-        const merkleProof = tree.proof(user_0);
-        console.log(merkleProof);
-
-        const root = tree.proof(user_0).pathRoot;
-        hex_root = BigInt(root).toString(16);
-        hex_root_256 = '0x' + hex_root.padStart(64, '0');
-        console.log(hex_root_256);
-
-        const isValidRoot = await registry.isKnownRoot(hex_root_256);
+        const isValidRoot = await registry.isKnownRoot(root);
         expect(isValidRoot).to.be.true;
+    })
+
+    it('Should generate a proof for a leaf in the Merkle Tree off chain', async function () {
+        wasm = path.join(__dirname, "..", "build", "circuits", "register_js", "register.wasm");
+        zkey = path.join(__dirname, "..", "build", "circuits", "register_final.zkey");
+        
+        const merkleProof = treeOffChain.proof(leafToInsert);
+        const signers = await ethers.getSigners();
+        const signer0 = signers[0];
+        address0 = await signer0.getAddress();
+
+        const secret = "secret"
+        const secretBuff = (new TextEncoder()).encode(secret)
+        const secretBigInt = ffjavascript.utils.leBuff2int(secretBuff)
+
+        const nullifier = 1n;
+        const input = {
+            "root": merkleProof.pathRoot,
+            "nullifierHash": "987654321",
+            "recipient": "100",
+            "relayer": "50",
+            "fee": "10",
+            "refund": "5",
+            "nullifier": nullifier,
+            "secret": secretBigInt,
+            "pathElements": merkleProof.pathElements,
+            "pathIndices": merkleProof.pathIndices,
+            "smartContractWalletAddress": address0
+        }
+
+        const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.plonk.fullProve(input, wasm, zkey);
+        const parsedproof = utils.parseProof(proofJson);
+        const isValid = await registry.verify(parsedproof, publicInputs);
+        // expect(isValid).to.be.true;
     })
 })

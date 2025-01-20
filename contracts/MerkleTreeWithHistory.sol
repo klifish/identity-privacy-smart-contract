@@ -31,8 +31,8 @@ contract MerkleTreeWithHistory {
 
   // filledSubtrees and roots could be bytes32[size], but using mappings makes it cheaper because
   // it removes index range check on every interaction
-  mapping(uint256 => bytes32) public filledSubtrees;
-  mapping(uint256 => bytes32) public roots;
+  mapping(uint256 => uint256) public filledSubtrees;
+  mapping(uint256 => uint256) public roots;
   uint32 public constant ROOT_HISTORY_SIZE = 30;
   uint32 public currentRootIndex = 0;
   uint32 public nextIndex = 0;
@@ -54,32 +54,51 @@ contract MerkleTreeWithHistory {
   /**
     @dev Hash 2 tree leaves, returns MiMC(_left, _right)
   */
-  function hashLeftRight(
-    IHasher _hasher,
-    bytes32 _left,
-    bytes32 _right
-  ) public pure returns (bytes32) {
-    // console.log("_left:", uint256(_left));
-    require(uint256(_left) < FIELD_SIZE, "_left should be inside the field");
-    require(uint256(_right) < FIELD_SIZE, "_right should be inside the field");
+  // function hashLeftRight(
+  //   IHasher _hasher,
+  //   bytes32 _left,
+  //   bytes32 _right
+  // ) public pure returns (bytes32) {
+  //   console.log("_left:", uint256(_left));
+  //   console.log("_right:", uint256(_right));
+  //   require(uint256(_left) < FIELD_SIZE, "_left should be inside the field");
+  //   require(uint256(_right) < FIELD_SIZE, "_right should be inside the field");
     
-    uint256 R = uint256(_left);
-    uint256 C = 0;
+  //   uint256 R = uint256(_left);
+  //   uint256 C = 0;
     
-    (R, C) = _hasher.MiMCSponge(R, C, 220);
-    R = addmod(R, uint256(_right), FIELD_SIZE);
-    (R, C) = _hasher.MiMCSponge(R, C, 220);
-    return bytes32(R);
+  //   (R, C) = _hasher.MiMCSponge(R, C, 220);
+  //   R = addmod(R, uint256(_right), FIELD_SIZE);
+  //   (R, C) = _hasher.MiMCSponge(R, C, 220);
+  //   return bytes32(R);
+  // }
+
+  function hashLeftRight(IHasher _hasher, uint256 left, uint256 right) public pure returns (uint256) {
+    require(left < FIELD_SIZE, "Left input out of field size");
+    require(right < FIELD_SIZE, "Right input out of field size");
+
+    uint256 R = 0; // Initialize R (equivalent to F.zero in JS)
+    uint256 C = 0; // Initialize C (equivalent to F.zero in JS)
+
+        // Step 1: Add left input to R
+    R = (R + left) % FIELD_SIZE;
+    (R, C) = _hasher.MiMCSponge(R, C, 0); // First hash with MiMC Sponge
+
+        // Step 2: Add right input to R
+    R = (R + right) % FIELD_SIZE;
+    (R, C) = _hasher.MiMCSponge(R, C, 0); // Second hash with MiMC Sponge
+
+    return R; // Return xL as the final hash
   }
 
-  function _insert(bytes32 _leaf) internal returns (uint32 index) {
-    console.log("currentLevelHash:", uint256(hashLeftRight(hasher, _leaf, zeros(0))));
+  function _insert(uint256 _leaf) internal returns (uint32 index) {
+    // console.log("currentLevelHash:", uint256(hashLeftRight(hasher, _leaf, zeros(0))));
     uint32 _nextIndex = nextIndex;
     require(_nextIndex != uint32(2)**levels, "Merkle tree is full. No more leaves can be added");
     uint32 currentIndex = _nextIndex;
-    bytes32 currentLevelHash = _leaf;
-    bytes32 left;
-    bytes32 right;
+    uint256 currentLevelHash = _leaf;
+    uint256 left;
+    uint256 right;
 
     for (uint32 i = 0; i < levels; i++) {
       if (currentIndex % 2 == 0) {
@@ -98,6 +117,10 @@ contract MerkleTreeWithHistory {
       currentIndex /= 2;
     }
 
+    for (uint32 i = 0; i < 4; i++){
+      console.log(zeros(i));
+    }
+
     // console.log("currentLevelHash:", uint256(currentLevelHash));  
 
     uint32 newRootIndex = (currentRootIndex + 1) % ROOT_HISTORY_SIZE;
@@ -110,7 +133,7 @@ contract MerkleTreeWithHistory {
   /**
     @dev Whether the root is present in the root history
   */
-  function isKnownRoot(bytes32 _root) public view returns (bool) {
+  function isKnownRoot(uint256 _root) public view returns (bool) {
     if (_root == 0) {
       return false;
     }
@@ -131,16 +154,16 @@ contract MerkleTreeWithHistory {
   /**
     @dev Returns the last root
   */
-  function getLastRoot() public view returns (bytes32) {
+  function getLastRoot() public view returns (uint256) {
     return roots[currentRootIndex];
   }
 
   /// @dev provides Zero (Empty) elements for a MiMC MerkleTree. Up to 32 levels
-  function zeros(uint256 i) public pure returns (bytes32) {
-    if (i == 0) return bytes32(0x0000000000000000000000000000000000000000000000000000000000000000);
-    else if (i == 1) return bytes32(0x1ef99844e1e87694f2e16f530dbcb39c31b8fa404ef9bc3c210f5d037c4acc10);
-    else if (i == 2) return bytes32(0x29e5a05bce8f48e97db682eec95bc207db5d8028e1d728aee9edc9cfed04de2a);
-    else if (i == 3) return bytes32(0x162f388c45785e19ed96adb29f3188b4044a5067c76be012ac58d1570dadcf7f);
+  function zeros(uint256 i) public pure returns (uint256) {
+    if (i == 0) return uint256(0x0000000000000000000000000000000000000000000000000000000000000000);
+    else if (i == 1) return uint256(0x2d9fea8398a61ea1997e7d748364c0fdb49412c4dbabc1578375ade642e85581);
+    else if (i == 2) return uint256(0x1234a304a6250851669d511fd01a93eef2fd88d84bbb8b089021393bd6314ace);
+    else if (i == 3) return uint256(0x162f388c45785e19ed96adb29f3188b4044a5067c76be012ac58d1570dadcf7f);
     // else if (i == 4) return bytes32(0x0a89ca6ffa14cc462cfedb842c30ed221a50a3d6bf022a6a57dc82ab24c157c9);
     // else if (i == 5) return bytes32(0x24ca05c2b5cd42e890d6be94c68d0689f4f21c9cec9c0f13fe41d566dfb54959);
     // else if (i == 6) return bytes32(0x1ccb97c932565a92c60156bdba2d08f3bf1377464e025cee765679e604a7315c);
