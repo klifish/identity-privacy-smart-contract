@@ -21,13 +21,15 @@
     "build:circuit:register": "npm run build:circuit:compile:register && npm run build:circuit:info:register && npm run build:circuit:setup && npm run build:circuit:export:verificationkey:register && npm run build:circuit:export:solidityverifier:register",
     "build:circuit:commitment": "npm run build:circuit:compile:commitment && npm run build:circuit:info:commitment && npm run build:circuit:setup && npm run build:circuit:export:verificationkey:commitment && npm run build:circuit:export:solidityverifier:commitment",
     "build:circuit": "npm run build:circuit:compile && npm run build:circuit:info && npm run build:circuit:setup && npm run build:circuit:export:verificationkey && npm run build:circuit:export:solidityverifier",
-    "build": "npm run build:circuit"
+    "build": "npm run build:circuit",
+    "deploy": "npx thirdweb@latest deploy -k $(grep THIRDWEB_KEY .env | cut -d '=' -f2)"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^3.0.8",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "dotenv-cli": "^8.0.0",
     "ethers": "^6.13.4",
     "ffjavascript": "^0.3.1",
     "hardhat": "^2.22.13",

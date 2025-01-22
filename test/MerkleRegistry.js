@@ -85,6 +85,7 @@ describe('Registry Smart Contract', function () {
     it("Should deploy a hasher on chain", async () => {
         const signers = await ethers.getSigners();
         const signer = signers[0];
+        
         const bytecode = circomlibjs.mimcSpongecontract.createCode(SEED, 220);
         const abi = circomlibjs.mimcSpongecontract.abi;
         HasherContract = new ethers.ContractFactory(
