@@ -6,7 +6,10 @@ import "./RegisterPlonkVerifier.sol";
 import "hardhat/console.sol";
 
 interface IVerifier {
-    function verifyProof(uint256[24] calldata _proof, uint256[2] calldata _pubSignals) external returns (bool);
+    function verifyProof(
+        uint256[24] calldata _proof,
+        uint256[2] calldata _pubSignals
+    ) external returns (bool);
 }
 
 contract MerkleRegistry is MerkleTreeWithHistory {
@@ -14,9 +17,15 @@ contract MerkleRegistry is MerkleTreeWithHistory {
     IVerifier public immutable verifier;
     // Events
     event UserRegistered(uint256 leaf, uint32 index);
+    event ProofVerified(uint256 root, bool result);
+
     // event ProofVerified(bytes32 nullifier);
 
-    constructor(uint32 _levels, IHasher _hasher, IVerifier _verifier) MerkleTreeWithHistory(_levels, _hasher) {
+    constructor(
+        uint32 _levels,
+        IHasher _hasher,
+        IVerifier _verifier
+    ) MerkleTreeWithHistory(_levels, _hasher) {
         verifier = _verifier;
     }
 
@@ -29,10 +38,15 @@ contract MerkleRegistry is MerkleTreeWithHistory {
         emit UserRegistered(_leaf, index);
     }
 
-    function verify(uint256[24] calldata _proof, uint256[2] calldata _pubSignals) public returns (bool) {
+    function verify(
+        uint256[24] calldata _proof,
+        uint256[2] calldata _pubSignals
+    ) public returns (bool) {
         require(isKnownRoot(_pubSignals[0]), "Invalid Merkle root");
         bool result = verifier.verifyProof(_proof, _pubSignals);
-        console.log("Verification result:", result);
+        if (result) {
+            emit ProofVerified(_pubSignals[0], result);
+        }
         return result;
     }
 

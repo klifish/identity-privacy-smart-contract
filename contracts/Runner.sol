@@ -16,13 +16,21 @@ interface IRegistry {
 
 contract Runner is BaseAccount, Initializable {
     IEntryPoint private immutable _entryPoint;
-    IRegistry private _registry;
+    IRegistry private immutable _registry;
 
     constructor(IEntryPoint anEntryPoint, IRegistry aRegistry) {
         _entryPoint = anEntryPoint;
         _registry = aRegistry;
         _disableInitializers();
     }
+
+    // function initialize(
+    //     IEntryPoint anEntryPoint,
+    //     IRegistry aRegistry
+    // ) public initializer {
+    //     _entryPoint = anEntryPoint;
+    //     _registry = aRegistry;
+    // }
 
     function entryPoint() public view virtual override returns (IEntryPoint) {
         return _entryPoint;
@@ -56,12 +64,39 @@ contract Runner is BaseAccount, Initializable {
         }
     }
 
+    function _deserializeProofAndPublicSignals(
+        bytes calldata signature
+    )
+        public
+        pure
+        returns (uint256[24] memory proof, uint256[2] memory publicSignals)
+    {
+        (proof, publicSignals) = abi.decode(
+            signature,
+            (uint256[24], uint256[2])
+        );
+    }
+
+    function verifyProof(bytes calldata signarute) public returns (bool) {
+        return _verifyProof(signarute);
+    }
+
+    function _verifyProof(bytes calldata signature) internal returns (bool) {
+        (
+            uint256[24] memory proof,
+            uint256[2] memory publicSignals
+        ) = _deserializeProofAndPublicSignals(signature);
+        bool result = _registry.verify(proof, publicSignals);
+        console.log("Proof verified: %s", result);
+        return result;
+    }
+
     // validate the signature of the user operation
     // verify if the userOp is submitted by a registered user
     function _validateSignature(
         PackedUserOperation calldata userOp,
         bytes32 userOpHash
     ) internal virtual override returns (uint256 validationData) {
-        
+        require(_verifyProof(userOp.signature), "Invalid signature");
     }
 }

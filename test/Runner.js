@@ -1,11 +1,13 @@
 const { register } = require("module");
 const path = require("path");
 const { expect } = require("chai");
-const exp = require("constants");
 const circomlibjs = require("circomlibjs");
 const { ethers } = require("hardhat");
 const ffjavascript = require("ffjavascript");
 const utils = require('../scripts/utils');
+const merkleTree = require('fixed-merkle-tree');
+const { setupHasher, hashLeftRight } = require('../scripts/utilities/hasher');
+const snarkjs = require("snarkjs");
 
 describe('Runner', function () {
     const SEED = "mimcsponge";
@@ -17,15 +19,23 @@ describe('Runner', function () {
     let runnerFactory;
     let registry;
     let hasher;
+    let hasherOffChain;
     let signer;
     let treeOffChain;
 
     let babyjub;
     let F;
+
+    let wasm
+    let zkey
     before(async () => {
         signer = (await ethers.getSigners())[0];
         babyjub = await circomlibjs.buildBabyjub();
         F = babyjub.F;
+
+        wasm = path.join(__dirname, "..", "build", "circuits", "register_js", "register.wasm");
+        zkey = path.join(__dirname, "..", "build", "circuits", "register_final.zkey");
+        hasherOffChain = await setupHasher();
 
     });
 
@@ -85,7 +95,8 @@ describe('Runner', function () {
 
     it("Should deploy the RunnerFactory", async () => {
         const RunnerFactoryContract = await ethers.getContractFactory("RunnerFactory");
-        runnerFactory = await RunnerFactoryContract.deploy(entryPoint, await registry.getAddress());
+        const registryAddress = await registry.getAddress()
+        runnerFactory = await RunnerFactoryContract.deploy(entryPoint, registryAddress);
 
         const runnerFactoryAddress = await runnerFactory.getAddress();
         expect(runnerFactoryAddress).to.be.a.properAddress;
@@ -105,6 +116,9 @@ describe('Runner', function () {
 
         const entryPointAddress = await runner.entryPoint();
         expect(entryPointAddress).to.be.equal(entryPoint);
+
+        const registryAddress = await runner.registry();
+        expect(registryAddress).to.be.equal(await registry.getAddress());
     });
 
     it("Should register a new user", async () => {
@@ -126,11 +140,105 @@ describe('Runner', function () {
 
     });
 
+    it("Should construct a Merkle tree off-chain", async () => {
+
+        const events = await registry.queryFilter(registry.filters.UserRegistered());
+        const sortedEvents = events.sort((a, b) => (a.args.index < b.args.index ? -1 : a.args.index > b.args.index ? 1 : 0));
+        const leafs = sortedEvents.map(event => event.args.leaf);
+
+        treeOffChain = new merkleTree.MerkleTree(MERKLE_TREE_LEVEL, leafs, { hashFunction: (left, right) => hashLeftRight(hasherOffChain, left, right) });
+        const root = treeOffChain.root;
+        const isValidRoot = await registry.isKnownRoot(root);
+        expect(isValidRoot).to.be.true;
+
+    });
+
+    // it("Should generate a proof for the registered user", async () => {
+
+    //     let userAddress = signer.address;
+
+    //     const secret = SECRET;
+    //     const secretBuff = (new TextEncoder()).encode(secret)
+    //     const secretBigInt = ffjavascript.utils.leBuff2int(secretBuff)
+
+    //     const nullifier = 0n;
+
+    //     const src = [userAddress, secretBigInt, nullifier]
+    //     leaf = await utils.pedersenHashMultipleInputs(src)
+
+    //     const hP = babyjub.unpackPoint(leaf);
+    //     hp1 = F.toObject(hP[1])
+
+    //     const merkleProof = treeOffChain.proof(hp1);
+
+    //     const input = {
+    //         "root": merkleProof.pathRoot,
+    //         "nullifierHash": "987654321",
+    //         "recipient": "100",
+    //         "relayer": "50",
+    //         "fee": "10",
+    //         "refund": "5",
+    //         "nullifier": nullifier,
+    //         "secret": secretBigInt,
+    //         "pathElements": merkleProof.pathElements,
+    //         "pathIndices": merkleProof.pathIndices,
+    //         "smartContractWalletAddress": userAddress
+    //     }
+
+    //     const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.plonk.fullProve(input, wasm, zkey);
 
 
+    //     const parsedproof = utils.parseProof(proofJson);
+    //     const tx = await registry.verify(parsedproof, publicInputs);
+    //     const receipt = await tx.wait();
+
+    //     const events = await registry.queryFilter(registry.filters.ProofVerified());
+    //     expect(events[0].args.result).to.be.true;
+
+    // });
+
+    it("Should validate the proof in Runner via _validateSignature", async () => {
+        let userAddress = signer.address;
+
+        const secret = SECRET;
+        const secretBuff = (new TextEncoder()).encode(secret)
+        const secretBigInt = ffjavascript.utils.leBuff2int(secretBuff)
+
+        const nullifier = 0n;
+
+        const src = [userAddress, secretBigInt, nullifier]
+        leaf = await utils.pedersenHashMultipleInputs(src)
+
+        const hP = babyjub.unpackPoint(leaf);
+        hp1 = F.toObject(hP[1])
+
+        const merkleProof = treeOffChain.proof(hp1);
+
+        const input = {
+            "root": merkleProof.pathRoot,
+            "nullifierHash": "987654321",
+            "recipient": "100",
+            "relayer": "50",
+            "fee": "10",
+            "refund": "5",
+            "nullifier": nullifier,
+            "secret": secretBigInt,
+            "pathElements": merkleProof.pathElements,
+            "pathIndices": merkleProof.pathIndices,
+            "smartContractWalletAddress": userAddress
+        }
+
+        const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.plonk.fullProve(input, wasm, zkey);
+        const parsedproof = utils.parseProof(proofJson);
+        const proofBigint = parsedproof.map((el) => BigInt(el));
+        const publicSignalsBigint = publicInputs.map((el) => BigInt(el));
+
+        const serializedProofandPublicSignals = ethers.AbiCoder.defaultAbiCoder().encode(["uint256[24]", "uint256[2]"], [proofBigint, publicSignalsBigint]);
+
+        const tx = await runner._deserializeProofAndPublicSignals(serializedProofandPublicSignals);
+
+        await runner.verifyProof(serializedProofandPublicSignals)
 
 
-
-
-
+    });
 });
