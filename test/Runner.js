@@ -17,6 +17,7 @@ describe('Runner', function () {
     let registerPlonkVerifier;
     let entryPoint;
     let runnerFactory;
+    let runner;
     let registry;
     let hasher;
     let hasherOffChain;
@@ -197,6 +198,16 @@ describe('Runner', function () {
 
     // });
 
+    it("should be able to call transfer", async () => {
+        const runnerAddress = await runner.getAddress();
+        const balanceBefore = await ethers.provider.getBalance(runnerAddress);
+        console.log("balanceBefore", balanceBefore.toString());
+
+        await signer.sendTransaction({ from: signer.address, to: runnerAddress, value: ethers.parseEther("1") });
+        const balanceAfter = await ethers.provider.getBalance(runnerAddress);
+        console.log("balanceAfter", balanceAfter.toString());
+    });
+
     it("Should validate the proof in Runner via _validateSignature", async () => {
         let userAddress = signer.address;
 
@@ -229,6 +240,7 @@ describe('Runner', function () {
         }
 
         const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.plonk.fullProve(input, wasm, zkey);
+
         const parsedproof = utils.parseProof(proofJson);
         const proofBigint = parsedproof.map((el) => BigInt(el));
         const publicSignalsBigint = publicInputs.map((el) => BigInt(el));

@@ -4,12 +4,13 @@ require('dotenv').config();
 // require("@nomiclabs/hardhat-ethers");
 require("@nomicfoundation/hardhat-ethers");
 require("@nomicfoundation/hardhat-chai-matchers");
+require("@nomicfoundation/hardhat-ignition-ethers");
 
-const {API_URL, PRIVATE_KEY} = process.env;
+const { API_URL, PRIVATE_KEY } = process.env;
 
 module.exports = {
   solidity: {
-    version:"0.8.27",
+    version: "0.8.27",
     settings: {
       optimizer: {
         enabled: true,

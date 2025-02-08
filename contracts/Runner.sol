@@ -32,6 +32,10 @@ contract Runner is BaseAccount, Initializable {
     //     _registry = aRegistry;
     // }
 
+    event SignatureVerified(bool result);
+
+    receive() external payable {}
+
     function entryPoint() public view virtual override returns (IEntryPoint) {
         return _entryPoint;
     }
@@ -87,7 +91,8 @@ contract Runner is BaseAccount, Initializable {
             uint256[2] memory publicSignals
         ) = _deserializeProofAndPublicSignals(signature);
         bool result = _registry.verify(proof, publicSignals);
-        console.log("Proof verified: %s", result);
+        // console.log("Proof verified: %s", result);
+        emit SignatureVerified(result);
         return result;
     }
 
@@ -98,5 +103,6 @@ contract Runner is BaseAccount, Initializable {
         bytes32 userOpHash
     ) internal virtual override returns (uint256 validationData) {
         require(_verifyProof(userOp.signature), "Invalid signature");
+        return 0;
     }
 }

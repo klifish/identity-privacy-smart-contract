@@ -16,10 +16,14 @@ import "./Counter.sol";
 contract MyAccountFactory {
     MyAccount public immutable accountImplementation;
     Counter private counter;
-    
 
-    event AccountCreated(address accountAddress);
-    constructor(IEntryPoint _entryPoint, IVerifier aVerifier, uint256 _initialCount) {
+    event AccountCreated(address accountAddress, uint256 commitment);
+
+    constructor(
+        IEntryPoint _entryPoint,
+        IVerifier aVerifier,
+        uint256 _initialCount
+    ) {
         accountImplementation = new MyAccount(_entryPoint, aVerifier);
         counter = new Counter(_initialCount);
     }
@@ -44,13 +48,12 @@ contract MyAccountFactory {
             payable(
                 new ERC1967Proxy{salt: bytes32(salt)}(
                     address(accountImplementation),
-                    abi.encodeCall(MyAccount.initialize, (_commitment)
-                    )
+                    abi.encodeCall(MyAccount.initialize, (_commitment))
                 )
             )
         );
         // console.log("Account created at address: %s", address(ret));
-        emit AccountCreated(address(ret));
+        emit AccountCreated(address(ret), _commitment);
         // return ret;
     }
 
@@ -61,18 +64,40 @@ contract MyAccountFactory {
         uint256 _commitment,
         uint256 salt
     ) public view returns (address) {
-        return
-            Create2.computeAddress(
-                bytes32(salt),
-                keccak256(
-                    abi.encodePacked(
-                        type(ERC1967Proxy).creationCode,
-                        abi.encode(
-                            address(accountImplementation),
-                            abi.encodeCall(MyAccount.initialize, (_commitment))
-                        )
-                    )
-                )
-            );
+        bytes32 saltBytes = bytes32(salt);
+        console.log("commitment: %s", _commitment);
+        console.log("saltBytes: %s", bytes32ToString(saltBytes));
+
+        bytes memory initCode = abi.encodePacked(
+            type(ERC1967Proxy).creationCode,
+            abi.encode(
+                address(accountImplementation),
+                abi.encodeCall(MyAccount.initialize, (_commitment))
+            )
+        );
+
+        bytes32 initCodeHash = keccak256(initCode);
+        console.log("initCodeHash: %s", bytes32ToString(initCodeHash));
+
+        address computedAddress = Create2.computeAddress(
+            saltBytes,
+            initCodeHash
+        );
+
+        console.log("computedAddress: %s", computedAddress);
+        return computedAddress;
+    }
+
+    function bytes32ToString(
+        bytes32 _bytes32
+    ) public pure returns (string memory) {
+        bytes memory hexChars = "0123456789abcdef";
+        bytes memory result = new bytes(64); // 32 bytes * 2 characters per byte
+
+        for (uint256 i = 0; i < 32; i++) {
+            result[i * 2] = hexChars[uint8(_bytes32[i] >> 4)];
+            result[i * 2 + 1] = hexChars[uint8(_bytes32[i] & 0x0f)];
+        }
+        return string(result);
     }
 }

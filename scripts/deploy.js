@@ -1,10 +1,10 @@
 const { ethers } = require("hardhat");
+const { deployHasher } = require("./deployHasher.js");
 
 async function main() {
-    const HelloWorld = await ethers.getContractFactory("HelloWorld");
 
-    const helloWorld = await HelloWorld.deploy("Hello World!");
-    console.log("Contract deployed to address:", helloWorld.address);
+    // 0xb52EB40826970b9C2903715E670E18504a06B3ab
+    // await deployHasher(); // No need to deploy the hasher contract again
 }
 
 main().then(() => process.exit(0)).catch(error => {

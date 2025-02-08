@@ -4,38 +4,11 @@ const circomlibjs = require("circomlibjs");
 const ffjavascript = require("ffjavascript");
 // const AddressZero = ethers.constants.AddressZero;
 
-/**
- * Default values for a UserOperation object.
- */
-// const DefaultsForUserOp = {
-//   sender: AddressZero,
-//   nonce: 0,
-//   initCode: '0x',
-//   callData: '0x',
-//   callGasLimit: 0,
-//   verificationGasLimit: 150000, // Default verification gas
-//   preVerificationGas: 21000,   // Covers calldata cost
-//   maxFeePerGas: 0,
-//   maxPriorityFeePerGas: 1e9,
-//   paymaster: AddressZero,
-//   paymasterData: '0x',
-//   paymasterVerificationGasLimit: 300000,
-//   paymasterPostOpGasLimit: 0,
-//   signature: '0x',
-// };
-
-// function buff2hex(buff) {
-//   function i2hex(i) {
-//     return ('0' + i.toString(16)).slice(-2);
-//   }
-//   return Array.from(buff).map(i2hex).join('');
-// }
-
-let pedersenInstance; 
+let pedersenInstance;
 
 async function pedersenHashMultipleInputs(inputs) {
   if (!Array.isArray(inputs)) {
-      throw new Error("Inputs must be an array.");
+    throw new Error("Inputs must be an array.");
   }
 
   // 1. 初始化 Pedersen 哈希函数
@@ -43,16 +16,16 @@ async function pedersenHashMultipleInputs(inputs) {
 
   // 2. 将所有输入标准化为 32 字节 Uint8Array 格式
   const buffers = inputs.map(input => {
-      const bigintInput = BigInt(input); // 确保输入为 BigInt
-      return ffjavascript.utils.leInt2Buff(bigintInput, 32); // 转换为 32 字节 Uint8Array
+    const bigintInput = BigInt(input); // 确保输入为 BigInt
+    return ffjavascript.utils.leInt2Buff(bigintInput, 32); // 转换为 32 字节 Uint8Array
   });
 
   // 3. 拼接所有 Uint8Array
   const concatenatedBuffer = new Uint8Array(buffers.reduce((totalLength, buffer) => totalLength + buffer.length, 0));
   let offset = 0;
   for (const buffer of buffers) {
-      concatenatedBuffer.set(buffer, offset);
-      offset += buffer.length;
+    concatenatedBuffer.set(buffer, offset);
+    offset += buffer.length;
   }
 
   // 4. 计算 Pedersen 哈希
@@ -110,7 +83,7 @@ function numToBits(inValue, n) {
 function address2Uint8Array32(address) {
   addressBigInt = BigInt(address)
   // console.log("addressBigInt:", addressBigInt);
-  
+
   addressBits = numToBits(addressBigInt, 256)
   // console.log("addressBits:", addressBits);
 
@@ -120,7 +93,7 @@ function address2Uint8Array32(address) {
 
   ret = new Uint8Array(32);
   for (let i = 0; i < addressBuff.length; i++) {
-    ret[i+12] = addressBuff[i]
+    ret[i + 12] = addressBuff[i]
   }
   // console.log("ret:", ret);
   return ret;
