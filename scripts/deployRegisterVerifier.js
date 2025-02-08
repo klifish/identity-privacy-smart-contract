@@ -11,8 +11,10 @@ async function deployRegisterVerifier() {
     const RegisterGroth16VerifierContract = await ethers.getContractFactory("RegisterGroth16Verifier", signer);
     const registerGroth16Verifier = await RegisterGroth16VerifierContract.deploy();
 
-    console.log("Register Contract deployed to address:", registerGroth16Verifier.address)
-    return registerGroth16Verifier.address;
+    const address = await registerGroth16Verifier.getAddress();
+
+    console.log("Register Contract deployed to address:", address)
+    return address;
 }
 
 module.exports = { deployRegisterVerifier }

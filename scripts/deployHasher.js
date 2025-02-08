@@ -27,8 +27,8 @@ async function deployHasher() {
     const mimc = await C.deploy()
     const address = await mimc.getAddress()
 
-    console.log("Hasher Contract deployed to address:", mimc.address)
-    return mimc.address
+    console.log("Hasher Contract deployed to address:", address)
+    return address
 }
 
 // main().then(() => process.exit(0)).catch(error => {

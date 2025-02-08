@@ -21,16 +21,16 @@ async function registry_verify() {
 
     // await registerUser(smart_account_address, secret, nullifier);
 
-    const [serializedProofandPublicSignals, parsedproof, publicInputs] = await generateProof(smart_account_address, secret, nullifier);
+    // await registerUser(smart_account_address, secret, nullifier);
 
-    const tx = await merkleRegistry.verify(parsedproof, publicInputs, { gasLimit: 15000000 });
+    const { pA, pB, pC, pubSignals } = await generateProof(smart_account_address, secret, nullifier);
+
+    const tx = await merkleRegistry.verify(pA, pB, pC, pubSignals);
     await tx.wait();
-    console.log("Verification result:", tx);
-
-
 }
 
 async function main() {
+
     await registry_verify()
 }
 main().then(() => process.exit(0)).catch(error => {

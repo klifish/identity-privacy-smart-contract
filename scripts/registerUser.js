@@ -98,17 +98,20 @@ async function generateProof(smart_account_address, secret, nullifier) {
 
     console.log("start proving")
 
-    const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.plonk.fullProve(input, wasm, zkey);
+    // const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.plonk.fullProve(input, wasm, zkey);
+    const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.groth16.fullProve(input, wasm, zkey);
+
     console.log("prove done")
 
-    const parsedproof = utils.parseProof(proofJson);
+    let { pA, pB, pC, pubSignals } = await utils.groth16ExportSolidityCallData(proofJson, publicInputs);
+    // const parsedproof = utils.parseProof(proofJson);
 
-    const proofBigint = parsedproof.map((el) => BigInt(el));
-    const publicSignalsBigint = publicInputs.map((el) => BigInt(el));
+    // const proofBigint = parsedproof.map((el) => BigInt(el));
+    // const publicSignalsBigint = publicInputs.map((el) => BigInt(el));
 
-    const serializedProofandPublicSignals = ethers.AbiCoder.defaultAbiCoder().encode(["uint256[24]", "uint256[2]"], [proofBigint, publicSignalsBigint]);
+    // const serializedProofandPublicSignals = ethers.AbiCoder.defaultAbiCoder().encode(["uint256[24]", "uint256[2]"], [proofBigint, publicSignalsBigint]);
 
-    return [serializedProofandPublicSignals, parsedproof, publicInputs];
+    return { pA, pB, pC, pubSignals };
 
 }
 

@@ -1,4 +1,4 @@
-const {ethers} = require("hardhat");
+const { ethers } = require("hardhat");
 const { expect } = require("chai");
 
 describe('RegisterVerifierContract', function () {
@@ -6,7 +6,7 @@ describe('RegisterVerifierContract', function () {
     let RegisterVerifierContract, registerVerifier;
 
     before(async function () {
-        RegisterVerifierContract = await ethers.getContractFactory("PlonkVerifier");
+        RegisterVerifierContract = await ethers.getContractFactory("RegisterGroth16Verifier");
     });
 
     it('Should deploy RegisterVerifierContract', async function () {

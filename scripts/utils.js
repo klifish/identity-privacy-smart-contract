@@ -173,6 +173,29 @@ function parseProof(proofJson) {
   return proof;
 }
 
+function p256(n) {
+  let nstr = n.toString(16);
+  while (nstr.length < 64) nstr = "0" + nstr;
+  nstr = `0x${nstr}`;
+  return nstr;
+}
+
+async function groth16ExportSolidityCallData(_proof, _pub) {
+  // const proof = unstringifyBigInts(_proof);
+  const proof = ffjavascript.utils.unstringifyBigInts(_proof);
+  const pub = ffjavascript.utils.unstringifyBigInts(_pub);
+
+  const pA = [p256(proof.pi_a[0]), p256(proof.pi_a[1])];
+  const pB = [
+    [p256(proof.pi_b[0][1]), p256(proof.pi_b[0][0])],
+    [p256(proof.pi_b[1][1]), p256(proof.pi_b[1][0])]
+  ];
+  const pC = [p256(proof.pi_c[0]), p256(proof.pi_c[1])];
+  const pubSignals = pub.map(p256);
+
+  return { pA, pB, pC, pubSignals };
+}
+
 /**
  * Fills missing fields in a UserOperation object with default values.
  * @param {Object} op - A partial UserOperation object.
@@ -200,5 +223,6 @@ module.exports = {
   address2Uint8Array32,
   numToBits,
   bitsToNum,
-  pedersenHashMultipleInputs
+  pedersenHashMultipleInputs,
+  groth16ExportSolidityCallData
 };

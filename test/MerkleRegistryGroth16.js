@@ -1,21 +1,15 @@
-const { loadFixture } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-const assert = require('assert');
 const circomlibjs = require("circomlibjs");
 const ffjavascript = require("ffjavascript");
 const merkleTree = require('fixed-merkle-tree');
 const { setupHasher, hashLeftRight } = require('../scripts/utilities/hasher');
-const exp = require("constants");
 const utils = require('../scripts/utils');
 const path = require('path');
 const snarkjs = require("snarkjs");
 
 const SEED = "mimcsponge";
 
-// async function setupHasher() {
-//     return await circomlibjs.buildMimcSponge();
-// }
 
 describe('Registry Smart Contract', function () {
     const MERKLE_TREE_LEVEL = process.env.MERKLE_TREE_LEVEL
@@ -102,7 +96,7 @@ describe('Registry Smart Contract', function () {
     });
 
 
-    it('Should deploy RegisterPlonkVerifier smart contract', async function () {
+    it('Should deploy RegisterVerifier smart contract', async function () {
         registerVerifier = await RegisterVerifierContract.deploy();
         const contractAddress = await registerVerifier.getAddress();
 
@@ -241,7 +235,7 @@ describe('Registry Smart Contract', function () {
         expect(isValidRoot).to.be.true;
     })
 
-    it('Should generate a proof for a leaf in the Merkle Tree off chain', async function () {
+    it('Should generate a proof for a leaf in the Merkle Tree off chain and verify on chain', async function () {
         wasm = path.join(__dirname, "..", "build", "circuits", "register_js", "register.wasm");
         zkey = path.join(__dirname, "..", "build", "circuits", "register_final.zkey");
 
@@ -269,9 +263,8 @@ describe('Registry Smart Contract', function () {
             "smartContractWalletAddress": address0
         }
 
-        const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.plonk.fullProve(input, wasm, zkey);
-        const parsedproof = utils.parseProof(proofJson);
-        const isValid = await registry.verify(parsedproof, publicInputs);
-        // expect(isValid).to.be.true;
+        const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.groth16.fullProve(input, wasm, zkey);
+        let { pA, pB, pC, pubSignals } = await utils.groth16ExportSolidityCallData(proofJson, publicInputs);
+        await expect(registry.verify(pA, pB, pC, pubSignals)).to.emit(registry, 'ProofVerified').withArgs(pubSignals[0], true);
     })
 })
