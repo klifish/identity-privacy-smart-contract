@@ -18,8 +18,15 @@ async function setDeployed(contractName, address) {
     if (fs.existsSync(deployedContractsPath)) {
         deployedContracts = JSON.parse(fs.readFileSync(deployedContractsPath, 'utf8'));
     }
+    if (contractName === "Runner") {
+        if (!Array.isArray(deployedContracts["Runner"])) {
+            deployedContracts["Runner"] = [];
+        }
+        deployedContracts["Runner"].push(address);
+    } else {
+        deployedContracts[contractName] = address;
+    }
 
-    deployedContracts[contractName] = address;
     fs.writeFileSync(deployedContractsPath, JSON.stringify(deployedContracts, null, 2));
 }
 
@@ -32,4 +39,20 @@ async function getDeployed(contractName) {
     return deployedContracts[contractName];
 }
 
-module.exports = { isDeployed, setDeployed, getDeployed }
+async function getHasherAddress() {
+    return await getDeployed("Hasher");
+}
+
+async function getRegistryAddress() {
+    return await getDeployed("Registry");
+}
+
+async function getRegisterVerifierAddress() {
+    return await getDeployed("RegisterVerifier");
+}
+
+async function getRunnerFactoryAddress() {
+    return await getDeployed("RunnerFactory");
+}
+
+module.exports = { isDeployed, setDeployed, getDeployed, getHasherAddress, getRegistryAddress, getRegisterVerifierAddress, getRunnerFactoryAddress }

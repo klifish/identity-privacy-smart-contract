@@ -2,7 +2,7 @@ const path = require('path');
 const ffjavascript = require('ffjavascript');
 const API_URL = process.env.API_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
-const CONTRACT_ADDRESS = process.env.REGISTRY_CONTRACT_ADDRESS;
+// const CONTRACT_ADDRESS = process.env.REGISTRY_CONTRACT_ADDRESS;
 const ethers = require('ethers');
 const hre = require("hardhat");
 const utils = require("./utils")
@@ -10,6 +10,7 @@ const circomlibjs = require("circomlibjs")
 const { hashLeftRight, setupHasher } = require("./utilities/hasher")
 const merkleTree = require('fixed-merkle-tree');
 const snarkjs = require("snarkjs");
+const { getRegistryAddress } = require("isDeployed");
 
 const contract = require("../artifacts/contracts/MerkleRegistry.sol/MerkleRegistry.json");
 const MERKLE_TREE_LEVEL = process.env.MERKLE_TREE_LEVEL
@@ -23,7 +24,7 @@ const signer = new ethers.Wallet(PRIVATE_KEY, alchemyProvider);
 // const accountAddress = await signer.getAddress();
 const secret = "secret";
 const nullifier = 1n;
-const merkleRegistryContract = new ethers.Contract(CONTRACT_ADDRESS, contract.abi, signer);
+const merkleRegistryContract = new ethers.Contract(await getRegistryAddress(), contract.abi, signer);
 
 async function calculateLeaf(smart_account_address, secret, nullifier) {
     const secretBuff = (new TextEncoder()).encode(secret);
@@ -88,12 +89,6 @@ async function generateProof(smart_account_address, secret, nullifier) {
     console.log("prove done")
 
     let { pA, pB, pC, pubSignals } = await utils.groth16ExportSolidityCallData(proofJson, publicInputs);
-    // const parsedproof = utils.parseProof(proofJson);
-
-    // const proofBigint = parsedproof.map((el) => BigInt(el));
-    // const publicSignalsBigint = publicInputs.map((el) => BigInt(el));
-
-    // const serializedProofandPublicSignals = ethers.AbiCoder.defaultAbiCoder().encode(["uint256[24]", "uint256[2]"], [proofBigint, publicSignalsBigint]);
 
     return { pA, pB, pC, pubSignals };
 
