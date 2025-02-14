@@ -40,21 +40,6 @@ async function calculateLeaf(smart_account_address, secret, nullifier) {
 }
 
 async function registerUser(smart_account_address, secret, nullifier) {
-    // const accountAddress = await signer.getAddress();
-
-    // const babyjub = await circomlibjs.buildBabyjub();
-    // const levels = await merkleRegistryContract.getLevels();
-    // console.log("The levels is: " + levels);
-
-    // const secretBuff = (new TextEncoder()).encode(secret);
-    // const secretBigInt = ffjavascript.utils.leBuff2int(secretBuff);
-
-
-    // const src = [accountAddress, secretBigInt, nullifier];
-    // const leaf = await utils.pedersenHashMultipleInputs(src);
-    // console.log("The leaf is: " + leaf);
-    // const hP = babyjub.unpackPoint(leaf);
-    // hp1 = babyjub.F.toObject(hP[1]);
     const leafToInsert = calculateLeaf(smart_account_address, secret, nullifier);
 
     const tx = await merkleRegistryContract.registerUser(leafToInsert);
@@ -98,7 +83,6 @@ async function generateProof(smart_account_address, secret, nullifier) {
 
     console.log("start proving")
 
-    // const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.plonk.fullProve(input, wasm, zkey);
     const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.groth16.fullProve(input, wasm, zkey);
 
     console.log("prove done")
