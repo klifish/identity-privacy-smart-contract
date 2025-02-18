@@ -41,13 +41,13 @@ describe('Runner', function () {
     });
 
     it("Should deploy the RegisterPlonkVerifier", async () => {
-        const RegisterPlonkVerifierContract = await ethers.getContractFactory("RegisterPlonkVerifier");
+        const RegisterVerifierContract = await ethers.getContractFactory("RegisterGroth16Verifier");
 
-        registerPlonkVerifier = await RegisterPlonkVerifierContract.deploy();
+        registerVerifier = await RegisterVerifierContract.deploy();
 
-        const registerPlonkVerifierAddress = await registerPlonkVerifier.getAddress();
+        const registerVerifierAddress = await registerVerifier.getAddress();
 
-        expect(registerPlonkVerifierAddress).to.be.a.properAddress;
+        expect(registerVerifierAddress).to.be.a.properAddress;
     });
 
     it("Should deploy a hasher", async () => {
@@ -67,7 +67,7 @@ describe('Runner', function () {
 
     it("Should deploy a registry", async () => {
         const hasherAddress = await hasher.getAddress();
-        const verifierAddress = await registerPlonkVerifier.getAddress();
+        const verifierAddress = await registerVerifier.getAddress();
         const RegistryContract = await ethers.getContractFactory("MerkleRegistry");
         registry = await RegistryContract.deploy(MERKLE_TREE_LEVEL, hasherAddress, verifierAddress);
 
@@ -141,6 +141,7 @@ describe('Runner', function () {
 
     });
 
+
     it("Should construct a Merkle tree off-chain", async () => {
 
         const events = await registry.queryFilter(registry.filters.UserRegistered());
@@ -201,11 +202,10 @@ describe('Runner', function () {
     it("should be able to call transfer", async () => {
         const runnerAddress = await runner.getAddress();
         const balanceBefore = await ethers.provider.getBalance(runnerAddress);
-        console.log("balanceBefore", balanceBefore.toString());
 
         await signer.sendTransaction({ from: signer.address, to: runnerAddress, value: ethers.parseEther("1") });
         const balanceAfter = await ethers.provider.getBalance(runnerAddress);
-        console.log("balanceAfter", balanceAfter.toString());
+        expect(balanceAfter).to.be.equal(balanceBefore + ethers.parseEther("1"));
     });
 
     it("Should validate the proof in Runner via _validateSignature", async () => {
@@ -239,18 +239,16 @@ describe('Runner', function () {
             "smartContractWalletAddress": userAddress
         }
 
-        const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.plonk.fullProve(input, wasm, zkey);
+        const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.groth16.fullProve(input, wasm, zkey);
 
-        const parsedproof = utils.parseProof(proofJson);
-        const proofBigint = parsedproof.map((el) => BigInt(el));
-        const publicSignalsBigint = publicInputs.map((el) => BigInt(el));
+        let { pA, pB, pC, pubSignals } = await utils.groth16ExportSolidityCallData(proofJson, publicInputs);
+        const serializedProofandPublicSignals = ethers.AbiCoder.defaultAbiCoder().encode(["uint[2]", "uint[2][2]", "uint[2]", "uint[2]"], [pA, pB, pC, pubSignals]);
+        // console.log("Available functions in Runner contract:", runner.functions);
 
-        const serializedProofandPublicSignals = ethers.AbiCoder.defaultAbiCoder().encode(["uint256[24]", "uint256[2]"], [proofBigint, publicSignalsBigint]);
-
-        const tx = await runner._deserializeProofAndPublicSignals(serializedProofandPublicSignals);
+        const decodedProof = await runner._deserializeProofAndPublicSignals(serializedProofandPublicSignals);
+        console.log("Decoded proof:", decodedProof);
 
         await runner.verifyProof(serializedProofandPublicSignals)
-
 
     });
 });

@@ -9,9 +9,11 @@ import "hardhat/console.sol";
 
 interface IRegistry {
     function verify(
-        uint256[24] calldata _proof,
-        uint256[2] calldata _pubSignals
-    ) external returns (bool);
+        uint[2] calldata _pA,
+        uint[2][2] calldata _pB,
+        uint[2] calldata _pC,
+        uint[2] calldata _pubSignals
+    ) external view returns (bool);
 }
 
 contract Runner is BaseAccount, Initializable {
@@ -32,7 +34,7 @@ contract Runner is BaseAccount, Initializable {
     //     _registry = aRegistry;
     // }
 
-    event SignatureVerified(bool result);
+    event SignatureVerified(bool isValid);
 
     receive() external payable {}
 
@@ -73,26 +75,34 @@ contract Runner is BaseAccount, Initializable {
     )
         public
         pure
-        returns (uint256[24] memory proof, uint256[2] memory publicSignals)
+        returns (
+            uint[2] memory _pA,
+            uint[2][2] memory _pB,
+            uint[2] memory _pC,
+            uint[2] memory _pubSignals
+        )
     {
-        (proof, publicSignals) = abi.decode(
+        (_pA, _pB, _pC, _pubSignals) = abi.decode(
             signature,
-            (uint256[24], uint256[2])
+            (uint[2], uint[2][2], uint[2], uint[2])
         );
     }
 
-    function verifyProof(bytes calldata signarute) public returns (bool) {
-        return _verifyProof(signarute);
+    function verifyProof(bytes calldata signature) public returns (bool) {
+        return _verifyProof(signature);
     }
 
-    function _verifyProof(bytes calldata signature) internal returns (bool) {
+    function _verifyProof(
+        bytes calldata signature
+    ) internal view returns (bool) {
         (
-            uint256[24] memory proof,
-            uint256[2] memory publicSignals
+            uint[2] memory _pA,
+            uint[2][2] memory _pB,
+            uint[2] memory _pC,
+            uint[2] memory _pubSignals
         ) = _deserializeProofAndPublicSignals(signature);
-        bool result = _registry.verify(proof, publicSignals);
-        // console.log("Proof verified: %s", result);
-        emit SignatureVerified(result);
+        bool result = _registry.verify(_pA, _pB, _pC, _pubSignals);
+        // emit SignatureVerified(result);
         return result;
     }
 

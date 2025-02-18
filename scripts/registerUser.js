@@ -1,16 +1,17 @@
 const path = require('path');
+const fs = require('fs');
 const ffjavascript = require('ffjavascript');
 const API_URL = process.env.API_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 // const CONTRACT_ADDRESS = process.env.REGISTRY_CONTRACT_ADDRESS;
-const ethers = require('ethers');
+const { ethers } = require('hardhat');
 const hre = require("hardhat");
 const utils = require("./utils")
 const circomlibjs = require("circomlibjs")
 const { hashLeftRight, setupHasher } = require("./utilities/hasher")
 const merkleTree = require('fixed-merkle-tree');
 const snarkjs = require("snarkjs");
-const { getRegistryAddress } = require("isDeployed");
+const { getRegistryAddress } = require("./isDeployed.js");
 
 const contract = require("../artifacts/contracts/MerkleRegistry.sol/MerkleRegistry.json");
 const MERKLE_TREE_LEVEL = process.env.MERKLE_TREE_LEVEL
@@ -24,7 +25,7 @@ const signer = new ethers.Wallet(PRIVATE_KEY, alchemyProvider);
 // const accountAddress = await signer.getAddress();
 const secret = "secret";
 const nullifier = 1n;
-const merkleRegistryContract = new ethers.Contract(await getRegistryAddress(), contract.abi, signer);
+
 
 async function calculateLeaf(smart_account_address, secret, nullifier) {
     const secretBuff = (new TextEncoder()).encode(secret);
@@ -41,6 +42,7 @@ async function calculateLeaf(smart_account_address, secret, nullifier) {
 }
 
 async function registerUser(smart_account_address, secret, nullifier) {
+    const merkleRegistryContract = new ethers.Contract(await getRegistryAddress(), contract.abi, signer);
     const leafToInsert = calculateLeaf(smart_account_address, secret, nullifier);
 
     const tx = await merkleRegistryContract.registerUser(leafToInsert);
@@ -49,8 +51,14 @@ async function registerUser(smart_account_address, secret, nullifier) {
 }
 
 async function generateProof(smart_account_address, secret, nullifier) {
+    console.log("smart_account_address: ", smart_account_address);
+    console.log("secret: ", secret);
+    console.log("nullifier: ", nullifier);
+
     let wasm = path.join(__dirname, "..", "build", "circuits", "register_js", "register.wasm");
     let zkey = path.join(__dirname, "..", "build", "circuits", "register_final.zkey");
+
+    const merkleRegistryContract = new ethers.Contract(await getRegistryAddress(), contract.abi, signer);
 
     const leafToInsert = await calculateLeaf(smart_account_address, secret, nullifier);
     console.log("The leaf to insert is: " + leafToInsert);
@@ -58,18 +66,18 @@ async function generateProof(smart_account_address, secret, nullifier) {
     const hasher = await setupHasher();
     const events = await merkleRegistryContract.queryFilter("UserRegistered");
     const sortedEvents = events.sort((a, b) => (a.args.index < b.args.index ? -1 : a.args.index > b.args.index ? 1 : 0));
-    const leafs = sortedEvents.map(event => event.args.leaf);
+    let leafs = sortedEvents.map(event => event.args.leaf);
     console.log("The leafs are: " + leafs);
 
     const treeOffChain = new merkleTree.MerkleTree(MERKLE_TREE_LEVEL, leafs, { hashFunction: (left, right) => hashLeftRight(hasher, left, right) });
 
-    const root = treeOffChain.proof(leafToInsert).pathRoot;
-    const { pathElements, pathIndices } = treeOffChain.proof(leafToInsert)
+    const merkleProof = treeOffChain.proof(leafToInsert);
+    console.log("The root is: " + merkleProof.pathRoot);
     const secretBuff = (new TextEncoder()).encode(secret);
     const secretBigInt = ffjavascript.utils.leBuff2int(secretBuff);
 
     const input = {
-        "root": root,
+        "root": merkleProof.pathRoot,
         "nullifierHash": "987654321",
         "recipient": "100",
         "relayer": "50",
@@ -77,8 +85,8 @@ async function generateProof(smart_account_address, secret, nullifier) {
         "refund": "5",
         "nullifier": nullifier,
         "secret": secretBigInt,
-        "pathElements": pathElements,
-        "pathIndices": pathIndices,
+        "pathElements": merkleProof.pathElements,
+        "pathIndices": merkleProof.pathIndices,
         "smartContractWalletAddress": smart_account_address
     }
 
@@ -90,7 +98,17 @@ async function generateProof(smart_account_address, secret, nullifier) {
 
     let { pA, pB, pC, pubSignals } = await utils.groth16ExportSolidityCallData(proofJson, publicInputs);
 
-    return { pA, pB, pC, pubSignals };
+
+    // debug here
+    // const RegistryContract = await ethers.getContractFactory("MerkleRegistry", signer);
+    // const registry = await RegistryContract.attach(await getRegistryAddress());
+    // console.log("Verify proof in registry contract");
+
+    // const tx = await registry.verify(pA, pB, pC, pubSignals, { gasLimit: 1000000 });
+    // console.log("Proof verified: ", tx);
+
+    const serializedProofandPublicSignals = ethers.AbiCoder.defaultAbiCoder().encode(["uint[2]", "uint[2][2]", "uint[2]", "uint[2]"], [pA, pB, pC, pubSignals]);
+    return serializedProofandPublicSignals;
 
 }
 

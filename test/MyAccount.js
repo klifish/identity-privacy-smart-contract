@@ -115,7 +115,7 @@ describe('MyAccount Smart Contract', function () {
         const encodedMessage = new TextEncoder().encode(secret);
         const encodedMessageBigInt = ffjavascript.utils.leBuff2int(encodedMessage);
 
-        const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.plonk.fullProve({ secret: encodedMessageBigInt }, wasm, zkey);
+        const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.groth16.fullProve({ secret: encodedMessageBigInt }, wasm, zkey);
         // console.log("publicInputs:", publicInputs);
         const parsedpProof = parseProof(proofJson);
         const tx = await myAccount.verifyOwnership(parsedpProof);

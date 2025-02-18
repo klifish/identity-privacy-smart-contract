@@ -13,7 +13,6 @@ async function deployRegisterVerifier() {
 
     const address = await registerGroth16Verifier.getAddress();
 
-    console.log("Register Contract deployed to address:", address)
     return address;
 }
 

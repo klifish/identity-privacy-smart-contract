@@ -170,55 +170,99 @@ contract MerkleTreeWithHistory {
     }
 
     /// @dev provides Zero (Empty) elements for a MiMC MerkleTree. Up to 32 levels
+    // function zeros(uint256 i) public pure returns (uint256) {
+    //     if (i == 0)
+    //         return
+    //             uint256(
+    //                 0x0000000000000000000000000000000000000000000000000000000000000000
+    //             );
+    //     else if (i == 1)
+    //         return
+    //             uint256(
+    //                 0x2d9fea8398a61ea1997e7d748364c0fdb49412c4dbabc1578375ade642e85581
+    //             );
+    //     else if (i == 2)
+    //         return
+    //             uint256(
+    //                 0x1234a304a6250851669d511fd01a93eef2fd88d84bbb8b089021393bd6314ace
+    //             );
+    //     else if (i == 3)
+    //         return
+    //             uint256(
+    //                 0x11a759c3e46852e6ee14e3bb8f7158c62d9270217563f56726b3d5ae719e77cf
+    //             );
+    //     else if (i == 4) {
+    //         return
+    //             uint256(
+    //                 0x2802b08e40189aad1966fe84660e04b0a92cd6a0c6a8845915244bb888d60cc1
+    //             );
+    //     } else revert("Index out of bounds");
+    // }
+
     function zeros(uint256 i) public pure returns (uint256) {
         if (i == 0)
             return
-                uint256(
-                    0x0000000000000000000000000000000000000000000000000000000000000000
-                );
+                0x0000000000000000000000000000000000000000000000000000000000000000;
         else if (i == 1)
             return
-                uint256(
-                    0x2d9fea8398a61ea1997e7d748364c0fdb49412c4dbabc1578375ade642e85581
-                );
+                0x2d9fea8398a61ea1997e7d748364c0fdb49412c4dbabc1578375ade642e85581;
         else if (i == 2)
             return
-                uint256(
-                    0x1234a304a6250851669d511fd01a93eef2fd88d84bbb8b089021393bd6314ace
-                );
+                0x1234a304a6250851669d511fd01a93eef2fd88d84bbb8b089021393bd6314ace;
         else if (i == 3)
             return
-                uint256(
-                    0x162f388c45785e19ed96adb29f3188b4044a5067c76be012ac58d1570dadcf7f
-                );
-        // else if (i == 4) return bytes32(0x0a89ca6ffa14cc462cfedb842c30ed221a50a3d6bf022a6a57dc82ab24c157c9);
-        // else if (i == 5) return bytes32(0x24ca05c2b5cd42e890d6be94c68d0689f4f21c9cec9c0f13fe41d566dfb54959);
-        // else if (i == 6) return bytes32(0x1ccb97c932565a92c60156bdba2d08f3bf1377464e025cee765679e604a7315c);
-        // else if (i == 7) return bytes32(0x19156fbd7d1a8bf5cba8909367de1b624534ebab4f0f79e003bccdd1b182bdb4);
-        // else if (i == 8) return bytes32(0x261af8c1f0912e465744641409f622d466c3920ac6e5ff37e36604cb11dfff80);
-        // else if (i == 9) return bytes32(0x0058459724ff6ca5a1652fcbc3e82b93895cf08e975b19beab3f54c217d1c007);
-        // else if (i == 10) return bytes32(0x1f04ef20dee48d39984d8eabe768a70eafa6310ad20849d4573c3c40c2ad1e30);
-        // else if (i == 11) return bytes32(0x1bea3dec5dab51567ce7e200a30f7ba6d4276aeaa53e2686f962a46c66d511e5);
-        // else if (i == 12) return bytes32(0x0ee0f941e2da4b9e31c3ca97a40d8fa9ce68d97c084177071b3cb46cd3372f0f);
-        // else if (i == 13) return bytes32(0x1ca9503e8935884501bbaf20be14eb4c46b89772c97b96e3b2ebf3a36a948bbd);
-        // else if (i == 14) return bytes32(0x133a80e30697cd55d8f7d4b0965b7be24057ba5dc3da898ee2187232446cb108);
-        // else if (i == 15) return bytes32(0x13e6d8fc88839ed76e182c2a779af5b2c0da9dd18c90427a644f7e148a6253b6);
-        // else if (i == 16) return bytes32(0x1eb16b057a477f4bc8f572ea6bee39561098f78f15bfb3699dcbb7bd8db61854);
-        // else if (i == 17) return bytes32(0x0da2cb16a1ceaabf1c16b838f7a9e3f2a3a3088d9e0a6debaa748114620696ea);
-        // else if (i == 18) return bytes32(0x24a3b3d822420b14b5d8cb6c28a574f01e98ea9e940551d2ebd75cee12649f9d);
-        // else if (i == 19) return bytes32(0x198622acbd783d1b0d9064105b1fc8e4d8889de95c4c519b3f635809fe6afc05);
-        // else if (i == 20) return bytes32(0x29d7ed391256ccc3ea596c86e933b89ff339d25ea8ddced975ae2fe30b5296d4);
-        // else if (i == 21) return bytes32(0x19be59f2f0413ce78c0c3703a3a5451b1d7f39629fa33abd11548a76065b2967);
-        // else if (i == 22) return bytes32(0x1ff3f61797e538b70e619310d33f2a063e7eb59104e112e95738da1254dc3453);
-        // else if (i == 23) return bytes32(0x10c16ae9959cf8358980d9dd9616e48228737310a10e2b6b731c1a548f036c48);
-        // else if (i == 24) return bytes32(0x0ba433a63174a90ac20992e75e3095496812b652685b5e1a2eae0b1bf4e8fcd1);
-        // else if (i == 25) return bytes32(0x019ddb9df2bc98d987d0dfeca9d2b643deafab8f7036562e627c3667266a044c);
-        // else if (i == 26) return bytes32(0x2d3c88b23175c5a5565db928414c66d1912b11acf974b2e644caaac04739ce99);
-        // else if (i == 27) return bytes32(0x2eab55f6ae4e66e32c5189eed5c470840863445760f5ed7e7b69b2a62600f354);
-        // else if (i == 28) return bytes32(0x002df37a2642621802383cf952bf4dd1f32e05433beeb1fd41031fb7eace979d);
-        // else if (i == 29) return bytes32(0x104aeb41435db66c3e62feccc1d6f5d98d0a0ed75d1374db457cf462e3a1f427);
-        // else if (i == 30) return bytes32(0x1f3c6fd858e9a7d4b0d1f38e256a09d81d5a5e3c963987e2d4b814cfab7c6ebb);
-        // else if (i == 31) return bytes32(0x2c7a07d20dff79d01fecedc1134284a8d08436606c93693b67e333f671bf69cc);
+                0x11a759c3e46852e6ee14e3bb8f7158c62d9270217563f56726b3d5ae719e77cf;
+        else if (i == 4)
+            return
+                0x2802b08e40189aad1966fe84660e04b0a92cd6a0c6a8845915244bb888d60cc1;
+        else if (i == 5)
+            return
+                0x278861ed6103a39717d415bec985d336cca450c01e5e2782c33949ba10b986a5;
+        else if (i == 6)
+            return
+                0x20a474de93592d5b1127589ba705a0f0016ab559a799b0c7ce76429b3243b0a;
+        else if (i == 7)
+            return
+                0x2116864224ac0352d9637a12017a5a9c87417becc8147bd0d7654d2c66ea25bf;
+        else if (i == 8)
+            return
+                0x2343742077c09474f0309521118da4d25cc0b62c59ace9bb68872de00a6eabad;
+        else if (i == 9)
+            return
+                0x2466b9845a16b0ebf5c7186e91005508b795731630fed543c3283ec5d6979d4d;
+        else if (i == 10)
+            return
+                0x1a7857e456c4c61a08577945811e341c6aea2e9ffbc067ae2c6ba84e234274d8;
+        else if (i == 11)
+            return
+                0x117f1149dee533f1fd19526b414b2d2bef7a58bf40700d9f2f20a48110245caf;
+        else if (i == 12)
+            return
+                0x1f65c6939e8ea9cf0721305bdcb4d46f110e47d36cb7425c60548ed3ffd6dec4;
+        else if (i == 13)
+            return
+                0x2a127272f233f9414c4db2bfb72da605681103e489c5c27344b3e3e05c9731d6;
+        else if (i == 14)
+            return
+                0x1597270471e05f72ac53719b6fe4cb6ce6322a730706c34da70a98e6928f311f;
+        else if (i == 15)
+            return
+                0x144e4dcfca8d432a7bf23d6c57ef2cc86f371ea4b32527388ea4ce26ecb0a8e8;
+        else if (i == 16)
+            return
+                0x1a781c1159b0f76ac76b5d8fe1ddf457f75d0033fef4d6f44f2c7787825c3229;
+        else if (i == 17)
+            return
+                0x16fb3e5ac86d9a09fc73706c4c778707cdb4e6fd15b7cbd8e83519b85968b13d;
+        else if (i == 18)
+            return
+                0x2fc35be02fb43a8c4d17b79f104b5b53f4ade39d020702a96ba45af57a747ad4;
+        else if (i == 19)
+            return
+                0x17a97f2fd44b04668cb9d53a7cd3ddcf4fa2f87e0eba8e080180f5848646363d;
+        else if (i == 20)
+            return
+                0x231118223cad627f42312b09cc5c1d971028532ba718f4804ade66b62d69d0d8;
         else revert("Index out of bounds");
     }
 }

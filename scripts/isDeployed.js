@@ -7,9 +7,17 @@ async function isDeployed(contractName) {
         deployedContracts = JSON.parse(fs.readFileSync(deployedContractsPath, 'utf8'));
     }
 
-    if (deployedContracts[contractName]) {
+    if (typeof deployedContracts[contractName] !== "undefined" && deployedContracts[contractName] !== "") {
         return true;
+    } else {
+        return false;
     }
+
+    if (typeof deployedContracts[contractName] === "undefined") {
+        return false;
+    }
+
+
     return false;
 }
 
@@ -39,6 +47,24 @@ async function getDeployed(contractName) {
     return deployedContracts[contractName];
 }
 
+async function getRandomRunnerAddress() {
+    let deployedContracts = {};
+    if (fs.existsSync(deployedContractsPath)) {
+        deployedContracts = JSON.parse(fs.readFileSync(deployedContractsPath, 'utf8'));
+    }
+
+    return deployedContracts["Runner"][Math.floor(Math.random() * deployedContracts["Runner"].length)];
+}
+
+async function getFirstRunnerAddress() {
+    let deployedContracts = {};
+    if (fs.existsSync(deployedContractsPath)) {
+        deployedContracts = JSON.parse(fs.readFileSync(deployedContractsPath, 'utf8'));
+    }
+
+    return deployedContracts["Runner"][0];
+}
+
 async function getHasherAddress() {
     return await getDeployed("Hasher");
 }
@@ -55,4 +81,19 @@ async function getRunnerFactoryAddress() {
     return await getDeployed("RunnerFactory");
 }
 
-module.exports = { isDeployed, setDeployed, getDeployed, getHasherAddress, getRegistryAddress, getRegisterVerifierAddress, getRunnerFactoryAddress }
+async function getAccountFactoryAddress() {
+    return await getDeployed("AccountFactory");
+}
+
+module.exports = {
+    isDeployed,
+    setDeployed,
+    getDeployed,
+    getHasherAddress,
+    getRegistryAddress,
+    getRegisterVerifierAddress,
+    getRunnerFactoryAddress,
+    getRandomRunnerAddress,
+    getFirstRunnerAddress,
+    getAccountFactoryAddress,
+};

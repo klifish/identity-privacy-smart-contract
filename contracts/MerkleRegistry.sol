@@ -2,7 +2,6 @@
 pragma solidity >=0.8.0;
 
 import "./MerkleTreeWithHistory.sol";
-import "./RegisterPlonkVerifier.sol";
 import "hardhat/console.sol";
 
 interface IVerifier {
@@ -45,13 +44,12 @@ contract MerkleRegistry is MerkleTreeWithHistory {
         uint[2][2] calldata _pB,
         uint[2] calldata _pC,
         uint[2] calldata _pubSignals
-    ) public returns (bool) {
+    ) public view returns (bool) {
         require(isKnownRoot(_pubSignals[0]), "Invalid Merkle root");
         bool result = verifier.verifyProof(_pA, _pB, _pC, _pubSignals);
-        if (result) {
-            emit ProofVerified(_pubSignals[0], result);
-        }
-        console.log("Proof verified:", result);
+
+        // emit ProofVerified(_pubSignals[0], result);
+
         return result;
     }
 

@@ -1,4 +1,5 @@
 const { ethers } = require("hardhat")
+const { getRegistryAddress } = require("./isDeployed.js")
 
 const API_URL = process.env.API_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
@@ -12,9 +13,8 @@ const signer = new ethers.Wallet(PRIVATE_KEY, alchemyProvider);
 async function deployRunnerFactory() {
 
     const RunnerFactoryContract = await ethers.getContractFactory("RunnerFactory", signer);
-    const runnerFactory = await RunnerFactoryContract.deploy(process.env.ENTRY_POINT, process.env.REGISTRY_CONTRACT_ADDRESS)
+    const runnerFactory = await RunnerFactoryContract.deploy(process.env.ENTRY_POINT, await getRegistryAddress())
     const address = await runnerFactory.getAddress()
-    console.log("Runner Factory Contract deployed to address:", address)
     return address
 }
 

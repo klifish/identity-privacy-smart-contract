@@ -2,61 +2,56 @@
 const { ethers } = require('hardhat');
 const { computePedersenHash } = require('../scripts/utils');
 const { generateProof, registerUser } = require('./registerUser');
-const ACCOUNT_FACTORY_ADDRESS = "0xF74652784Bf245D586544Aa606ee08a764c45cFD"
-const SMART_ACCOUNT_ADDRESS = "0x7dD7a828f9264015981FEe39A8bC71ea6eF2D898"
-const RUNNER_ADDRESS = process.env.RUNNER_ADDRESS;
+const { getRandomRunnerAddress, getFirstRunnerAddress, getAccountFactoryAddress } = require('./isDeployed');
+
 const API_URL = process.env.API_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const secret = "hello world"
 
-async function _createSmartAccount() {
+async function createSmartAccount() {
+    const alchemyProvider = new ethers.JsonRpcProvider(API_URL);
+    const signer = new ethers.Wallet(PRIVATE_KEY, alchemyProvider);
 
-    const MyAccountFactoryContract = await ethers.getContractFactory("MyAccountFactory");
-    const myAccountFactory = MyAccountFactoryContract.attach(ACCOUNT_FACTORY_ADDRESS);
+    console.log("Creating smart account");
 
+    const MyAccountFactoryContract = await ethers.getContractFactory("MyAccountFactory", signer);
+    const myAccountFactory = MyAccountFactoryContract.attach(await getAccountFactoryAddress());
 
     const commitment = await computePedersenHash(secret);
     const salt = 1
 
-    const accountAddress = await myAccountFactory.getAddress(commitment, salt);
-    console.log("Account address:", accountAddress);
+    // Here, I am not sure why the following two calls of getAddress() return same address
+    // is it because getAddress() is conflicting with the function in the contract? here the reuslt is the address of account factory
+    // const accountAddress = await myAccountFactory.getAddress(commitment, salt);
+    // console.log("Account address:", accountAddress);
 
-    const accountAddress1 = await myAccountFactory.getAddress("111", salt + 1);
-    console.log("Account address:", accountAddress1);
+    // const accountAddress1 = await myAccountFactory.getAddress("111", salt + 1);
+    // console.log("Account address:", accountAddress1);
 
     const tx = await myAccountFactory.createAccount(commitment, salt);
     await tx.wait();
 
     const filter = myAccountFactory.filters.AccountCreated();
     const events = await myAccountFactory.queryFilter(filter);
-    // console.log("MyAccount address:", events);
+
+    latestEvent = events[events.length - 1];
+    console.log("MyAccount address:", latestEvent.args.accountAddress);
+    return latestEvent.args.accountAddress;
 }
 
 
 
-async function _sendOperation() {
+async function sendUserOperation() {
     const alchemyProvider = new ethers.JsonRpcProvider(API_URL);
     const signer = new ethers.Wallet(PRIVATE_KEY, alchemyProvider);
 
     const RunnerContract = await ethers.getContractFactory("Runner", signer);
-    const runner = RunnerContract.attach(RUNNER_ADDRESS);
+    const runnerAddress = await getFirstRunnerAddress();
+    console.log("Runner address:", runnerAddress);
+    const runner = RunnerContract.attach(runnerAddress);
 
-    const verificationResult = await runner.verifyProof("0x1ef62113c90d6e2bd093cf918ca8e9337634261109e7387ca7038451e8aee40d11590169ab561db8f30fc4a7c818d4e3c3ce1b9137f058dc08197e9a4d7beb541f5fd014fd7fa9f1bc606b6bced1fe6b37ca55b2f1e96ce6070466cbdbfd619e128ebb8990058a213e5bb5021d6fa6d55a3b8b5663c2773ab67226bfa702bb2c1b1e97346269c09b0a05a29dfa2ba4228794ce53c8a71ee48e289fecbfca61f616fa137d378c4588175ff35c9e1e55e98fe1dabd398fb0adb3c88afb89d1d01d27255bdde741a0a3b37f5591905106f84519741f2c999d896b02a5bc08cb4e65028ffca078f6c49808d0e93ea33000cc984b68ed94dbf488e610c356d9e5dbd31ae3f3f38b01ad955f8f41b65818e47886fb1ede003140ea7bb8b7afe2e5fc47069b5bf0efab67177e223394b11aeb713c2d01939a1dbe55c524c6d0839495f412299f90310c86de9c61eeb79b7cdb2c7fbdb257be8c6d2475e43984583f829f27c3db1dc1f6cf7eb928376543e6b2b29f1f4d96199b082625c9ced73888f1ef1eeb66537f9ab0a07df1bc4bb8775d8306872fdc354bf01517fa81b71fe9d49521f1c8f4c03ec7b9159f91324ccdfe016535ad36ecf8280622d7539ca6acc0ac1fc5e3809fed7f2d5005b20e12523e8faeba8020319c0f04b1fb28c40223a05e140f7ce31799f70fcd831c864fb6003b673f4224125cc1c51610531e73cb07bb2bbcfa5653bbf184d6a9cc3662b486cc801a8392e02fdba213ea0425851d41271f750bef083678f75e733397b7bb5f2cf512a6ced398bdba0a7129a77b2cd9e0143a84992808e93218fd4c82795272de62210d0abf50d782eae30b12c8bfa52416408b633861d49e57aaf235674be05211cf4e3f89b9bfd63465c85fe650d32b2c2f88735d396a49634050f14b2c4e9a52d3ce8e50d2a59be15aaad99697f21d0fb200da98b4844ab3afa28746806fd3f10b7aff4ecd5429b8a9b43c17bd8c05179b3ea348bd81dfea0390248712ac8dc4bff814ffd43500572964d7a40df89a1f772b00116074d4fe9af177595202fee993a9347b20eb3904b1f8624212b60701ed3c4756dee492be032975322b1aa924cd0970c07ef5fbbc8a212cd4a63366000000000000000000000000000000000000000000000000000000003ade68b1", { gasLimit: 1500000 });
-    verificationResult.wait();
-    const receipt = await alchemyProvider.getTransactionReceipt(verificationResult.hash);
-    console.log("Verification result:", receipt);
-
-    // tx.wait();
-    // console.log("Transaction:", tx);
-
-    // const code = await alchemyProvider.getCode(RUNNER_ADDRESS);
-    // console.log("Code:", code);
-
-    // return;
-
-    return;
     let userOperation = {
-        sender: RUNNER_ADDRESS, // Address of the sender (e.g., smart contract wallet)
+        sender: runnerAddress, // Address of the sender (e.g., smart contract wallet)
         nonce: "0x0", // Replace with actual nonce
         initCode: "0x", // Initialization code, if needed
         callData: "0x", // Encoded function call data
@@ -69,19 +64,26 @@ async function _sendOperation() {
         signature: "0x" // Replace with the correct signature
     };
 
-    const smart_account_address = SMART_ACCOUNT_ADDRESS;
+    // const smart_account_address = await createSmartAccount();
+    const smart_account_address = "0xECc88Cc6a3c93AD477C6b72A486C14653803D044"
     const secret = "hello world";
     const nullifier = 0n;
-
     // await registerUser(smart_account_address, secret, nullifier);
 
+    console.log("Generating proof");
     const proof = await generateProof(smart_account_address, secret, nullifier);
-    console.log("Proof:", proof);
+    console.log("Proof generated");
+
+    // console.log("Verifying proof on chain");
+    // const verificationResult = await runner.verifyProof(proof, { gasLimit: 1000000 });
+    // console.log("Verification result:", verificationResult);
+
     userOperation.signature = proof;
+    // console.log("userOperation.signature:", userOperation.signature);
 
     // deploy a new contract
     const bytecode = (await ethers.getContractFactory("HelloWorld")).bytecode;
-    console.log("Bytecode:", bytecode);
+    // console.log("Bytecode:", bytecode);
 
     userOperation.callData = bytecode;
 
@@ -91,22 +93,78 @@ async function _sendOperation() {
         body: JSON.stringify({
             id: 1,
             jsonrpc: '2.0',
-            method: 'eth_sendUserOperation',
-            params: [userOperation]
+            method: 'alchemy_requestGasAndPaymasterAndData',
+            params: [
+                {
+                    policyId: '32871eca-3b5c-4fe8-a71b-eebd1e569fb7',
+                    entryPoint: '0x0000000071727De22E5E9d8BAf0edAc6f37da032',
+                    dummySignature: '0xe8fe34b166b64d118dccf44c7198648127bf8a76a48a042862321af6058026d276ca6abb4ed4b60ea265d1e57e33840d7466de75e13f072bbd3b7e64387eebfe1b',
+                    userOperation: {
+                        sender: userOperation.sender,
+                        nonce: '0x0',
+                        initCode: '0x',
+                        callData: userOperation.callData
+                    }
+                }
+            ]
         })
     };
 
-    fetch(API_URL, options)
+    console.log("Sending request to Alchemy API...");
+    await fetch('https://polygon-amoy.g.alchemy.com/v2/VG6iwUaOlQPYcDCb3AlkyAxrAXF7UzU9', options)
         .then(res => res.json())
-        .then(res => console.log(res))
-        .catch(err => console.error(err));
+        .then(res => console.log("Alchemy Response:", res))
+        .catch(err => {
+            console.error("Alchemy API Error:", err);
+        });
+
+    // const options = {
+    //     method: 'POST',
+    //     headers: { accept: 'application/json', 'content-type': 'application/json' },
+    //     body: JSON.stringify({
+    //         id: 1,
+    //         jsonrpc: '2.0',
+    //         method: 'eth_sendUserOperation',
+    //         params: [userOperation]
+    //     })
+    // };
+
+    // fetch(API_URL, options)
+    //     .then(res => res.json())
+    //     .then(res => console.log(res))
+    //     .catch(err => console.error(err));
 
 }
 
+const PROOF = "0x0c18ce0a9a007d3b7f3bb31f282278d53e172f0b036c4be3743515176117efd42098d61be467dbb51e7cc960ab8a80f280cb790205dc623022dfe54657097729040f88b43abe143d339a22ebbc681cd4b2c75ab4070a2ab375630b7cbc99fbcd3030047032e8e44985fcd327d9f7a3b75eb654f11c73128833b42f99da4f3bf11a5670423292abd350c997f193073516a50ea5c750e0a5367aa9bedee7328c611c1e1c70a342e9a05ca1152488d1ee4be30d045c3089adde3897477483885f292a44a4e974d90dfad940b02afccba410c5deaf33e4dbfa9ec6b906357825933705d0609adfa18a7ea728a162cd5acebed1e1d0658b41eaf7209350468d555e251191f8b446226ae7fdc9a1fa89655591430bd8b96bd1f7f73f8161351a232c58000000000000000000000000000000000000000000000000000000003ade68b1"
+
+async function runnerVerify() {
+    const alchemyProvider = new ethers.JsonRpcProvider(API_URL);
+    const signer = new ethers.Wallet(PRIVATE_KEY, alchemyProvider);
+
+    const RunnerContract = await ethers.getContractFactory("Runner", signer);
+    const runnerAddress = await getFirstRunnerAddress();
+    console.log("Runner address:", runnerAddress);
+    const runner = RunnerContract.attach(runnerAddress);
+
+    const entryPoint = await runner.entryPoint();
+    console.log("Entry point:", entryPoint);
+
+    console.log("Verifying proof on chain");
+    // const gasLimit = ethers.utils.hexlify(1000000);
+    const verificationResult = await runner.verifyProof(PROOF, { gasLimit: 1000000 });
+    verificationResult.wait();
+
+    const decodedProof = await runner._deserializeProofAndPublicSignals(PROOF);
+    console.log("Decoded proof:", decodedProof);
+
+
+}
 // _createSmartAccount();
 async function main() {
-    await _sendOperation();
-    // _createSmartAccount();
+    // await runnerVerify();
+    await sendUserOperation();
+    // await createSmartAccount();
 }
 
 main().then(() => process.exit(0)).catch(error => {
