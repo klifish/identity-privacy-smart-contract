@@ -7,21 +7,28 @@ import "./Runner.sol";
 
 contract RunnerFactory {
     Runner public immutable runnerImplementation;
+    address public admin;
 
     event RunnerCreated(address runnerAddress);
 
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can call this function");
+        _;
+    }
+
     constructor(IEntryPoint _entryPoint, IRegistry aRegistry) {
+        admin = msg.sender;
         runnerImplementation = new Runner(_entryPoint, aRegistry);
     }
 
-    function createRunner() public returns (Runner ret) {
+    function createRunner() public onlyAdmin returns (Runner ret) {
         ret = Runner(
             payable(new ERC1967Proxy(address(runnerImplementation), ""))
         );
         emit RunnerCreated(address(ret));
     }
 
-    function createAccount() public returns (Runner ret) {
+    function createAccount() public onlyAdmin returns (Runner ret) {
         ret = createRunner();
     }
 }

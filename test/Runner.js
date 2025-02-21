@@ -14,7 +14,7 @@ describe('Runner', function () {
     const MERKLE_TREE_LEVEL = process.env.MERKLE_TREE_LEVEL
     const SECRET = "secret";
 
-    let registerPlonkVerifier;
+    let registerVerifier;
     let entryPoint;
     let runnerFactory;
     let runner;
@@ -106,20 +106,27 @@ describe('Runner', function () {
         expect(runnerImplementationAddress).to.be.a.properAddress;
     });
 
-    it("Should create a new Runner", async () => {
+    it("Should create a new Runner by admin", async () => {
         await runnerFactory.createAccount();
+
         const filter = runnerFactory.filters.RunnerCreated();
         const events = await runnerFactory.queryFilter(filter);
 
         const runnerAddress = events[0].args.runnerAddress;
         const RunnerContract = await ethers.getContractFactory("Runner");
-        runner = await RunnerContract.attach(runnerAddress);
+        runner = RunnerContract.attach(runnerAddress);
 
         const entryPointAddress = await runner.entryPoint();
         expect(entryPointAddress).to.be.equal(entryPoint);
 
         const registryAddress = await runner.registry();
         expect(registryAddress).to.be.equal(await registry.getAddress());
+    });
+
+    it("Should not be able to create a new Runner by non-admin", async () => {
+        let signer1 = (await ethers.getSigners())[1]; // In default hardhat network, the first account is used to deploy runnerFactory, so the first account is the admin
+
+        await expect(runnerFactory.connect(signer1).createAccount()).to.be.revertedWith("Only admin can call this function");
     });
 
     it("Should register a new user", async () => {
@@ -246,7 +253,7 @@ describe('Runner', function () {
         // console.log("Available functions in Runner contract:", runner.functions);
 
         const decodedProof = await runner._deserializeProofAndPublicSignals(serializedProofandPublicSignals);
-        console.log("Decoded proof:", decodedProof);
+        // console.log("Decoded proof:", decodedProof);
 
         await runner.verifyProof(serializedProofandPublicSignals)
 
