@@ -50,19 +50,35 @@ async function sendUserOperation() {
     console.log("Runner address:", runnerAddress);
     const runner = RunnerContract.attach(runnerAddress);
 
+    // let userOperation = {
+    //     sender: runnerAddress, // Address of the sender (e.g., smart contract wallet)
+    //     nonce: "0x0", // Replace with actual nonce
+    //     initCode: "0x", // Initialization code, if needed
+    //     callData: "0x", // Encoded function call data
+    //     callGasLimit: "0x5208", // Gas limit for the operation
+    //     verificationGasLimit: "0x5208", // Verification gas limit
+    //     preVerificationGas: "0x0", // Gas cost for pre-verification
+    //     maxFeePerGas: "0x09184e72a000", // Max fee per gas
+    //     maxPriorityFeePerGas: "0x09184e72a000", // Max priority fee
+    //     paymasterAndData: "0x", // Paymaster details, if applicable
+    //     signature: "0x" // Replace with the correct signature
+    // };
+
     let userOperation = {
-        sender: runnerAddress, // Address of the sender (e.g., smart contract wallet)
-        nonce: "0x0", // Replace with actual nonce
-        initCode: "0x", // Initialization code, if needed
-        callData: "0x", // Encoded function call data
-        callGasLimit: "0x5208", // Gas limit for the operation
-        verificationGasLimit: "0x5208", // Verification gas limit
-        preVerificationGas: "0x0", // Gas cost for pre-verification
-        maxFeePerGas: "0x09184e72a000", // Max fee per gas
-        maxPriorityFeePerGas: "0x09184e72a000", // Max priority fee
-        paymasterAndData: "0x", // Paymaster details, if applicable
-        signature: "0x" // Replace with the correct signature
-    };
+        sender: runnerAddress,
+        nonce: "0x0",
+        callData: "0xb61d27f600000000000000000000000043f6bfbe9dad44cf0a60570c30c307d949be4cd40000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000645c833bfd000000000000000000000000613c64104b98b048b93289ed20aefd80912b3cde0000000000000000000000000000000000000000000000000de123e8a84f9901000000000000000000000000c9371ea30dea5ac745b71e191ba8cde2c4e66df500000000000000000000000000000000000000000000000000000000",
+        callGasLimit: "0x7A1200",
+        verificationGasLimit: "0x927C0",
+        preVerificationGas: "0x15F90",
+        maxFeePerGas: "0x956703D00",
+        maxPriorityFeePerGas: "0x13AB668000",
+        paymasterVerificationGasLimit: "0x927C0",
+        paymasterPostOpGasLimit: "0x927C0",
+        signature: "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c",
+        paymaster: "0x9db7f05b0eb93eb242b5913596dcfaada756af5c",
+        paymasterData: "0x"
+    }
 
     // const smart_account_address = await createSmartAccount();
     const smart_account_address = "0xECc88Cc6a3c93AD477C6b72A486C14653803D044"
@@ -81,11 +97,24 @@ async function sendUserOperation() {
     userOperation.signature = proof;
     // console.log("userOperation.signature:", userOperation.signature);
 
+    // const RunnerFactoryContract = await ethers.getContractAt("RunnerFactory", await getAccountFactoryAddress());
+    // const callData = RunnerFactoryContract.interface.encodeFunctionData("runnerImplementation")
+
     // deploy a new contract
-    const bytecode = (await ethers.getContractFactory("HelloWorld")).bytecode;
+    // const HelloWorldContract = (await ethers.getContractFactory("HelloWorld"));
+    // const callData = await HelloWorldContract.getDeployTransaction("Hello, world");
+    const counterAddress = "0x59d0d591b90ac342752ea7872d52cdc3c573ab71"
+    const counterContract = await ethers.getContractAt("Counter", counterAddress);
+    const func = counterContract.interface.encodeFunctionData("increment");
+
+    const runnerExecuteInterfact = new ethers.Interface([
+        "function execute(address dest,uint256 value,bytes calldata func) external"
+    ]);
+
+    const callData = runnerExecuteInterfact.encodeFunctionData("execute", [counterAddress, 0, func]);
     // console.log("Bytecode:", bytecode);
 
-    userOperation.callData = bytecode;
+    userOperation.callData = callData;
 
     const options = {
         method: 'POST',
@@ -98,7 +127,7 @@ async function sendUserOperation() {
                 {
                     policyId: '32871eca-3b5c-4fe8-a71b-eebd1e569fb7',
                     entryPoint: '0x0000000071727De22E5E9d8BAf0edAc6f37da032',
-                    dummySignature: '0xe8fe34b166b64d118dccf44c7198648127bf8a76a48a042862321af6058026d276ca6abb4ed4b60ea265d1e57e33840d7466de75e13f072bbd3b7e64387eebfe1b',
+                    dummySignature: userOperation.signature,
                     userOperation: {
                         sender: userOperation.sender,
                         nonce: '0x0',
@@ -110,29 +139,40 @@ async function sendUserOperation() {
         })
     };
 
-    console.log("Sending request to Alchemy API...");
-    await fetch('https://polygon-amoy.g.alchemy.com/v2/VG6iwUaOlQPYcDCb3AlkyAxrAXF7UzU9', options)
-        .then(res => res.json())
-        .then(res => console.log("Alchemy Response:", res))
-        .catch(err => {
-            console.error("Alchemy API Error:", err);
-        });
+    try {
+        const response = await fetch('https://polygon-amoy.g.alchemy.com/v2/VG6iwUaOlQPYcDCb3AlkyAxrAXF7UzU9', options)
+        const data = await response.json();
+        console.log(data);
+        userOperation.paymaster = data.result.paymaster;
+        userOperation.paymasterData = data.result.paymasterData;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
 
-    // const options = {
-    //     method: 'POST',
-    //     headers: { accept: 'application/json', 'content-type': 'application/json' },
-    //     body: JSON.stringify({
-    //         id: 1,
-    //         jsonrpc: '2.0',
-    //         method: 'eth_sendUserOperation',
-    //         params: [userOperation]
-    //     })
-    // };
+    console.log(userOperation)
 
-    // fetch(API_URL, options)
-    //     .then(res => res.json())
-    //     .then(res => console.log(res))
-    //     .catch(err => console.error(err));
+    const options1 = {
+        method: 'POST',
+        headers: { accept: 'application/json', 'content-type': 'application/json' },
+        body: JSON.stringify({
+            id: 1,
+            jsonrpc: '2.0',
+            method: 'eth_sendUserOperation',
+            params: [userOperation, "0x0000000071727De22E5E9d8BAf0edAc6f37da032"]
+        })
+    };
+
+    try {
+        const response = await fetch('https://polygon-amoy.g.alchemy.com/v2/VG6iwUaOlQPYcDCb3AlkyAxrAXF7UzU9', options1)
+        // console.log("response:", response);
+        const data = await response.json();
+        console.log(data);
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
 
 }
 
