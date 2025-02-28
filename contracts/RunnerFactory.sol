@@ -23,9 +23,24 @@ contract RunnerFactory {
 
     function createRunner() public onlyAdmin returns (Runner ret) {
         ret = Runner(
-            payable(new ERC1967Proxy(address(runnerImplementation), ""))
+            payable(
+                new ERC1967Proxy(
+                    address(runnerImplementation),
+                    abi.encodeWithSignature(
+                        "initialize(address)",
+                        address(this)
+                    )
+                )
+            )
         );
         emit RunnerCreated(address(ret));
+    }
+
+    function withdrawFromRunner(
+        address payable runnerAddress,
+        uint256 amount
+    ) public onlyAdmin {
+        Runner(runnerAddress).execute(admin, amount, new bytes(0));
     }
 
     function createAccount() public onlyAdmin returns (Runner ret) {

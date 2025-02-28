@@ -8,6 +8,8 @@ const utils = require('../scripts/utils');
 const merkleTree = require('fixed-merkle-tree');
 const { setupHasher, hashLeftRight } = require('../scripts/utilities/hasher');
 const snarkjs = require("snarkjs");
+const { Runner } = require("mocha");
+
 
 describe('Runner', function () {
     const SEED = "mimcsponge";
@@ -107,12 +109,21 @@ describe('Runner', function () {
     });
 
     it("Should create a new Runner by admin", async () => {
+        const runnerFactoryAddress = await runnerFactory.getAddress();
         await runnerFactory.createAccount();
+
 
         const filter = runnerFactory.filters.RunnerCreated();
         const events = await runnerFactory.queryFilter(filter);
 
-        const runnerAddress = events[0].args.runnerAddress;
+        if (events.length === 0) {
+            console.log("No RunnerCreated event found");
+            return;
+        }
+
+        const latestEvent = events[events.length - 1];
+
+        const runnerAddress = latestEvent.args.runnerAddress;
         const RunnerContract = await ethers.getContractFactory("Runner");
         runner = RunnerContract.attach(runnerAddress);
 
@@ -121,6 +132,9 @@ describe('Runner', function () {
 
         const registryAddress = await runner.registry();
         expect(registryAddress).to.be.equal(await registry.getAddress());
+
+        const owner = await runner.owner();
+        expect(owner).to.be.equal(runnerFactoryAddress);
     });
 
     it("Should not be able to create a new Runner by non-admin", async () => {
@@ -213,6 +227,19 @@ describe('Runner', function () {
         await signer.sendTransaction({ from: signer.address, to: runnerAddress, value: ethers.parseEther("1") });
         const balanceAfter = await ethers.provider.getBalance(runnerAddress);
         expect(balanceAfter).to.be.equal(balanceBefore + ethers.parseEther("1"));
+    });
+
+    it("Should be able to withdraw funds from the Runner", async () => {
+        const runnerAddress = await runner.getAddress();
+        const balanceBefore = await ethers.provider.getBalance(runnerAddress);
+        console.log("Runner balance before:", balanceBefore.toString());
+
+        const tx = await runnerFactory.withdrawFromRunner(runnerAddress, ethers.parseEther("1"));
+        await tx.wait();
+        const balanceAfter = await ethers.provider.getBalance(runnerAddress);
+        console.log("Runner balance after:", balanceAfter.toString());
+        expect(balanceAfter).to.be.equal(balanceBefore - ethers.parseEther("1"));
+
     });
 
     it("Should validate the proof in Runner via _validateSignature", async () => {

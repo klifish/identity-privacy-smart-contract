@@ -3,6 +3,8 @@ const { ethers } = require('hardhat');
 const { computePedersenHash } = require('../scripts/utils');
 const { generateProof, registerUser } = require('./registerUser');
 const { getRandomRunnerAddress, getFirstRunnerAddress, getAccountFactoryAddress } = require('./isDeployed');
+const { depositToRunner, withdrawAllFromRunner } = require('./runnerInteraction');
+
 
 const API_URL = process.env.API_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
@@ -48,7 +50,7 @@ async function sendUserOperation() {
     const RunnerContract = await ethers.getContractFactory("Runner", signer);
     const runnerAddress = await getFirstRunnerAddress();
     console.log("Runner address:", runnerAddress);
-    const runner = RunnerContract.attach(runnerAddress);
+    // await depositToRunner(runnerAddress, "1");
 
     // let userOperation = {
     //     sender: runnerAddress, // Address of the sender (e.g., smart contract wallet)
@@ -76,8 +78,6 @@ async function sendUserOperation() {
         paymasterVerificationGasLimit: "0x927C0",
         paymasterPostOpGasLimit: "0x927C0",
         signature: "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c",
-        paymaster: "0x9db7f05b0eb93eb242b5913596dcfaada756af5c",
-        paymasterData: "0x"
     }
 
     // const smart_account_address = await createSmartAccount();
@@ -95,6 +95,8 @@ async function sendUserOperation() {
     // console.log("Verification result:", verificationResult);
 
     userOperation.signature = proof;
+    // dummySignature = "0x" + "f".repeat(proof.length - 2);
+
     // console.log("userOperation.signature:", userOperation.signature);
 
     // const RunnerFactoryContract = await ethers.getContractAt("RunnerFactory", await getAccountFactoryAddress());
@@ -112,45 +114,46 @@ async function sendUserOperation() {
     ]);
 
     const callData = runnerExecuteInterfact.encodeFunctionData("execute", [counterAddress, 0, func]);
-    // console.log("Bytecode:", bytecode);
 
     userOperation.callData = callData;
 
-    const options = {
-        method: 'POST',
-        headers: { accept: 'application/json', 'content-type': 'application/json' },
-        body: JSON.stringify({
-            id: 1,
-            jsonrpc: '2.0',
-            method: 'alchemy_requestGasAndPaymasterAndData',
-            params: [
-                {
-                    policyId: '32871eca-3b5c-4fe8-a71b-eebd1e569fb7',
-                    entryPoint: '0x0000000071727De22E5E9d8BAf0edAc6f37da032',
-                    dummySignature: userOperation.signature,
-                    userOperation: {
-                        sender: userOperation.sender,
-                        nonce: '0x0',
-                        initCode: '0x',
-                        callData: userOperation.callData
-                    }
-                }
-            ]
-        })
-    };
+    // const options = {
+    //     method: 'POST',
+    //     headers: { accept: 'application/json', 'content-type': 'application/json' },
+    //     body: JSON.stringify({
+    //         id: 1,
+    //         jsonrpc: '2.0',
+    //         method: 'alchemy_requestGasAndPaymasterAndData',
+    //         params: [
+    //             {
+    //                 policyId: '32871eca-3b5c-4fe8-a71b-eebd1e569fb7',
+    //                 entryPoint: '0x0000000071727De22E5E9d8BAf0edAc6f37da032',
+    //                 dummySignature: userOperation.signature,
+    //                 userOperation: {
+    //                     sender: userOperation.sender,
+    //                     nonce: '0x0',
+    //                     initCode: '0x',
+    //                     callData: userOperation.callData
+    //                 }
+    //             }
+    //         ]
+    //     })
+    // };
 
-    try {
-        const response = await fetch('https://polygon-amoy.g.alchemy.com/v2/VG6iwUaOlQPYcDCb3AlkyAxrAXF7UzU9', options)
-        const data = await response.json();
-        console.log(data);
-        userOperation.paymaster = data.result.paymaster;
-        userOperation.paymasterData = data.result.paymasterData;
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+    // try {
+    //     const response = await fetch('https://polygon-amoy.g.alchemy.com/v2/VG6iwUaOlQPYcDCb3AlkyAxrAXF7UzU9', options)
+    //     const data = await response.json();
+    //     console.log(data);
+    //     // userOperation.paymaster = data.result.paymaster;
+    //     // userOperation.paymasterData = data.result.paymasterData;
+    // } catch (error) {
+    //     console.error(error);
+    //     throw error;
+    // }
 
     console.log(userOperation)
+
+
 
     const options1 = {
         method: 'POST',

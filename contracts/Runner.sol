@@ -4,6 +4,7 @@ pragma solidity >=0.7.0 <0.9.0;
 
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@account-abstraction/contracts/core/BaseAccount.sol";
+import "@account-abstraction/contracts/core/Helpers.sol";
 import "./MerkleRegistry.sol";
 import "hardhat/console.sol";
 
@@ -20,23 +21,27 @@ contract Runner is BaseAccount, Initializable {
     IEntryPoint private immutable _entryPoint;
     IRegistry private immutable _registry;
 
+    address private _owner;
+
     constructor(IEntryPoint anEntryPoint, IRegistry aRegistry) {
         _entryPoint = anEntryPoint;
         _registry = aRegistry;
+        _owner = msg.sender;
         _disableInitializers();
     }
-
-    // function initialize(
-    //     IEntryPoint anEntryPoint,
-    //     IRegistry aRegistry
-    // ) public initializer {
-    //     _entryPoint = anEntryPoint;
-    //     _registry = aRegistry;
-    // }
 
     event SignatureVerified(bool isValid);
 
     receive() external payable {}
+
+    modifier onlyVerified(bytes calldata signature) {
+        require(_verifyProof(signature), "Invalid signature");
+        _;
+    }
+
+    function owner() public view returns (address) {
+        return _owner;
+    }
 
     function entryPoint() public view virtual override returns (IEntryPoint) {
         return _entryPoint;
@@ -44,6 +49,17 @@ contract Runner is BaseAccount, Initializable {
 
     function registry() public view returns (IRegistry) {
         return _registry;
+    }
+
+    function initialize(address newOwner) public initializer {
+        _owner = newOwner;
+    }
+
+    function _requireFromEntryPointOrOwner() internal view {
+        require(
+            msg.sender == address(entryPoint()) || msg.sender == _owner,
+            "account: not Owner or EntryPoint"
+        );
     }
 
     /**
@@ -57,7 +73,7 @@ contract Runner is BaseAccount, Initializable {
         uint256 value,
         bytes calldata func
     ) external {
-        // _requireFromEntryPointOrOwner();
+        _requireFromEntryPointOrOwner();
         _call(dest, value, func);
     }
 
@@ -113,6 +129,6 @@ contract Runner is BaseAccount, Initializable {
         bytes32 userOpHash
     ) internal virtual override returns (uint256 validationData) {
         require(_verifyProof(userOp.signature), "Invalid signature");
-        return 0;
+        return SIG_VALIDATION_SUCCESS;
     }
 }
