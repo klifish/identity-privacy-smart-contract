@@ -6,5 +6,7 @@
   "Runner": [
     "0x9Bd7561782e1BC4BE0fD72BED1591B804a971869"
   ],
-  "AccountFactory": "0x9cd95551D4f5B765545b5471d3A9d01bb8aa1aDc"
+  "AccountFactory": "0x9cd95551D4f5B765545b5471d3A9d01bb8aa1aDc",
+  "VerifyingPaymasterFactory": "0xaCfe1C9b4CD89cDeB0877f4Ce88C57994b7f5eE3",
+  "VerifyingPaymaster": "0xC75874AEa194705B541e42EC1709c99417630141"
 }

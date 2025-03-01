@@ -69,6 +69,14 @@ async function getHasherAddress() {
     return await getDeployed("Hasher");
 }
 
+async function getVerifyingPaymsaterFactoryAddress() {
+    return await getDeployed("VerifyingPaymasterFactory");
+}
+
+async function getVerifyingPaymsaterAddress() {
+    return await getDeployed("VerifyingPaymaster");
+}
+
 async function getRegistryAddress() {
     return await getDeployed("Registry");
 }
@@ -96,4 +104,6 @@ module.exports = {
     getRandomRunnerAddress,
     getFirstRunnerAddress,
     getAccountFactoryAddress,
+    getVerifyingPaymsaterAddress,
+    getVerifyingPaymsaterFactoryAddress
 };
