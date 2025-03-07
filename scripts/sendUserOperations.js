@@ -65,7 +65,6 @@ async function sendUserOperation() {
 
     let userOperation = {
         sender: runnerAddress,
-        nonce: 0n,
         callData: "0xb61d27f600000000000000000000000043f6bfbe9dad44cf0a60570c30c307d949be4cd40000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000645c833bfd000000000000000000000000613c64104b98b048b93289ed20aefd80912b3cde0000000000000000000000000000000000000000000000000de123e8a84f9901000000000000000000000000c9371ea30dea5ac745b71e191ba8cde2c4e66df500000000000000000000000000000000000000000000000000000000",
         callGasLimit: "0x7A1200",
         verificationGasLimit: "0x927C0",
@@ -132,6 +131,8 @@ async function sendUserOperation() {
     const hash = await verifyingPaymaster.getHash(packedUserOp, MOCK_VALID_UNTIL, MOCK_VALID_AFTER);
 
     const sig = await signer.signMessage(ethers.getBytes(hash));
+    console.log("userOperation", userOperation);
+    // delete userOperation.nonce;
     const UserOp = await fillUserOp({
         ...userOperation,
         paymaster: verifyingPaymasterAddress,
@@ -141,9 +142,11 @@ async function sendUserOperation() {
 
 
     UserOp.nonce = "0x" + UserOp.nonce.toString();
+    console.log("User operation:", UserOp);
 
     delete UserOp.initCode
     // console.log("User operation:", UserOp);
+
 
     const options1 = {
         method: 'POST',
