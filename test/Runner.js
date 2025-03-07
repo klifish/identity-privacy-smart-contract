@@ -279,10 +279,12 @@ describe('Runner', function () {
         const serializedProofandPublicSignals = ethers.AbiCoder.defaultAbiCoder().encode(["uint[2]", "uint[2][2]", "uint[2]", "uint[2]"], [pA, pB, pC, pubSignals]);
         // console.log("Available functions in Runner contract:", runner.functions);
 
-        const decodedProof = await runner._deserializeProofAndPublicSignals(serializedProofandPublicSignals);
+        // const decodedProof = await runner._deserializeProofAndPublicSignals(serializedProofandPublicSignals);
         // console.log("Decoded proof:", decodedProof);
 
         await runner.verifyProof(serializedProofandPublicSignals)
+
+        await runner.preVerifySignature(serializedProofandPublicSignals);
 
     });
 });

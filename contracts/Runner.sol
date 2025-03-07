@@ -23,6 +23,8 @@ contract Runner is BaseAccount, Initializable {
 
     address private _owner;
 
+    mapping(bytes32 => bool) public verifiedProofs;
+
     constructor(IEntryPoint anEntryPoint, IRegistry aRegistry) {
         _entryPoint = anEntryPoint;
         _registry = aRegistry;
@@ -128,7 +130,23 @@ contract Runner is BaseAccount, Initializable {
         PackedUserOperation calldata userOp,
         bytes32 userOpHash
     ) internal virtual override returns (uint256 validationData) {
-        require(_verifyProof(userOp.signature), "Invalid signature");
+        bytes32 proofHash = keccak256(userOp.signature);
+        require(verifiedProofs[proofHash], "Signature not pre-verified");
         return SIG_VALIDATION_SUCCESS;
+    }
+
+    function validateSignature(
+        PackedUserOperation calldata userOp,
+        bytes32 userOpHash
+    ) public virtual returns (uint256 validationData) {
+        bytes32 proofHash = keccak256(userOp.signature);
+        require(verifiedProofs[proofHash], "Signature not pre-verified");
+        return SIG_VALIDATION_SUCCESS;
+    }
+
+    function preVerifySignature(bytes calldata signature) external {
+        require(_verifyProof(signature), "Invalid signature");
+        bytes32 proofHash = keccak256(signature);
+        verifiedProofs[proofHash] = true;
     }
 }

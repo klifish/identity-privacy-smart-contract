@@ -39,4 +39,19 @@ async function deployVerifyingPaymaster() {
 
 }
 
-module.exports = { deployVerifyingPaymasterFactory, deployVerifyingPaymaster }
+async function deployVerifyingPaymasterWithoutFactory() {
+    const VerifyingPaymasterContract = await ethers.getContractFactory("VerifyingPaymaster", signer);
+    const verifyingPaymaster = await VerifyingPaymasterContract.deploy(ENTRY_POINT, signer.address);
+
+    const tx = verifyingPaymaster.deploymentTransaction(); // Get transaction details
+    console.log("Transaction Hash:", tx.hash);
+
+    const receipt = await tx.wait(); // Wait for the transaction to be mined
+    console.log("Transaction Receipt:", receipt);
+
+    // return verifyingPaymaster.address;
+    const address = await verifyingPaymaster.getAddress()
+    return address
+}
+
+module.exports = { deployVerifyingPaymasterFactory, deployVerifyingPaymaster, deployVerifyingPaymasterWithoutFactory }

@@ -2,13 +2,25 @@
 const { ethers } = require('hardhat');
 const { computePedersenHash } = require('../scripts/utils');
 const { generateProof, registerUser } = require('./registerUser');
-const { getRandomRunnerAddress, getFirstRunnerAddress, getAccountFactoryAddress } = require('./isDeployed');
+const { getVerifyingPaymsaterAddress, getFirstRunnerAddress, getAccountFactoryAddress } = require('./isDeployed');
 const { depositToRunner, withdrawAllFromRunner } = require('./runnerInteraction');
+const { fillAndSign, packUserOp, fillAndPcak, simulateValidation, fillUserOp } = require('../scripts/userOp');
+const fs = require("fs");
 
+const entryPointAbi = JSON.parse(fs.readFileSync("abi/entryPoint.json", "utf8")).abi;
+const ENTRY_POINT_ADDRESS = process.env.ENTRY_POINT;
 
 const API_URL = process.env.API_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const secret = "hello world"
+const MOCK_VALID_UNTIL = '0x00000000deadbeef'
+const MOCK_VALID_AFTER = '0x0000000000001234'
+
+const alchemyProvider = new ethers.JsonRpcProvider(API_URL);
+
+// signer - you
+const signer = new ethers.Wallet(PRIVATE_KEY, alchemyProvider);
+
 
 async function createSmartAccount() {
     const alchemyProvider = new ethers.JsonRpcProvider(API_URL);
@@ -47,28 +59,13 @@ async function sendUserOperation() {
     const alchemyProvider = new ethers.JsonRpcProvider(API_URL);
     const signer = new ethers.Wallet(PRIVATE_KEY, alchemyProvider);
 
-    const RunnerContract = await ethers.getContractFactory("Runner", signer);
     const runnerAddress = await getFirstRunnerAddress();
+    const runner = await ethers.getContractAt("Runner", runnerAddress);
     console.log("Runner address:", runnerAddress);
-    // await depositToRunner(runnerAddress, "1");
-
-    // let userOperation = {
-    //     sender: runnerAddress, // Address of the sender (e.g., smart contract wallet)
-    //     nonce: "0x0", // Replace with actual nonce
-    //     initCode: "0x", // Initialization code, if needed
-    //     callData: "0x", // Encoded function call data
-    //     callGasLimit: "0x5208", // Gas limit for the operation
-    //     verificationGasLimit: "0x5208", // Verification gas limit
-    //     preVerificationGas: "0x0", // Gas cost for pre-verification
-    //     maxFeePerGas: "0x09184e72a000", // Max fee per gas
-    //     maxPriorityFeePerGas: "0x09184e72a000", // Max priority fee
-    //     paymasterAndData: "0x", // Paymaster details, if applicable
-    //     signature: "0x" // Replace with the correct signature
-    // };
 
     let userOperation = {
         sender: runnerAddress,
-        nonce: "0x0",
+        nonce: 0n,
         callData: "0xb61d27f600000000000000000000000043f6bfbe9dad44cf0a60570c30c307d949be4cd40000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000645c833bfd000000000000000000000000613c64104b98b048b93289ed20aefd80912b3cde0000000000000000000000000000000000000000000000000de123e8a84f9901000000000000000000000000c9371ea30dea5ac745b71e191ba8cde2c4e66df500000000000000000000000000000000000000000000000000000000",
         callGasLimit: "0x7A1200",
         verificationGasLimit: "0x927C0",
@@ -78,9 +75,15 @@ async function sendUserOperation() {
         paymasterVerificationGasLimit: "0x927C0",
         paymasterPostOpGasLimit: "0x927C0",
         signature: "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c",
+        paymaster: await getVerifyingPaymsaterAddress(),
+        paymasterData: ethers.concat(
+            [
+                ethers.AbiCoder.defaultAbiCoder().encode(['uint48', 'uint48'], [MOCK_VALID_UNTIL, MOCK_VALID_AFTER]),
+                '0x' + '00'.repeat(65)
+            ]
+        )
     }
 
-    // const smart_account_address = await createSmartAccount();
     const smart_account_address = "0xECc88Cc6a3c93AD477C6b72A486C14653803D044"
     const secret = "hello world";
     const nullifier = 0n;
@@ -90,11 +93,10 @@ async function sendUserOperation() {
     const proof = await generateProof(smart_account_address, secret, nullifier);
     console.log("Proof generated");
 
-    // console.log("Verifying proof on chain");
-    // const verificationResult = await runner.verifyProof(proof, { gasLimit: 1000000 });
-    // console.log("Verification result:", verificationResult);
-
     userOperation.signature = proof;
+    console.log("Proof:", proof);
+    const tx = await runner.preVerifySignature(userOperation.signature);
+    await tx.wait();
     // dummySignature = "0x" + "f".repeat(proof.length - 2);
 
     // console.log("userOperation.signature:", userOperation.signature);
@@ -117,43 +119,31 @@ async function sendUserOperation() {
 
     userOperation.callData = callData;
 
-    // const options = {
-    //     method: 'POST',
-    //     headers: { accept: 'application/json', 'content-type': 'application/json' },
-    //     body: JSON.stringify({
-    //         id: 1,
-    //         jsonrpc: '2.0',
-    //         method: 'alchemy_requestGasAndPaymasterAndData',
-    //         params: [
-    //             {
-    //                 policyId: '32871eca-3b5c-4fe8-a71b-eebd1e569fb7',
-    //                 entryPoint: '0x0000000071727De22E5E9d8BAf0edAc6f37da032',
-    //                 dummySignature: userOperation.signature,
-    //                 userOperation: {
-    //                     sender: userOperation.sender,
-    //                     nonce: '0x0',
-    //                     initCode: '0x',
-    //                     callData: userOperation.callData
-    //                 }
-    //             }
-    //         ]
-    //     })
-    // };
+    const verifyingPaymasterAddress = await getVerifyingPaymsaterAddress();
+    const verifyingPaymaster = await ethers.getContractAt("VerifyingPaymaster", verifyingPaymasterAddress);
 
-    // try {
-    //     const response = await fetch('https://polygon-amoy.g.alchemy.com/v2/VG6iwUaOlQPYcDCb3AlkyAxrAXF7UzU9', options)
-    //     const data = await response.json();
-    //     console.log(data);
-    //     // userOperation.paymaster = data.result.paymaster;
-    //     // userOperation.paymasterData = data.result.paymasterData;
-    // } catch (error) {
-    //     console.error(error);
-    //     throw error;
-    // }
+    const entryPoint = new ethers.Contract(ENTRY_POINT_ADDRESS, entryPointAbi, alchemyProvider);
+    const userOp1 = await fillUserOp(userOperation, entryPoint, 'getNonce');
+    // console.log("User operation:", userOp1.paymasterData);
 
-    console.log(userOperation)
+    const packedUserOp = packUserOp(userOp1);
+    // console.log("Packed user operation:", packedUserOp);
+
+    const hash = await verifyingPaymaster.getHash(packedUserOp, MOCK_VALID_UNTIL, MOCK_VALID_AFTER);
+
+    const sig = await signer.signMessage(ethers.getBytes(hash));
+    const UserOp = await fillUserOp({
+        ...userOperation,
+        paymaster: verifyingPaymasterAddress,
+        paymasterData: ethers.concat([ethers.AbiCoder.defaultAbiCoder().encode(['uint48', 'uint48'], [MOCK_VALID_UNTIL, MOCK_VALID_AFTER]), sig])
+
+    }, entryPoint)
 
 
+    UserOp.nonce = "0x" + UserOp.nonce.toString();
+
+    delete UserOp.initCode
+    // console.log("User operation:", UserOp);
 
     const options1 = {
         method: 'POST',
@@ -162,7 +152,7 @@ async function sendUserOperation() {
             id: 1,
             jsonrpc: '2.0',
             method: 'eth_sendUserOperation',
-            params: [userOperation, "0x0000000071727De22E5E9d8BAf0edAc6f37da032"]
+            params: [UserOp, "0x0000000071727De22E5E9d8BAf0edAc6f37da032"]
         })
     };
 
