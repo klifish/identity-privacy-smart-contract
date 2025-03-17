@@ -11,7 +11,7 @@ const hashLeftRight = (hasher, left, right) => {
     const F = hasher.F;
     const leftBigInt = BigInt(left);
     // console.log("leftBigInt", leftBigInt);
-    
+
     const rightBigInt = BigInt(right);
     // console.log("rightBigInt", rightBigInt);
 
@@ -19,8 +19,8 @@ const hashLeftRight = (hasher, left, right) => {
     if (rightBigInt >= FIELD_SIZE) throw new Error("_right should be inside the field");
 
 
-    let R = F.zero; 
-    let C = F.zero; 
+    let R = F.zero;
+    let C = F.zero;
 
 
     R = F.add(R, F.e(leftBigInt));
@@ -37,7 +37,7 @@ const hashLeftRight = (hasher, left, right) => {
 
 // const hashLeftRight = (hasher, left, right) => {
 //     const leftValue = BigInt(left);
-    
+
 //     const rightValue = BigInt(right);
 
 //     if (leftValue >= FIELD_SIZE) throw new Error("_left should be inside the field");
@@ -63,11 +63,10 @@ const hashLeftRightNew = (hasher, left, right) => {
     const rightBigInt = BigInt(right);
     const Fr = hasher.F;
 
-    // Hash the inputs
+
     const hash = hasher.multiHash([leftBigInt, rightBigInt], 0, 1);
-    // const firstHash = Fr.toObject(hashArray[0])
 
     return Fr.toObject(hash); // Return the hash as BigInt
 };
 
-module.exports = { setupHasher, hashLeftRight,hashLeftRightNew };
+module.exports = { setupHasher, hashLeftRight, hashLeftRightNew };

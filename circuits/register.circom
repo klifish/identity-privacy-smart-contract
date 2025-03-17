@@ -102,5 +102,5 @@ template Register(levels) {
     refundSquare <== refund * refund;
 }
 
-component main {public [root, nullifierHash]}= Register(2);
+component main {public [root, nullifierHash]}= Register(20);
 // component main = WalletAndSecretHasher();
