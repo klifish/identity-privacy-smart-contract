@@ -8,7 +8,7 @@ import "hardhat/console.sol";
 
 contract MyAccount is BaseAccount, Initializable {
     Commitment public commitmentModule;
-    uint256 public immutable countId;
+    uint256 public countId;
 
     IEntryPoint private immutable _entryPoint;
     IVerifier private immutable _verifier;
@@ -27,6 +27,14 @@ contract MyAccount is BaseAccount, Initializable {
         _disableInitializers();
     }
 
+    function GetCountId() public view returns (uint256) {
+        return countId;
+    }
+
+    function IncreaseCountId() public {
+        countId++;
+    }
+
     /// @inheritdoc BaseAccount
     function entryPoint() public view virtual override returns (IEntryPoint) {
         return _entryPoint;
@@ -40,15 +48,27 @@ contract MyAccount is BaseAccount, Initializable {
         return commitmentModule.GetCommitment();
     }
 
+    function UpdateCommitment(
+        bytes calldata proof,
+        uint256 _commitment
+    ) external onlyVerified(proof) {
+        commitmentModule.UpdateCommitment(proof, _commitment);
+    }
+
     modifier onlyVerified(bytes calldata proof) {
+        bytes32 proofHash = keccak256(proof);
+        require(verifiedProofs[proofHash] == false, "Proof already verified");
+        verifiedProofs[proofHash] = true;
         require(commitmentModule.verify(proof), "Proof verification failed");
         _;
     }
 
     function verifyOwnership(bytes calldata proof) external {
-        bool isValid = commitmentModule.verify(proof);
-        console.log("Ownership verified: %s", isValid);
-        emit OwnershipVerified(isValid);
+        bytes32 proofHash = keccak256(proof);
+        require(verifiedProofs[proofHash] == false, "Proof already verified");
+        verifiedProofs[proofHash] = true;
+        require(commitmentModule.verify(proof), "Proof verification failed");
+        emit OwnershipVerified(true);
     }
 
     /**
@@ -100,6 +120,7 @@ contract MyAccount is BaseAccount, Initializable {
 
     function _initialize(uint256 _commitment) internal virtual {
         commitmentModule = new Commitment(_verifier, _commitment);
+        countId = 1; // It is resonable to start from 1 because when the account is created, there is already a commitment
         emit MyAccountInitialized(_entryPoint, _commitment);
     }
 

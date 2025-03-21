@@ -6,6 +6,7 @@ const { ethers } = require("hardhat");
 const ffjavascript = require("ffjavascript");
 const { fillUserOpDefaults, parseProof, computePedersenHash } = require("../scripts/utils");
 const { groth16ExportSolidityCallData } = require("../scripts/utils");
+const e = require("express");
 
 describe('MyAccount Smart Contract', function () {
     const commitmentValue = 42;
@@ -124,8 +125,6 @@ describe('MyAccount Smart Contract', function () {
 
     it("Should be able to verify the ownership of the account", async () => {
 
-        const commitmentValue = await myAccount.GetCommitment();
-
         wasm = path.join(__dirname, "..", "build", "circuits", "commitment_js", "commitment.wasm");
         zkey = path.join(__dirname, "..", "build", "circuits", "commitment_final.zkey");
 
@@ -145,6 +144,59 @@ describe('MyAccount Smart Contract', function () {
         expect(events[0].args.isValid).to.be.true;
 
     })
+
+    it("Should be able to update the commitment", async () => {
+        const countId = await myAccount.GetCountId();
+        // generate proof
+        wasm = path.join(__dirname, "..", "build", "circuits", "commitment_js", "commitment.wasm");
+        zkey = path.join(__dirname, "..", "build", "circuits", "commitment_final.zkey");
+
+        const encodedMessage = new TextEncoder().encode(secret + (Number(countId) - 1));
+        const encodedMessageBigInt = ffjavascript.utils.leBuff2int(encodedMessage);
+
+        const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.groth16.fullProve({ secret: encodedMessageBigInt }, wasm, zkey);
+        let { pA, pB, pC, pubSignals } = await groth16ExportSolidityCallData(proofJson, publicInputs);
+        const proof = ethers.AbiCoder.defaultAbiCoder().encode(["uint[2]", "uint[2][2]", "uint[2]", "uint[1]"], [pA, pB, pC, pubSignals]);
+
+        // update commitment
+        const commitmentOld = await myAccount.GetCommitment();
+
+        const commitmentToBeUpdated = await computePedersenHash(secret + countId);
+
+        await myAccount.UpdateCommitment(proof, commitmentToBeUpdated)
+
+        const commitmentUpdated = await myAccount.GetCommitment();
+
+        expect(commitmentUpdated).to.be.equal(commitmentToBeUpdated);
+        expect(commitmentOld).to.be.not.equal(commitmentUpdated);
+
+    });
+
+    it("Should not be able to use the same proof twice", async () => {
+        const countId = await myAccount.GetCountId();
+        // generate proof
+        wasm = path.join(__dirname, "..", "build", "circuits", "commitment_js", "commitment.wasm");
+        zkey = path.join(__dirname, "..", "build", "circuits", "commitment_final.zkey");
+
+        const encodedMessage = new TextEncoder().encode(secret + (Number(countId) - 1));
+        const encodedMessageBigInt = ffjavascript.utils.leBuff2int(encodedMessage);
+
+        const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.groth16.fullProve({ secret: encodedMessageBigInt }, wasm, zkey);
+        let { pA, pB, pC, pubSignals } = await groth16ExportSolidityCallData(proofJson, publicInputs);
+        const proof = ethers.AbiCoder.defaultAbiCoder().encode(["uint[2]", "uint[2][2]", "uint[2]", "uint[1]"], [pA, pB, pC, pubSignals]);
+
+        // verify the proof for the first time
+        const tx = await myAccount.verifyOwnership(proof);
+        const receipt = await tx.wait();
+
+        // verify the proof for the second time
+        try {
+            await myAccount.verifyOwnership(proof);
+            // expect.fail("Should have thrown an error");
+        } catch (error) {
+            expect(error.message).to.contain("Proof already verified");
+        }
+    });
 
     it('Should be able to call transfer', async () => {
 
