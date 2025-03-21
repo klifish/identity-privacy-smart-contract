@@ -117,11 +117,3 @@ module.exports = {
     registerUser,
     generateProof
 }
-// async function main() {
-//     await generateProof();
-// }
-
-// main().then(() => process.exit(0)).catch(error => {
-//     console.error(error);
-//     process.exit(1);
-// });

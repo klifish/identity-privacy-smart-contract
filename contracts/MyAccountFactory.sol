@@ -65,8 +65,6 @@ contract MyAccountFactory {
         uint256 salt
     ) public view returns (address) {
         bytes32 saltBytes = bytes32(salt);
-        console.log("commitment: %s", _commitment);
-        console.log("saltBytes: %s", bytes32ToString(saltBytes));
 
         bytes memory initCode = abi.encodePacked(
             type(ERC1967Proxy).creationCode,
@@ -77,14 +75,12 @@ contract MyAccountFactory {
         );
 
         bytes32 initCodeHash = keccak256(initCode);
-        console.log("initCodeHash: %s", bytes32ToString(initCodeHash));
 
         address computedAddress = Create2.computeAddress(
             saltBytes,
             initCodeHash
         );
 
-        console.log("computedAddress: %s", computedAddress);
         return computedAddress;
     }
 
