@@ -14,6 +14,7 @@ const snarkjs = require("snarkjs");
 const { getRegistryAddress } = require("./isDeployed.js");
 
 const contract = require("../artifacts/contracts/MerkleRegistry.sol/MerkleRegistry.json");
+const { verify } = require('crypto');
 const MERKLE_TREE_LEVEL = process.env.MERKLE_TREE_LEVEL
 
 // provider - Alchemy
@@ -42,12 +43,29 @@ async function calculateLeaf(smart_account_address, secret, nullifier) {
 }
 
 async function registerUser(smart_account_address, secret, nullifier) {
-    const merkleRegistryContract = new ethers.Contract(await getRegistryAddress(), contract.abi, signer);
+
     const leafToInsert = calculateLeaf(smart_account_address, secret, nullifier);
+
+    await registerUserWithLeaf(leafToInsert);
+    // const merkleRegistryContract = new ethers.Contract(await getRegistryAddress(), contract.abi, signer);
+
+    // const tx = await merkleRegistryContract.registerUser(leafToInsert);
+    // await tx.wait();
+    // console.log("User registered");
+}
+
+async function registerUserWithLeaf(leafToInsert) {
+    const merkleRegistryContract = new ethers.Contract(await getRegistryAddress(), contract.abi, signer);
+    const events = await merkleRegistryContract.queryFilter("UserRegistered");
+    const sortedEvents = events.sort((a, b) => (a.args.index < b.args.index ? -1 : a.args.index > b.args.index ? 1 : 0));
+    let leafs = sortedEvents.map(event => event.args.leaf);
+    if (leafs.includes(leafToInsert)) {
+        console.log("User already registered");
+        return;
+    }
 
     const tx = await merkleRegistryContract.registerUser(leafToInsert);
     await tx.wait();
-    console.log("User registered");
 }
 
 async function generateProof(smart_account_address, secret, nullifier) {
@@ -73,6 +91,8 @@ async function generateProof(smart_account_address, secret, nullifier) {
 
     const merkleProof = treeOffChain.proof(leafToInsert);
     console.log("The root is: " + merkleProof.pathRoot);
+    const isKnownRoot = await merkleRegistryContract.isKnownRoot(merkleProof.pathRoot);
+    console.log("Is the root known? " + isKnownRoot);
     const secretBuff = (new TextEncoder()).encode(secret);
     const secretBigInt = ffjavascript.utils.leBuff2int(secretBuff);
 
@@ -93,6 +113,11 @@ async function generateProof(smart_account_address, secret, nullifier) {
     console.log("start proving")
 
     const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.groth16.fullProve(input, wasm, zkey);
+    console.log("proofJson: ", proofJson);
+    console.log("publicInputs: ", publicInputs);
+    const vkey = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "build", "circuits", "register_vk.json"), "utf-8"));
+    const localVerification = await snarkjs.groth16.verify(vkey, publicInputs, proofJson);
+    console.log("local verification: ", localVerification)
 
     console.log("prove done")
 
@@ -100,12 +125,12 @@ async function generateProof(smart_account_address, secret, nullifier) {
 
 
     // debug here
-    // const RegistryContract = await ethers.getContractFactory("MerkleRegistry", signer);
-    // const registry = await RegistryContract.attach(await getRegistryAddress());
-    // console.log("Verify proof in registry contract");
+    const RegistryContract = await ethers.getContractFactory("MerkleRegistry", signer);
+    const registry = await RegistryContract.attach(await getRegistryAddress());
+    console.log("Verify proof in registry contract");
 
-    // const tx = await registry.verify(pA, pB, pC, pubSignals, { gasLimit: 1000000 });
-    // console.log("Proof verified: ", tx);
+    const tx = await registry.verify(pA, pB, pC, pubSignals, { gasLimit: 1000000 });
+    console.log("Proof verified: ", tx);
 
     const serializedProofandPublicSignals = ethers.AbiCoder.defaultAbiCoder().encode(["uint[2]", "uint[2][2]", "uint[2]", "uint[2]"], [pA, pB, pC, pubSignals]);
     return serializedProofandPublicSignals;
@@ -115,5 +140,6 @@ async function generateProof(smart_account_address, secret, nullifier) {
 module.exports = {
     calculateLeaf,
     registerUser,
+    registerUserWithLeaf,
     generateProof
 }

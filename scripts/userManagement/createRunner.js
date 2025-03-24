@@ -14,10 +14,11 @@ async function createRunner() {
 
     const tx = await runnerFactory.createRunner();
     await tx.wait();
+
     const filter = runnerFactory.filters.RunnerCreated();
     const events = await runnerFactory.queryFilter(filter);
     const runnerAddress = events[events.length - 1].args.runnerAddress;
-    
+
     await setDeployed("Runner", runnerAddress);
 
     console.log("Runner Contract deployed to address:", runnerAddress);

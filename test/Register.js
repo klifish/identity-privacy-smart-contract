@@ -66,7 +66,9 @@ describe('Register Circuit', function () {
         }
         console.log("start proving")
 
-        const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.plonk.fullProve(input, wasm, zkey);
+        const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.groth16.fullProve(input, wasm, zkey);
+        console.log("proof: ", proofJson)
+        console.log("publicSignals: ", publicInputs)
         console.log("prove done")
 
     })

@@ -18,7 +18,7 @@ contract MerkleRegistry is MerkleTreeWithHistory {
     IVerifier public immutable verifier;
     // Events
     event UserRegistered(uint256 leaf, uint32 index);
-    event ProofVerified(uint256 root, bool result);
+    event ProofVerified(uint root, bool result);
 
     // event ProofVerified(bytes32 nullifier);
 
@@ -46,9 +46,9 @@ contract MerkleRegistry is MerkleTreeWithHistory {
         uint[2] calldata _pubSignals
     ) public view returns (bool) {
         require(isKnownRoot(_pubSignals[0]), "Invalid Merkle root");
-        bool result = verifier.verifyProof(_pA, _pB, _pC, _pubSignals);
 
-        // emit ProofVerified(_pubSignals[0], result);
+        bool result = verifier.verifyProof(_pA, _pB, _pC, _pubSignals);
+        // emit ProofVerified(_pubSignals[0], result); // todo: if called from runner, it will revert. why?
 
         return result;
     }

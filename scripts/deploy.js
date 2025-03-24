@@ -6,6 +6,7 @@ const { deployRunnerFactory } = require("./deployRunnerFactory.js");
 const { deployAccountFactory } = require("./deployAccountFactory.js");
 const { deployVerifyingPaymasterFactory, deployVerifyingPaymaster, deployVerifyingPaymasterWithoutFactory } = require("./deployVerifyingPaymaster.js");
 const { isDeployed, setDeployed, getDeployed } = require("./isDeployed.js");
+const { deployCommitmentVerifier } = require("./deployCommitmentVerifier.js");
 
 async function deploy() {
 
@@ -24,6 +25,12 @@ async function deploy() {
         setDeployed("RegisterVerifier", registerVerifierAddress);
     }
     console.log("RegisterVerifier contract already deployed at address:", await getDeployed("RegisterVerifier"));
+
+    if (!(await isDeployed("CommitmentVerifier"))) {
+        const commitmentVerifierAddress = await deployCommitmentVerifier();
+        setDeployed("CommitmentVerifier", commitmentVerifierAddress);
+    }
+    console.log("CommitmentVerifier contract already deployed at address:", await getDeployed("CommitmentVerifier"));
 
 
 

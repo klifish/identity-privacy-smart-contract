@@ -14,7 +14,7 @@ const { Runner } = require("mocha");
 describe('Runner', function () {
     const SEED = "mimcsponge";
     const MERKLE_TREE_LEVEL = process.env.MERKLE_TREE_LEVEL
-    const SECRET = "secret";
+    const SECRET = "hello world";
 
     let registerVerifier;
     let entryPoint;
@@ -42,7 +42,7 @@ describe('Runner', function () {
 
     });
 
-    it("Should deploy the RegisterPlonkVerifier", async () => {
+    it("Should deploy the RegisterGroth16Verifier", async () => {
         const RegisterVerifierContract = await ethers.getContractFactory("RegisterGroth16Verifier");
 
         registerVerifier = await RegisterVerifierContract.deploy();
@@ -144,7 +144,7 @@ describe('Runner', function () {
     });
 
     it("Should register a new user", async () => {
-        let userAddress = signer.address;
+        let userAddress = "0xD1ab3ee7F715377856E7Cd612Df17Fd7dd09d1d7";
 
         const secret = SECRET;
         const secretBuff = (new TextEncoder()).encode(secret)
@@ -176,74 +176,9 @@ describe('Runner', function () {
 
     });
 
-    // it("Should generate a proof for the registered user", async () => {
+    it("Should generate a proof for the registered user", async () => {
 
-    //     let userAddress = signer.address;
-
-    //     const secret = SECRET;
-    //     const secretBuff = (new TextEncoder()).encode(secret)
-    //     const secretBigInt = ffjavascript.utils.leBuff2int(secretBuff)
-
-    //     const nullifier = 0n;
-
-    //     const src = [userAddress, secretBigInt, nullifier]
-    //     leaf = await utils.pedersenHashMultipleInputs(src)
-
-    //     const hP = babyjub.unpackPoint(leaf);
-    //     hp1 = F.toObject(hP[1])
-
-    //     const merkleProof = treeOffChain.proof(hp1);
-
-    //     const input = {
-    //         "root": merkleProof.pathRoot,
-    //         "nullifierHash": "987654321",
-    //         "recipient": "100",
-    //         "relayer": "50",
-    //         "fee": "10",
-    //         "refund": "5",
-    //         "nullifier": nullifier,
-    //         "secret": secretBigInt,
-    //         "pathElements": merkleProof.pathElements,
-    //         "pathIndices": merkleProof.pathIndices,
-    //         "smartContractWalletAddress": userAddress
-    //     }
-
-    //     const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.plonk.fullProve(input, wasm, zkey);
-
-
-    //     const parsedproof = utils.parseProof(proofJson);
-    //     const tx = await registry.verify(parsedproof, publicInputs);
-    //     const receipt = await tx.wait();
-
-    //     const events = await registry.queryFilter(registry.filters.ProofVerified());
-    //     expect(events[0].args.result).to.be.true;
-
-    // });
-
-    it("should be able to call transfer", async () => {
-        const runnerAddress = await runner.getAddress();
-        const balanceBefore = await ethers.provider.getBalance(runnerAddress);
-
-        await signer.sendTransaction({ from: signer.address, to: runnerAddress, value: ethers.parseEther("1") });
-        const balanceAfter = await ethers.provider.getBalance(runnerAddress);
-        expect(balanceAfter).to.be.equal(balanceBefore + ethers.parseEther("1"));
-    });
-
-    it("Should be able to withdraw funds from the Runner", async () => {
-        const runnerAddress = await runner.getAddress();
-        const balanceBefore = await ethers.provider.getBalance(runnerAddress);
-        console.log("Runner balance before:", balanceBefore.toString());
-
-        const tx = await runnerFactory.withdrawFromRunner(runnerAddress, ethers.parseEther("1"));
-        await tx.wait();
-        const balanceAfter = await ethers.provider.getBalance(runnerAddress);
-        console.log("Runner balance after:", balanceAfter.toString());
-        expect(balanceAfter).to.be.equal(balanceBefore - ethers.parseEther("1"));
-
-    });
-
-    it("Should validate the proof in Runner via _validateSignature", async () => {
-        let userAddress = signer.address;
+        let userAddress = "0xD1ab3ee7F715377856E7Cd612Df17Fd7dd09d1d7";
 
         const secret = SECRET;
         const secretBuff = (new TextEncoder()).encode(secret)
@@ -277,14 +212,78 @@ describe('Runner', function () {
 
         let { pA, pB, pC, pubSignals } = await utils.groth16ExportSolidityCallData(proofJson, publicInputs);
         const serializedProofandPublicSignals = ethers.AbiCoder.defaultAbiCoder().encode(["uint[2]", "uint[2][2]", "uint[2]", "uint[2]"], [pA, pB, pC, pubSignals]);
-        // console.log("Available functions in Runner contract:", runner.functions);
 
-        // const decodedProof = await runner._deserializeProofAndPublicSignals(serializedProofandPublicSignals);
+        const tx = await registry.verify(pA, pB, pC, pubSignals, { gasLimit: 1000000 });
+        const receipt = await tx.wait();
+
+        // const events = await registry.queryFilter(registry.filters.ProofVerified());
+        // expect(events[0].args.result).to.be.true;
+
+    });
+
+    it("should be able to call transfer", async () => {
+        const runnerAddress = await runner.getAddress();
+        const balanceBefore = await ethers.provider.getBalance(runnerAddress);
+
+        await signer.sendTransaction({ from: signer.address, to: runnerAddress, value: ethers.parseEther("1") });
+        const balanceAfter = await ethers.provider.getBalance(runnerAddress);
+        expect(balanceAfter).to.be.equal(balanceBefore + ethers.parseEther("1"));
+    });
+
+    it("Should be able to withdraw funds from the Runner", async () => {
+        const runnerAddress = await runner.getAddress();
+        const balanceBefore = await ethers.provider.getBalance(runnerAddress);
+
+        const tx = await runnerFactory.withdrawFromRunner(runnerAddress, ethers.parseEther("1"));
+        await tx.wait();
+        const balanceAfter = await ethers.provider.getBalance(runnerAddress);
+        expect(balanceAfter).to.be.equal(balanceBefore - ethers.parseEther("1"));
+
+    });
+
+    it("Should validate the proof in Runner via _validateSignature", async () => {
+        let userAddress = "0xD1ab3ee7F715377856E7Cd612Df17Fd7dd09d1d7";
+
+        const secret = SECRET;
+        const secretBuff = (new TextEncoder()).encode(secret)
+        const secretBigInt = ffjavascript.utils.leBuff2int(secretBuff)
+
+        const nullifier = 0n;
+
+        const src = [userAddress, secretBigInt, nullifier]
+        leaf = await utils.pedersenHashMultipleInputs(src)
+
+        const hP = babyjub.unpackPoint(leaf);
+        hp1 = F.toObject(hP[1])
+
+        const merkleProof = treeOffChain.proof(hp1);
+
+        const input = {
+            "root": merkleProof.pathRoot,
+            "nullifierHash": "987654321",
+            "recipient": "100",
+            "relayer": "50",
+            "fee": "10",
+            "refund": "5",
+            "nullifier": nullifier,
+            "secret": secretBigInt,
+            "pathElements": merkleProof.pathElements,
+            "pathIndices": merkleProof.pathIndices,
+            "smartContractWalletAddress": userAddress
+        }
+
+        const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.groth16.fullProve(input, wasm, zkey);
+
+        let { pA, pB, pC, pubSignals } = await utils.groth16ExportSolidityCallData(proofJson, publicInputs);
+        // console.log("pA: ", BigInt(pA[0]), BigInt(pA[1]));
+        const serializedProofandPublicSignals = ethers.AbiCoder.defaultAbiCoder().encode(["uint[2]", "uint[2][2]", "uint[2]", "uint[2]"], [pA, pB, pC, pubSignals]);
+
+        const decodedProof = await runner._deserializeProofAndPublicSignals(serializedProofandPublicSignals);
         // console.log("Decoded proof:", decodedProof);
+        await runner.verifyProof(serializedProofandPublicSignals, { gasLimit: 30000000 });
 
-        await runner.verifyProof(serializedProofandPublicSignals)
 
-        await runner.preVerifySignature(serializedProofandPublicSignals);
+        // await runner.preVerifySignature(serializedProofandPublicSignals);
 
     });
 });

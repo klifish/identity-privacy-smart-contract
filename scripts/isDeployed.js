@@ -93,6 +93,10 @@ async function getAccountFactoryAddress() {
     return await getDeployed("AccountFactory");
 }
 
+async function getCommitmentVerifierAddress() {
+    return await getDeployed("CommitmentVerifier");
+}
+
 module.exports = {
     isDeployed,
     setDeployed,
@@ -105,5 +109,6 @@ module.exports = {
     getFirstRunnerAddress,
     getAccountFactoryAddress,
     getVerifyingPaymsaterAddress,
-    getVerifyingPaymsaterFactoryAddress
+    getVerifyingPaymsaterFactoryAddress,
+    getCommitmentVerifierAddress
 };

@@ -38,7 +38,7 @@ contract MyAccountFactory {
         uint256 _commitment,
         uint256 salt
     ) public returns (MyAccount ret) {
-        address addr = getAddress(_commitment, salt);
+        address addr = getSender(_commitment, salt);
         uint256 codeSize = addr.code.length;
         if (codeSize > 0) {
             return MyAccount(payable(addr));
@@ -60,7 +60,7 @@ contract MyAccountFactory {
     /**
      * calculate the counterfactual address of this account as it would be returned by createAccount()
      */
-    function getAddress(
+    function getSender(
         uint256 _commitment,
         uint256 salt
     ) public view returns (address) {
