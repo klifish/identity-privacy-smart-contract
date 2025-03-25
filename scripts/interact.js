@@ -56,6 +56,7 @@ async function main() {
     const counterAddress = "0x59d0d591b90ac342752ea7872d52cdc3c573ab71"
     const counterContract = await ethers.getContractAt("Counter", counterAddress);
     const func = counterContract.interface.encodeFunctionData("increment");
+    // const func = counterContract.interface.encodeFunctionData("increment", [arg1, arg2]);// if the function has arguments
     const callData = getCallData(counterAddress, 0, func);
     userOperation.callData = callData;
 
