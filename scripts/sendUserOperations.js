@@ -1,6 +1,6 @@
 
 const { ethers } = require('hardhat');
-const { computePedersenHash } = require('../scripts/utils');
+
 const { generateProof, registerUser } = require('./registerUser');
 const { getVerifyingPaymsaterAddress, getFirstRunnerAddress, getAccountFactoryAddress } = require('./isDeployed');
 const { depositToRunner, withdrawAllFromRunner } = require('./runnerInteraction');
@@ -20,39 +20,6 @@ const alchemyProvider = new ethers.JsonRpcProvider(API_URL);
 
 // signer - you
 const signer = new ethers.Wallet(PRIVATE_KEY, alchemyProvider);
-
-
-async function createSmartAccount() {
-    const alchemyProvider = new ethers.JsonRpcProvider(API_URL);
-    const signer = new ethers.Wallet(PRIVATE_KEY, alchemyProvider);
-
-    console.log("Creating smart account");
-
-    const MyAccountFactoryContract = await ethers.getContractFactory("MyAccountFactory", signer);
-    const myAccountFactory = MyAccountFactoryContract.attach(await getAccountFactoryAddress());
-
-    const commitment = await computePedersenHash(secret);
-    const salt = 1
-
-    // Here, I am not sure why the following two calls of getAddress() return same address
-    // is it because getAddress() is conflicting with the function in the contract? here the reuslt is the address of account factory
-    // const accountAddress = await myAccountFactory.getAddress(commitment, salt);
-    // console.log("Account address:", accountAddress);
-
-    // const accountAddress1 = await myAccountFactory.getAddress("111", salt + 1);
-    // console.log("Account address:", accountAddress1);
-
-    const tx = await myAccountFactory.createAccount(commitment, salt);
-    await tx.wait();
-
-    const filter = myAccountFactory.filters.AccountCreated();
-    const events = await myAccountFactory.queryFilter(filter);
-
-    latestEvent = events[events.length - 1];
-    console.log("MyAccount address:", latestEvent.args.accountAddress);
-    return latestEvent.args.accountAddress;
-}
-
 
 
 async function sendUserOperation() {

@@ -38,7 +38,7 @@ contract MyAccountFactory {
         uint256 _commitment,
         uint256 salt
     ) public returns (MyAccount ret) {
-        address addr = getAddress(_commitment, salt);
+        address addr = getSender(_commitment, salt);
         uint256 codeSize = addr.code.length;
         if (codeSize > 0) {
             return MyAccount(payable(addr));
@@ -60,13 +60,11 @@ contract MyAccountFactory {
     /**
      * calculate the counterfactual address of this account as it would be returned by createAccount()
      */
-    function getAddress(
+    function getSender(
         uint256 _commitment,
         uint256 salt
     ) public view returns (address) {
         bytes32 saltBytes = bytes32(salt);
-        console.log("commitment: %s", _commitment);
-        console.log("saltBytes: %s", bytes32ToString(saltBytes));
 
         bytes memory initCode = abi.encodePacked(
             type(ERC1967Proxy).creationCode,
@@ -77,14 +75,12 @@ contract MyAccountFactory {
         );
 
         bytes32 initCodeHash = keccak256(initCode);
-        console.log("initCodeHash: %s", bytes32ToString(initCodeHash));
 
         address computedAddress = Create2.computeAddress(
             saltBytes,
             initCodeHash
         );
 
-        console.log("computedAddress: %s", computedAddress);
         return computedAddress;
     }
 

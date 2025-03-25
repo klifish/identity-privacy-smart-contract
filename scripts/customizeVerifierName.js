@@ -34,8 +34,6 @@ const path = require("path");
 const contractsDir = path.join(__dirname, "../contracts");
 
 const verifiers = [
-    { file: "RegisterPlonkVerifier.sol", name: "RegisterPlonkVerifier" },
-    { file: "CommitmentPlonkVerifier.sol", name: "CommitmentPlonkVerifier" },
     { file: "RegisterGroth16Verifier.sol", name: "RegisterGroth16Verifier" },
     { file: "CommitmentGroth16Verifier.sol", name: "CommitmentGroth16Verifier" },
 ];

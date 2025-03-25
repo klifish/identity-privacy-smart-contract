@@ -120,6 +120,7 @@ contract Runner is BaseAccount, Initializable {
             uint[2] memory _pubSignals
         ) = _deserializeProofAndPublicSignals(signature);
         bool result = _registry.verify(_pA, _pB, _pC, _pubSignals);
+
         // emit SignatureVerified(result);
         return result;
     }

@@ -4,8 +4,11 @@ pragma solidity >=0.7.0 <0.9.0;
 // Interface definition for a Zero-Knowledge Proof verifier.
 interface IVerifier {
     function verifyProof(
-        uint256[24] calldata _proof, uint256[1] calldata _pubSignals
-    ) external returns (bool);
+        uint[2] calldata _pA,
+        uint[2][2] calldata _pB,
+        uint[2] calldata _pC,
+        uint[1] calldata _pubSignals
+    ) external view returns (bool);
 }
 
 // This contract allows a data provider to send and store cryptographic commitments of data sets.
@@ -24,16 +27,49 @@ contract Commitment {
         return commitment;
     }
 
-    function verify(uint256[24] calldata _proof) public returns (bool) {
-        return verifier.verifyProof(_proof, [commitment]);
+    function UpdateCommitment(
+        bytes calldata _proof,
+        uint256 _commitment
+    ) public onlyVerified(_proof) {
+        commitment = _commitment;
     }
 
-    modifier onlyVerified(uint256[24] calldata _proof) {
+    function _deserializeProofAndPublicSignals(
+        bytes calldata _proofAndPubSignals
+    )
+        public
+        pure
+        returns (
+            uint[2] memory _pA,
+            uint[2][2] memory _pB,
+            uint[2] memory _pC,
+            uint[1] memory _pubSignals
+        )
+    {
+        (_pA, _pB, _pC, _pubSignals) = abi.decode(
+            _proofAndPubSignals,
+            (uint[2], uint[2][2], uint[2], uint[1])
+        );
+    }
+
+    function verify(bytes calldata _proofAndPubSignals) public returns (bool) {
+        (
+            uint[2] memory _pA,
+            uint[2][2] memory _pB,
+            uint[2] memory _pC,
+            uint[1] memory _pubSignals
+        ) = _deserializeProofAndPublicSignals(_proofAndPubSignals);
+        return verifier.verifyProof(_pA, _pB, _pC, _pubSignals);
+    }
+
+    modifier onlyVerified(bytes calldata _proof) {
         require(verify(_proof), "Proof verification failed");
         _;
     }
 
-    function convertBytesToUint256Array(bytes memory signature) public pure returns (uint256[24] memory) {
+    function convertBytesToUint256Array(
+        bytes memory signature
+    ) public pure returns (uint256[24] memory) {
         require(signature.length == 768, "Invalid signature length");
 
         uint256[24] memory result;
