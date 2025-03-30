@@ -24,7 +24,7 @@ const { alchemyProvider, signer } = require('./constants');
 
 async function main() {
     // user choose a secret
-    const secret = "hello world";
+    const secret = "hello my world";
     const countId = 0;
     const commitment = await utils.computePedersenHash(secret + countId);
     const address = await getSender(commitment, 1);
