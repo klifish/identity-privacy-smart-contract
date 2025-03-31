@@ -46,7 +46,7 @@ describe("UserData", function () {
         const serializedProofandPublicSignals = ethers.AbiCoder.defaultAbiCoder().encode(["uint[2]", "uint[2][2]", "uint[2]", "uint[1]"], [pA, pB, pC, pubSignals]);
 
         const verified = await userData.verify(serializedProofandPublicSignals)
-        expect(verified).to.be.true;
+        expect(verified).to.equal(true);
 
     })
 

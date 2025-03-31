@@ -5,7 +5,6 @@ import "../Commitment.sol";
 contract UserData {
     string private data;
     Commitment public commitment;
-    uint256 public counter = 0;
     mapping(bytes32 => bool) public verifiedProofs;
 
     constructor(IVerifier _verifier, uint256 _commitment, string memory _data) {
@@ -13,18 +12,22 @@ contract UserData {
         commitment = new Commitment(_verifier, _commitment);
     }
 
-    modifier onlyVerified(bytes calldata proof, uint256 _newCommitment) {
+    modifier onlyVerified(bytes calldata proof) {
         bytes32 proofHash = keccak256(proof);
         require(verifiedProofs[proofHash] == false, "Proof already verified");
         verifiedProofs[proofHash] = true;
         require(commitment.verify(proof), "Proof verification failed");
-        commitment.UpdateCommitment(proof, _newCommitment);
-        counter++;
         _;
     }
 
     function verify(bytes calldata _proof) public view returns (bool) {
-        return commitment.verify(_proof);
+        bytes32 proofHash = keccak256(_proof);
+        if (verifiedProofs[proofHash]) {
+            return true;
+        }
+
+        bool isVerified = commitment.verify(_proof);
+        return isVerified;
     }
 
     function update(
