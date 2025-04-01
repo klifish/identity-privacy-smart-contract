@@ -6,13 +6,14 @@ const utils = require('./utils');
 const { createSmartAccount, getSender } = require('./userManagement/createSmartAccount');
 const { calculateLeaf, registerUserWithLeaf, generateProof } = require('./registerUser');
 const { getVerifyingPaymsaterAddress, getFirstRunnerAddress, getAccountFactoryAddress } = require('./isDeployed');
-const { fillAndSign, packUserOp, fillAndPcak, simulateValidation, fillUserOp } = require('../scripts/userOp');
+const { getUserOpHash, fillAndSign, packUserOp, fillAndPcak, simulateValidation, fillUserOp } = require('../scripts/userOp');
 const fs = require("fs");
 const MOCK_VALID_UNTIL = '0x00000000deadbeef'
 const MOCK_VALID_AFTER = '0x0000000000001234'
 const ENTRY_POINT_ADDRESS = process.env.ENTRY_POINT;
 const entryPointAbi = JSON.parse(fs.readFileSync("abi/entryPoint.json", "utf8")).abi;
 const { alchemyProvider, signer } = require('./constants');
+const { get } = require("http");
 // const alchemyProvider = new ethers.JsonRpcProvider(API_URL);
 // const signer = new ethers.Wallet(PRIVATE_KEY, alchemyProvider);
 
@@ -37,7 +38,7 @@ async function main() {
     await registerUserWithLeaf(leafToInsert);
     console.log("User registered");
 
-    // generate proof
+    // generate registry proof
     const proof = await generateProof(address, secret, nullifier);
     console.log("Proof generated: ", proof);
 
@@ -48,9 +49,7 @@ async function main() {
     const userOperation = getDefaultUserOp(runnerAddress, paymaster);
 
     userOperation.signature = proof;
-    const tx = await runner.preVerifySignature(userOperation.signature);
-    await tx.wait();
-    console.log("User operation signature verified");
+
 
     // callData 
     const counterAddress = "0x59d0d591b90ac342752ea7872d52cdc3c573ab71"
@@ -85,7 +84,18 @@ async function main() {
 
     UserOp.nonce = "0x" + UserOp.nonce.toString();
     console.log("User operation:", UserOp);
-    delete UserOp.initCode
+    // delete UserOp.initCode
+
+    // get user operation hash
+    // const userOpHash = await entryPoint.getUserOpHash(packUserOp(UserOp));
+    // console.log("User operation hash:", userOpHash);
+
+    const userOpHashLocal = getUserOpHash(UserOp, ENTRY_POINT_ADDRESS, 80002);
+    console.log("User operation hash local:", userOpHashLocal);
+
+    const tx = await runner.preVerifySignature(userOperation.signature, userOpHashLocal);
+    await tx.wait();
+    console.log("User operation signature verified");
 
     const options1 = {
         method: 'POST',
@@ -108,10 +118,6 @@ async function main() {
         console.error(error);
         throw error;
     }
-
-
-
-
 }
 
 function getCallData(dest, value, func) {

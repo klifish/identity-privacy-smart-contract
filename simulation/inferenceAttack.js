@@ -3,8 +3,16 @@ const fs = require("fs");
 const NUM_USERS = 10;
 const { alchemyProvider, signer } = require('../scripts/constants');
 
+const walletsFilePath = "./simulation/wallets.json";
+
 
 function generateWallets(num_users) {
+
+    if (fs.existsSync(walletsFilePath)) {
+        console.log("wallets.json already exists. Aborting wallet generation to avoid overwriting.");
+        console.log("If you want to regenerate the wallets, please delete the existing wallets.json file.");
+        return;
+    }
     const wallets = [];
 
     for (let i = 0; i < num_users; i++) {
@@ -16,11 +24,31 @@ function generateWallets(num_users) {
         });
     }
 
-    fs.writeFileSync("./simulation/wallets.json", JSON.stringify(wallets));
+    fs.writeFileSync(walletsFilePath, JSON.stringify(wallets));
+}
+
+function generateSecrets() {
+    const wallets = JSON.parse(fs.readFileSync(walletsFilePath));
+    let updated = false;
+    for (let wallet of wallets) {
+
+        if (!wallet.secret) {
+            const secret = "secret" + wallet.index;
+            wallet.secret = secret;
+            updated = true;
+        }
+    }
+
+    if (updated) {
+        fs.writeFileSync(walletsFilePath, JSON.stringify(wallets));
+        console.log("Secrets generated and saved to wallets.json");
+    } else {
+        console.log("Secrets already exist. No changes made.");
+    }
 }
 
 async function fund() {
-    const wallets = JSON.parse(fs.readFileSync("./simulation/wallets.json"));
+    const wallets = JSON.parse(fs.readFileSync(walletsFilePath));
 
     for (let w of wallets) {
         const tx = await signer.sendTransaction({
@@ -34,13 +62,16 @@ async function fund() {
     }
 }
 
-async function deployUserDataContract() {
-    const wallets = JSON.parse(fs.readFileSync("./simulation/wallets.json"));
+async function deployUserDataContractTraditional() {
+    const wallets = JSON.parse(fs.readFileSync(walletsFilePath));
 
 
     for (let w of wallets) {
         const signer_wallet = new ethers.Wallet(w.privateKey, alchemyProvider);
         const UserData = await ethers.getContractFactory("UserData", signer_wallet);
+
+        const secret = w.secret;
+        const commitment = await computePedersenHash(secret);
         const contract = await UserData.deploy();
         contract.waitForDeployment();
 
@@ -51,8 +82,9 @@ async function deployUserDataContract() {
 
 async function main() {
     // generateWallets(NUM_USERS);
+    // generateSecrets();
     // fund();
-    await deployUserDataContract();
+    await deployUserDataContractTraditional();
 }
 
 main().then(() => process.exit(0))

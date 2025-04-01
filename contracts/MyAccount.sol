@@ -14,6 +14,7 @@ contract MyAccount is BaseAccount, Initializable {
     IVerifier private immutable _verifier;
 
     mapping(bytes32 => bool) public verifiedProofs;
+    mapping(bytes32 => bytes32) public proofHashToUserOpHash;
 
     event MyAccountInitialized(
         IEntryPoint indexed entryPoint,
@@ -110,7 +111,10 @@ contract MyAccount is BaseAccount, Initializable {
     ) internal virtual override returns (uint256 validationData) {
         bytes32 proofHash = keccak256(userOp.signature);
         require(verifiedProofs[proofHash], "Signature not pre-verified");
-        userOpHash;
+        require(
+            proofHashToUserOpHash[proofHash] == userOpHash,
+            "Proof does not match operation"
+        );
         return SIG_VALIDATION_SUCCESS;
     }
 
@@ -124,10 +128,14 @@ contract MyAccount is BaseAccount, Initializable {
         emit MyAccountInitialized(_entryPoint, _commitment);
     }
 
-    function preVerifySignature(bytes calldata signature) external {
+    function preVerifySignature(
+        bytes calldata signature,
+        bytes32 userOpHash
+    ) external {
         require(_verifyProof(signature), "Invalid signature");
         bytes32 proofHash = keccak256(signature);
         verifiedProofs[proofHash] = true;
+        proofHashToUserOpHash[proofHash] = userOpHash;
     }
 
     function _verifyProof(bytes calldata signature) internal returns (bool) {

@@ -24,6 +24,7 @@ contract Runner is BaseAccount, Initializable {
     address private _owner;
 
     mapping(bytes32 => bool) public verifiedProofs;
+    mapping(bytes32 => bytes32) public proofHashToUserOpHash;
 
     constructor(IEntryPoint anEntryPoint, IRegistry aRegistry) {
         _entryPoint = anEntryPoint;
@@ -133,6 +134,10 @@ contract Runner is BaseAccount, Initializable {
     ) internal virtual override returns (uint256 validationData) {
         bytes32 proofHash = keccak256(userOp.signature);
         require(verifiedProofs[proofHash], "Signature not pre-verified");
+        require(
+            proofHashToUserOpHash[proofHash] == userOpHash,
+            "Proof does not match operation"
+        );
         return SIG_VALIDATION_SUCCESS;
     }
 
@@ -145,9 +150,13 @@ contract Runner is BaseAccount, Initializable {
         return SIG_VALIDATION_SUCCESS;
     }
 
-    function preVerifySignature(bytes calldata signature) external {
+    function preVerifySignature(
+        bytes calldata signature,
+        bytes32 userOpHash
+    ) external {
         require(_verifyProof(signature), "Invalid signature");
         bytes32 proofHash = keccak256(signature);
         verifiedProofs[proofHash] = true;
+        proofHashToUserOpHash[proofHash] = userOpHash;
     }
 }
