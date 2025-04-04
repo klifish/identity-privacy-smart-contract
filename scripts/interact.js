@@ -15,15 +15,6 @@ const entryPointAbi = JSON.parse(fs.readFileSync("abi/entryPoint.json", "utf8"))
 const { alchemyProvider, signer } = require('./constants');
 const { get } = require("http");
 
-// const alchemyProvider = new ethers.JsonRpcProvider(API_URL);
-// const signer = new ethers.Wallet(PRIVATE_KEY, alchemyProvider);
-
-// // provider - Alchemy
-// const alchemyProvider = new ethers.providers.JsonRpcProvider(API_URL);
-
-// // signer - you
-// const signer = new ethers.Wallet(PRIVATE_KEY, alchemyProvider);
-
 async function main() {
     // user choose a secret
     const secret = "hello my world";
