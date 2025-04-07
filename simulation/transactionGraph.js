@@ -100,11 +100,17 @@ function buildDotGraph(txJson, outputName = 'transactionGraph') {
     }
 }
 
-async function main() {
-    const userOpHash = '0x0ceb2919b315251a1939eb55a07fc928b19408ead78101795d9e9d5b45c8a629'; // Replace with your transaction hash
+async function drawTransactionGraphOfUserOp(userOpHash, fileName) {
     txHash = await getUserOperationByHash(userOpHash);
     txJson = await getTransactionByHash(txHash);
-    buildDotGraph(txJson, 'myCustomOutput'); // Replace with desired output name
+    buildDotGraph(txJson, fileName); // Replace with desired output name
+}
+
+async function main() {
+    // const userOpHash = '0x0ceb2919b315251a1939eb55a07fc928b19408ead78101795d9e9d5b45c8a629'; // Replace with your transaction hash
+    await drawTransactionGraphOfUserOp("0x0ceb2919b315251a1939eb55a07fc928b19408ead78101795d9e9d5b45c8a629", "SmartAccountOp");
+    await drawTransactionGraphOfUserOp("0xd3049fa9bd32d093f3d55e39a1d5bd79a0b6003c9e07cb0969271d78a43805d9", "IdentityPrivacyOp");
+
 }
 main()
     .then(() => process.exit(0))
