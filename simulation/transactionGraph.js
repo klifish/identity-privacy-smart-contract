@@ -2,6 +2,7 @@ const { ethers } = require("hardhat");
 const fs = require('fs');
 const { alchemyProvider, signer } = require('../scripts/constants');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const API_URL = process.env.API_URL;
 
@@ -47,41 +48,56 @@ async function getTransactionByHash(hash, fileName = null) {
         });
         const json = await res.json();
 
-        // console.log('Transaction:', json.result);
-
         if (fileName) {
             fs.writeFileSync(path.join(__dirname, "data", fileName), JSON.stringify(json, null, 2));
         }
         return json.result;
-    }
-
-    // console.log('Transaction:', json.result);
-    catch (err) {
+    } catch (err) {
         console.error('Error fetching user op:', err);
     }
 }
 
 function buildDotGraph(txJson) {
+    const imageDir = path.join(__dirname, "image");
+    if (!fs.existsSync(imageDir)) {
+        fs.mkdirSync(imageDir, { recursive: true });
+    }
     let dot = 'digraph TransactionGraph {\n';
-    let count = 0;
-    function addNode(from, to, type) {
-        const fromLabel = `"${from}"`;
-        const toLabel = `"${to}"`;
-        dot += `  ${fromLabel} -> ${toLabel} [label="${type}"];\n`;
+    const edges = new Set();
+
+    function addEdge(from, to, label) {
+        const edge = `"${from}" -> "${to}"`;
+        if (!edges.has(edge + label)) {
+            edges.add(edge + label);
+            dot += `  ${edge} [label="${label}", labelfontsize=10];\n`;
+        }
     }
 
-    function traverse(node) {
+    function traverse(node, depth = 0, indexPath = []) {
         if (!node || !node.to || !node.from) return;
-        addNode(node.from, node.to, node.type || 'CALL');
+        const label = `${node.type || 'CALL'} (${indexPath.join('.') || '1'})`;
+        addEdge(node.from, node.to, label);
+
         if (Array.isArray(node.calls)) {
-            node.calls.forEach(child => traverse(child));
+            node.calls.forEach((child, index) => {
+                traverse(child, depth + 1, [...indexPath, index + 1]);
+            });
         }
     }
 
     traverse(txJson);
     dot += '}\n';
-    fs.writeFileSync(path.join(__dirname, 'transactionGraph.dot'), dot);
+    fs.writeFileSync(path.join(__dirname, "image", 'transactionGraph.dot'), dot);
     console.log('DOT file written to transactionGraph.dot');
+
+    const dotFilePath = path.join(imageDir, 'transactionGraph.dot');
+    const svgFilePath = path.join(imageDir, 'transactionGraph.svg');
+    try {
+        execSync(`dot -Tsvg "${dotFilePath}" -o "${svgFilePath}"`);
+        console.log('SVG file written to transactionGraph.svg');
+    } catch (error) {
+        console.error('Error generating SVG from DOT:', error.message);
+    }
 }
 
 async function main() {
