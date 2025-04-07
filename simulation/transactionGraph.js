@@ -57,7 +57,7 @@ async function getTransactionByHash(hash, fileName = null) {
     }
 }
 
-function buildDotGraph(txJson) {
+function buildDotGraph(txJson, outputName = 'transactionGraph') {
     const imageDir = path.join(__dirname, "image");
     if (!fs.existsSync(imageDir)) {
         fs.mkdirSync(imageDir, { recursive: true });
@@ -87,14 +87,14 @@ function buildDotGraph(txJson) {
 
     traverse(txJson);
     dot += '}\n';
-    fs.writeFileSync(path.join(__dirname, "image", 'transactionGraph.dot'), dot);
-    console.log('DOT file written to transactionGraph.dot');
+    const dotFilePath = path.join(imageDir, `${outputName}.dot`);
+    fs.writeFileSync(dotFilePath, dot);
+    console.log('DOT file written to', `${outputName}.dot`);
 
-    const dotFilePath = path.join(imageDir, 'transactionGraph.dot');
-    const svgFilePath = path.join(imageDir, 'transactionGraph.svg');
+    const svgFilePath = path.join(imageDir, `${outputName}.svg`);
     try {
         execSync(`dot -Tsvg "${dotFilePath}" -o "${svgFilePath}"`);
-        console.log('SVG file written to transactionGraph.svg');
+        console.log('SVG file written to', `${outputName}.svg`);
     } catch (error) {
         console.error('Error generating SVG from DOT:', error.message);
     }
@@ -104,7 +104,7 @@ async function main() {
     const userOpHash = '0x0ceb2919b315251a1939eb55a07fc928b19408ead78101795d9e9d5b45c8a629'; // Replace with your transaction hash
     txHash = await getUserOperationByHash(userOpHash);
     txJson = await getTransactionByHash(txHash);
-    buildDotGraph(txJson);
+    buildDotGraph(txJson, 'myCustomOutput'); // Replace with desired output name
 }
 main()
     .then(() => process.exit(0))
