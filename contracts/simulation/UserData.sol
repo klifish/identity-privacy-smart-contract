@@ -6,10 +6,12 @@ contract UserData {
     string private data;
     Commitment public commitment;
     mapping(bytes32 => bool) public verifiedProofs;
+    event UserDataCreated(address userDataAddress, address sender);
 
     constructor(IVerifier _verifier, uint256 _commitment, string memory _data) {
         data = _data;
         commitment = new Commitment(_verifier, _commitment);
+        emit UserDataCreated(address(this), msg.sender);
     }
 
     modifier onlyVerified(bytes calldata proof) {

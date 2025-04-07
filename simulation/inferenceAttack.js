@@ -4,12 +4,14 @@ const path = require("path");
 const snarkjs = require("snarkjs");
 const NUM_USERS = 10;
 const { alchemyProvider, signer } = require('../scripts/constants');
-const { getCommitmentVerifierAddress, getVerifyingPaymsaterAddress } = require('../scripts/isDeployed');
+const { getCommitmentVerifierAddress, getVerifyingPaymsaterAddress, getFirstRunnerAddress } = require('../scripts/isDeployed');
 const { computePedersenHash, groth16ExportSolidityCallData } = require("../scripts/utils");
 const { createSmartAccount, getSender } = require('../scripts/userManagement/createSmartAccount');
 const { calculateLeaf, registerUserWithLeaf, generateProof } = require('../scripts/registerUser');
 const { getUserOpHash, getDefaultUserOp, getCallData, fillUserOp, packUserOp } = require('../scripts/userOp');
 const ffjavascript = require("ffjavascript");
+const { ZeroAddress } = require("ethers");
+const { c } = require("circom_tester");
 const entryPointAbi = JSON.parse(fs.readFileSync("abi/entryPoint.json", "utf8")).abi;
 
 const MOCK_VALID_UNTIL = '0x00000000deadbeef'
@@ -126,13 +128,21 @@ async function deployUserDataWithSmartAccount() {
         userOperation.signature = proof;
 
 
+        // callData of deploying a UserData contract
+        const userDataContract = await ethers.getContractFactory("UserData");
+        const verifierAddress = await getCommitmentVerifierAddress();
+        const commitment = await computePedersenHash(secret);
+        const deployUserData = await userDataContract.getDeployTransaction(verifierAddress, commitment, "My User Data");
+        const deployFunc = deployUserData.data;
+        const userDataCallData = getCallData(ZeroAddress, 0, deployFunc);
         // callData 
-        const counterAddress = "0x59d0d591b90ac342752ea7872d52cdc3c573ab71"
-        const counterContract = await ethers.getContractAt("Counter", counterAddress);
-        const func = counterContract.interface.encodeFunctionData("increment");
-        // const func = counterContract.interface.encodeFunctionData("increment", [arg1, arg2]);// if the function has arguments
-        const callData = getCallData(counterAddress, 0, func);
-        userOperation.callData = callData;
+        // const counterAddress = "0x59d0d591b90ac342752ea7872d52cdc3c573ab71"
+        // const counterContract = await ethers.getContractAt("Counter", counterAddress);
+        // const func = counterContract.interface.encodeFunctionData("increment");
+        // // const func = counterContract.interface.encodeFunctionData("increment", [arg1, arg2]);// if the function has arguments
+        // const callData = getCallData(counterAddress, 0, func);
+        // userOperation.callData = callData;
+        userOperation.callData = userDataCallData;
 
         const verifyingPaymasterAddress = await getVerifyingPaymsaterAddress();
         const verifyingPaymaster = await ethers.getContractAt("VerifyingPaymaster", verifyingPaymasterAddress);
@@ -181,6 +191,8 @@ async function deployUserDataWithSmartAccount() {
             })
         };
 
+        const currentBlock = await alchemyProvider.getBlockNumber();
+
         try {
             const response = await fetch('https://polygon-amoy.g.alchemy.com/v2/VG6iwUaOlQPYcDCb3AlkyAxrAXF7UzU9', options1)
             // console.log("response:", response);
@@ -192,96 +204,150 @@ async function deployUserDataWithSmartAccount() {
             throw error;
         }
 
-        // const tx = await myAccount.verifyOwnership(serializedProofandPublicSignals);
-        // const receipt = await tx.wait();
+        const filter = myAccount.filters.ContractDeployed();
+        let events = [];
+        let retries = 15;
 
+        while (retries > 0) {
+            const latestBlock = await alchemyProvider.getBlockNumber();
+            events = await myAccount.queryFilter(filter, currentBlock, latestBlock);
+            if (events.length > 0) break;
 
-        // const filter = myAccount.filters.OwnershipVerified();
-        // const events = await myAccount.queryFilter(filter);
-        // console.log(events)
+            console.log("Waiting for ContractDeployed event...");
+            await new Promise(res => setTimeout(res, 3000));
+            retries--;
+        }
+
+        if (events.length === 0) {
+            console.log("Event not found after retries.");
+        } else {
+            console.log("New event(s):", events);
+        }
+        const event = events[events.length - 1];
+        const userDataAddress = event.args[0];
+        console.log("UserData contract deployed at address:", userDataAddress);
 
         break;
     }
 }
 
 async function deployUserDataContractWithPrivacy() {
-    const secret = "hello my world";
-    const countId = 0;
-    const accountCommitment = await computePedersenHash(secret + countId);
-    // Create smart account for the user baesd on the secret
-    const salt = 1;
-    const accountAddress = await getSender(accountCommitment, salt);
+    const wallets = JSON.parse(fs.readFileSync(walletsFilePath));
+    for (let wallet of wallets) {
+        const secret = wallet.secret;
+        const nullifier = 0n;
+        const accountAddress = wallet.smartAccountAddress;
+        const proof = await generateProof(accountAddress, secret, nullifier);
 
-    await createSmartAccount(accountCommitment); // in this function, the salt is hardcoded to 1. It should be input as a parameter, but now I have no time to change it
-    console.log("Smart account created at address:", accountAddress);
+        const runnerAddress = await getFirstRunnerAddress();
+        const runner = await ethers.getContractAt("Runner", runnerAddress);
 
-    // Register the user
-    const nullifier = 0n;
-    const leafToInsert = await calculateLeaf(accountAddress, secret, nullifier);
-    await registerUserWithLeaf(leafToInsert);
-    console.log("User registered");
+        const paymaster = await getVerifyingPaymsaterAddress();
+        const userOperation = getDefaultUserOp(runnerAddress, paymaster);
 
-    const proof = await generateProof(accountAddress, secret, nullifier);
-    console.log("Proof generated: ", proof);
-
-    const senderAddress = accountAddress;
-    const sender = await ethers.getContractAt("MyAccount", senderAddress);
-    const paymaster = await getVerifyingPaymsaterAddress();
-    const userOperation = getDefaultUserOp(senderAddress, paymaster);
-
-    // callData 
-    const counterAddress = "0x59d0d591b90ac342752ea7872d52cdc3c573ab71"
-    const counterContract = await ethers.getContractAt("Counter", counterAddress);
-    const func = counterContract.interface.encodeFunctionData("increment");
-    // const func = counterContract.interface.encodeFunctionData("increment", [arg1, arg2]);// if the function has arguments
-    const callData = getCallData(counterAddress, 0, func);
-    userOperation.callData = callData;
-
-    const verifyingPaymasterAddress = await getVerifyingPaymsaterAddress();
-    const verifyingPaymaster = await ethers.getContractAt("VerifyingPaymaster", verifyingPaymasterAddress);
-
-    const entryPoint = new ethers.Contract(ENTRY_POINT_ADDRESS, entryPointAbi, alchemyProvider);
-    const userOp1 = await fillUserOp(userOperation, entryPoint, 'getNonce');
-
-    const packedUserOp = packUserOp(userOp1);
-    const hash = await verifyingPaymaster.getHash(packedUserOp, MOCK_VALID_UNTIL, MOCK_VALID_AFTER);
-
-    const sig = await signer.signMessage(ethers.getBytes(hash));
-
-    const UserOp = await fillUserOp({
-        ...userOperation,
-        paymaster: verifyingPaymasterAddress,
-        paymasterData: ethers.concat([ethers.AbiCoder.defaultAbiCoder().encode(['uint48', 'uint48'], [MOCK_VALID_UNTIL, MOCK_VALID_AFTER]), sig])
-
-    }, entryPoint)
+        userOperation.signature = proof;
 
 
-    UserOp.nonce = "0x" + UserOp.nonce.toString();
+        // callData of deploying a UserData contract
+        const userDataContract = await ethers.getContractFactory("UserData");
+        const verifierAddress = await getCommitmentVerifierAddress();
+        const commitment = await computePedersenHash(secret);
+        const deployUserData = await userDataContract.getDeployTransaction(verifierAddress, commitment, "My User Data");
+        const deployFunc = deployUserData.data;
+        const userDataCallData = getCallData(ZeroAddress, 0, deployFunc);
+        // callData 
+        // const counterAddress = "0x59d0d591b90ac342752ea7872d52cdc3c573ab71"
+        // const counterContract = await ethers.getContractAt("Counter", counterAddress);
+        // const func = counterContract.interface.encodeFunctionData("increment");
+        // // const func = counterContract.interface.encodeFunctionData("increment", [arg1, arg2]);// if the function has arguments
+        // const callData = getCallData(counterAddress, 0, func);
+        // userOperation.callData = callData;
+        userOperation.callData = userDataCallData;
 
-    const tx = await runner.preVerifySignature(userOperation.signature, userOpHashLocal);
-    await tx.wait();
-    console.log("User operation signature verified");
+        const verifyingPaymasterAddress = await getVerifyingPaymsaterAddress();
+        const verifyingPaymaster = await ethers.getContractAt("VerifyingPaymaster", verifyingPaymasterAddress);
 
-    const options1 = {
-        method: 'POST',
-        headers: { accept: 'application/json', 'content-type': 'application/json' },
-        body: JSON.stringify({
-            id: 1,
-            jsonrpc: '2.0',
-            method: 'eth_sendUserOperation',
-            params: [UserOp, "0x0000000071727De22E5E9d8BAf0edAc6f37da032"]
-        })
-    };
+        const entryPoint = new ethers.Contract(ENTRY_POINT_ADDRESS, entryPointAbi, alchemyProvider);
+        const userOp1 = await fillUserOp(userOperation, entryPoint, 'getNonce');
 
-    try {
-        const response = await fetch('https://polygon-amoy.g.alchemy.com/v2/VG6iwUaOlQPYcDCb3AlkyAxrAXF7UzU9', options1)
-        // console.log("response:", response);
-        const data = await response.json();
-        console.log(data);
-    }
-    catch (error) {
-        console.error(error);
-        throw error;
+        const packedUserOp = packUserOp(userOp1);
+
+        const hash = await verifyingPaymaster.getHash(packedUserOp, MOCK_VALID_UNTIL, MOCK_VALID_AFTER);
+
+        const sig = await signer.signMessage(ethers.getBytes(hash));
+        console.log("userOperation", userOperation);
+        // delete userOperation.nonce;
+        const UserOp = await fillUserOp({
+            ...userOperation,
+            paymaster: verifyingPaymasterAddress,
+            paymasterData: ethers.concat([ethers.AbiCoder.defaultAbiCoder().encode(['uint48', 'uint48'], [MOCK_VALID_UNTIL, MOCK_VALID_AFTER]), sig])
+
+        }, entryPoint)
+
+
+        UserOp.nonce = "0x" + UserOp.nonce.toString();
+        console.log("User operation:", UserOp);
+        // delete UserOp.initCode
+
+        // get user operation hash
+        // const userOpHash = await entryPoint.getUserOpHash(packUserOp(UserOp));
+        // console.log("User operation hash:", userOpHash);
+
+        const userOpHashLocal = getUserOpHash(UserOp, ENTRY_POINT_ADDRESS, 80002);
+        console.log("User operation hash local:", userOpHashLocal);
+
+        const tx = await runner.preVerifySignature(userOperation.signature, userOpHashLocal);
+        await tx.wait();
+        console.log("User operation signature verified");
+
+        const options1 = {
+            method: 'POST',
+            headers: { accept: 'application/json', 'content-type': 'application/json' },
+            body: JSON.stringify({
+                id: 1,
+                jsonrpc: '2.0',
+                method: 'eth_sendUserOperation',
+                params: [UserOp, "0x0000000071727De22E5E9d8BAf0edAc6f37da032"]
+            })
+        };
+
+        const currentBlock = await alchemyProvider.getBlockNumber();
+
+        try {
+            const response = await fetch('https://polygon-amoy.g.alchemy.com/v2/VG6iwUaOlQPYcDCb3AlkyAxrAXF7UzU9', options1)
+            // console.log("response:", response);
+            const data = await response.json();
+            console.log(data);
+        }
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
+
+        const filter = runner.filters.ContractDeployed();
+        let events = [];
+        let retries = 15;
+
+        while (retries > 0) {
+            const latestBlock = await alchemyProvider.getBlockNumber();
+            events = await runner.queryFilter(filter, currentBlock, latestBlock);  // 限制起始区块
+            if (events.length > 0) break;
+
+            console.log("Waiting for ContractDeployed event...");
+            await new Promise(res => setTimeout(res, 3000));
+            retries--;
+        }
+
+        if (events.length === 0) {
+            console.log("Event not found after retries.");
+        } else {
+            console.log("New event(s):", events);
+        }
+        const event = events[events.length - 1];
+        const userDataAddress = event.args[0];
+        console.log("UserData contract deployed at address:", userDataAddress);
+
+        break;
     }
 
 }
@@ -334,6 +400,7 @@ async function main() {
     // await deployUserDataContractWithPrivacy();
     // await createAndRegisterSmartWallets();
     await deployUserDataWithSmartAccount();
+    // await deployUserDataContractWithPrivacy();
 }
 
 main().then(() => process.exit(0))

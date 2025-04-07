@@ -21,6 +21,7 @@ contract MyAccount is BaseAccount, Initializable {
         uint256 indexed commitmentModule
     );
     event OwnershipVerified(bool indexed isValid);
+    event ContractDeployed(address indexed newContract);
 
     constructor(IEntryPoint anEntryPoint, IVerifier aVerifier) {
         _entryPoint = anEntryPoint;
@@ -84,7 +85,13 @@ contract MyAccount is BaseAccount, Initializable {
         bytes calldata func
     ) external {
         // _requireFromEntryPointOrOwner();
-        _call(dest, value, func);
+
+        if (dest == address(0)) {
+            address newContract = _deployContract(func);
+            emit ContractDeployed(newContract);
+        } else {
+            _call(dest, value, func);
+        }
     }
 
     function _call(address target, uint256 value, bytes memory data) internal {
@@ -94,6 +101,15 @@ contract MyAccount is BaseAccount, Initializable {
                 revert(add(result, 32), mload(result))
             }
         }
+    }
+
+    function _deployContract(
+        bytes memory code
+    ) internal returns (address addr) {
+        assembly {
+            addr := create(0, add(code, 0x20), mload(code))
+        }
+        require(addr != address(0), "Deployment failed");
     }
 
     /// implement template method of BaseAccount
