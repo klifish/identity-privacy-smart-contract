@@ -25,20 +25,40 @@ const zkey = path.join(__dirname, "..", "build", "circuits", "commitment_final.z
 
 const walletsFilePath = "./simulation/wallets.json";
 
-async function main() {
-    // generateWallets(NUM_USERS);
-    // generateSecrets();
-    // await fund();
-    // await deployUserDataContractTraditionalBatch();
-    // await deployUserDataContractWithPrivacy();
-    // await createAndRegisterSmartWallets();
-    await deployUserDataWithSmartAccount();
-    // await deployUserDataContractWithPrivacy();
+async function createAndRegisterSmartWallets() {
+    const wallets = JSON.parse(fs.readFileSync(walletsFilePath));
+    for (let wallet of wallets) {
+
+        // create a smart wallet
+        if (wallet.smartAccountAddress) {
+            console.log("Smart account already exists for wallet:", wallet.address);
+            continue;
+        }
+
+        address = await createSmartWallet(wallet.secret);
+        wallet.smartAccountAddress = address
+
+        // register a user
+        await registerUserSmartWallet(wallet.secret, address);
+    }
+    fs.writeFileSync(walletsFilePath, JSON.stringify(wallets, null, 2));
+    console.log("Updated wallets.json with smart account addresses.");
 }
 
-main().then(() => process.exit(0))
-    .catch(error => {
-        console.error(error);
-        process.exit(1);
-    });
+async function createSmartWallet(secret) {
+    const commitment = await computePedersenHash(secret);
+    const address = await getSender(commitment, 1);
+    await createSmartAccount(commitment);
+    return address;
+}
 
+async function registerUserSmartWallet(secret, address, nullifier = 0n) {
+    const leafToInsert = await calculateLeaf(address, secret, nullifier);
+    await registerUserWithLeaf(leafToInsert);
+}
+
+module.exports = {
+    createAndRegisterSmartWallets,
+    createSmartWallet,
+    registerUserSmartWallet
+};
