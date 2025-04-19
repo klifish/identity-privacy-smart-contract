@@ -27,12 +27,18 @@ async function simulateSingleUser(secret, mode = "standard") {
 }
 
 async function main() {
+    // current block number
+    const blockNumber = await ethers.provider.getBlockNumber();
+    console.log("Current block number:", blockNumber);
+
+
     const wallets = JSON.parse(fs.readFileSync(walletsFilePath));
     for (let wallet of wallets) {
         const secret = wallet.secret;
-        await simulateSingleUser(secret, "privacy");
+        // await simulateSingleUser(secret, "privacy");
+        await simulateSingleUser(secret, "standard");
         console.log("Simulation completed for wallet:", wallet.index);
-        break; // Remove this line to simulate all users
+        // break; // Remove this line to simulate all users
     }
 }
 

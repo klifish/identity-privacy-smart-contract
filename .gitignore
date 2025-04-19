@@ -4,3 +4,4 @@ artifacts
 .env
 build
 simulation/wallets.json
+simulation/data/
