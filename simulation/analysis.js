@@ -43,7 +43,7 @@ async function main() {
         const txsForAddress = filterTransactionsByAddressRecursive(txs, address);
         filteredTransactions.push(...txsForAddress);
     }
-    
+
     const filteredDataPath = path.join(__dirname, "data", "transactions", "filteredTransactionData.json");
     fs.writeFileSync(filteredDataPath, JSON.stringify(filteredTransactions, null, 2));
     console.log(`Filtered transaction data written to ${filteredDataPath}`);
@@ -54,3 +54,8 @@ main().then(() => process.exit(0))
         console.error(error);
         process.exit(1);
     });
+
+module.exports = {
+    callTreeInvolvesAddress,
+    filterTransactionsByAddressRecursive
+};

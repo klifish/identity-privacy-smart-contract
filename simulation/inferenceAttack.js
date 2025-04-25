@@ -17,12 +17,8 @@ function generateAttackerPriorKnowledge() {
     console.log("✅ Attacker prior knowledge saved to", priorOutputPath);
 }
 
-function identifyDeployedContracts() {
-    const attackerKnowledgePath = path.join(__dirname, "attacker_prior_knowledge.json");
-    const attackerKnowledge = JSON.parse(fs.readFileSync(attackerKnowledgePath, "utf8"));
+function identifyDeployedContracts(txs, attackerKnowledge) {
 
-    const txDataPath = path.join(__dirname, "data", "transactions", "filteredTransactionData.json");
-    const txs = JSON.parse(fs.readFileSync(txDataPath, "utf8"));
 
     const userContracts = {};
     Object.entries(attackerKnowledge).forEach(([user, address]) => {
@@ -62,8 +58,13 @@ function identifyDeployedContracts() {
 }
 
 async function main() {
+    const attackerKnowledgePath = path.join(__dirname, "attacker_prior_knowledge.json");
+    const attackerKnowledge = JSON.parse(fs.readFileSync(attackerKnowledgePath, "utf8"));
+
+    const txDataPath = path.join(__dirname, "data", "transactions", "filteredTransactionData.json");
+    const txs = JSON.parse(fs.readFileSync(txDataPath, "utf8"));
     // generateAttackerPriorKnowledge();
-    identifyDeployedContracts();
+    identifyDeployedContracts(txs, attackerKnowledge);
 }
 
 main().then(() => process.exit(0))
@@ -71,3 +72,8 @@ main().then(() => process.exit(0))
         console.error(error);
         process.exit(1);
     });
+
+module.exports = {
+    generateAttackerPriorKnowledge,
+    identifyDeployedContracts
+};

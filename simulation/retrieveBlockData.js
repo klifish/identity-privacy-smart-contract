@@ -5,11 +5,14 @@ const { getTransactionByHash } = require('./transactionGraph');
 const { all } = require("express/lib/application");
 
 async function retrieveBlockRangeData(startBlock, endBlock) {
+    const allBlockData = [];
     for (let blockNumber = startBlock; blockNumber <= endBlock; blockNumber++) {
         console.log(`Retrieving data for block number: ${blockNumber}`);
-        await retrieveBlockData(blockNumber);
+        const blockData = await retrieveBlockData(blockNumber);
         console.log(`Data for block number ${blockNumber} retrieved successfully.`);
+        allBlockData.push(blockData);
     }
+    return allBlockData;
 }
 
 async function retrieveBlockData(blockNumber) {
@@ -26,9 +29,11 @@ async function retrieveBlockData(blockNumber) {
 
         fs.writeFileSync(path.join(__dirname, "data", `blockData_${blockNumber}.json`), JSON.stringify(blockData, null, 2));
         console.log(`Block data for block ${blockNumber} saved to blockData_${blockNumber}.json`);
+        return blockData;
     } catch (err) {
         console.error('Error retrieving block data:', err);
     }
+
 }
 
 function readAllBlockData() {
@@ -65,13 +70,13 @@ function getTransactionHashesFromBlocks(blockDataArray) {
 }
 
 async function getAllTransactionData(txHashes) {
-    // const allTransactionData = readAllTransactionData();
-    // const txHashes = getTransactionHashesFromBlocks(allTransactionData);
-
+    const allTransactionData = [];
     for (const hash of txHashes) {
         console.log(`Tracing transaction ${hash}`);
-        await getTransactionByHash(hash, `${hash}.json`);
+        const transactionData = await getTransactionByHash(hash, `${hash}.json`);
+        allTransactionData.push(transactionData);
     }
+    return allTransactionData;
 }
 
 async function main() {
@@ -92,3 +97,12 @@ main().then(() => process.exit(0))
         console.error(error);
         process.exit(1);
     });
+
+module.exports = {
+    retrieveBlockRangeData,
+    retrieveBlockData,
+    readAllBlockData,
+    readAllTransactionData,
+    getTransactionHashesFromBlocks,
+    getAllTransactionData
+};
