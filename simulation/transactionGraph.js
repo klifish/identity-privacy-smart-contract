@@ -49,7 +49,9 @@ async function getTransactionByHash(hash, fileName = null) {
         const json = await res.json();
 
         if (fileName) {
-            fs.writeFileSync(path.join(__dirname, "data", fileName), JSON.stringify(json, null, 2));
+            fs.writeFileSync(path.join(__dirname, "data", "transactions", fileName), JSON.stringify(json, null, 2));
+        } else {
+            fs.writeFileSync(path.join(__dirname, "data", "transactions", `${hash}.json`), JSON.stringify(json, null, 2));
         }
         return json.result;
     } catch (err) {
@@ -107,14 +109,22 @@ async function drawTransactionGraphOfUserOp(userOpHash, fileName) {
 }
 
 async function main() {
-    // const userOpHash = '0x0ceb2919b315251a1939eb55a07fc928b19408ead78101795d9e9d5b45c8a629'; // Replace with your transaction hash
     await drawTransactionGraphOfUserOp("0x0ceb2919b315251a1939eb55a07fc928b19408ead78101795d9e9d5b45c8a629", "SmartAccountOp");
     await drawTransactionGraphOfUserOp("0xd3049fa9bd32d093f3d55e39a1d5bd79a0b6003c9e07cb0969271d78a43805d9", "IdentityPrivacyOp");
-
 }
-main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        console.error(error);
-        process.exit(1);
-    });
+
+if (require.main === module) {
+    main()
+        .then(() => process.exit(0))
+        .catch((error) => {
+            console.error(error);
+            process.exit(1);
+        });
+}
+
+module.exports = {
+    getUserOperationByHash,
+    getTransactionByHash,
+    buildDotGraph,
+    drawTransactionGraphOfUserOp
+};

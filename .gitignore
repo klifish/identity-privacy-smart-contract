@@ -5,3 +5,4 @@ artifacts
 build
 simulation/wallets.json
 simulation/data/
+simulation/*.json

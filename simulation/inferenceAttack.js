@@ -1,39 +1,69 @@
 const { ethers } = require("hardhat");
 const fs = require("fs");
 const path = require("path");
-const snarkjs = require("snarkjs");
-const NUM_USERS = 10;
-const { alchemyProvider, signer } = require('../scripts/constants');
-const { getCommitmentVerifierAddress, getVerifyingPaymsaterAddress, getFirstRunnerAddress } = require('../scripts/isDeployed');
-const { computePedersenHash, groth16ExportSolidityCallData } = require("../scripts/utils");
-const { createSmartAccount, getSender } = require('../scripts/userManagement/createSmartAccount');
-const { calculateLeaf, registerUserWithLeaf, generateProof } = require('../scripts/registerUser');
-const { getUserOpHash, getDefaultUserOp, getCallData, fillUserOp, packUserOp } = require('../scripts/userOp');
-const ffjavascript = require("ffjavascript");
-const { ZeroAddress } = require("ethers");
-const { c } = require("circom_tester");
-const entryPointAbi = JSON.parse(fs.readFileSync("abi/entryPoint.json", "utf8")).abi;
-
-const MOCK_VALID_UNTIL = '0x00000000deadbeef'
-const MOCK_VALID_AFTER = '0x0000000000001234'
-const ENTRY_POINT_ADDRESS = process.env.ENTRY_POINT;
-
-const wasm = path.join(__dirname, "..", "build", "circuits", "commitment_js", "commitment.wasm");
-const zkey = path.join(__dirname, "..", "build", "circuits", "commitment_final.zkey");
-
-
 
 const walletsFilePath = "./simulation/wallets.json";
 
+function generateAttackerPriorKnowledge() {
+    const wallets = JSON.parse(fs.readFileSync(walletsFilePath, "utf8"));
+
+    const attackerKnowledge = {};
+    wallets.forEach((wallet, index) => {
+        attackerKnowledge[`user_${index}`] = wallet.smartAccountAddress;
+    });
+
+    const priorOutputPath = path.join(__dirname, "attacker_prior_knowledge.json");
+    fs.writeFileSync(priorOutputPath, JSON.stringify(attackerKnowledge, null, 2));
+    console.log("✅ Attacker prior knowledge saved to", priorOutputPath);
+}
+
+function identifyDeployedContracts() {
+    const attackerKnowledgePath = path.join(__dirname, "attacker_prior_knowledge.json");
+    const attackerKnowledge = JSON.parse(fs.readFileSync(attackerKnowledgePath, "utf8"));
+
+    const txDataPath = path.join(__dirname, "data", "transactions", "filteredTransactionData.json");
+    const txs = JSON.parse(fs.readFileSync(txDataPath, "utf8"));
+
+    const userContracts = {};
+    Object.entries(attackerKnowledge).forEach(([user, address]) => {
+        userContracts[user] = [];
+    });
+
+    function traverseInternalCalls(calls, attackerKnowledge, userContracts) {
+        if (!Array.isArray(calls)) return;
+
+        calls.forEach(call => {
+            if ((call.type === "CREATE" || call.type === "CREATE2") && call.from && call.to) {
+                const internalFrom = call.from.toLowerCase();
+                const matchedInternal = Object.entries(attackerKnowledge).find(
+                    ([, addr]) => addr.toLowerCase() === internalFrom
+                );
+                if (matchedInternal) {
+                    const [user] = matchedInternal;
+                    userContracts[user].push(call.to);
+                }
+            }
+            if (call.calls) {
+                traverseInternalCalls(call.calls, attackerKnowledge, userContracts);
+            }
+        });
+    }
+
+    txs.forEach(tx => {
+        if (tx.result && tx.result.from) {
+            const calls = tx.result.calls || [];
+            traverseInternalCalls(calls, attackerKnowledge, userContracts);
+        }
+    });
+
+    const outputPath = path.join(__dirname, "user_contract_mapping.json");
+    fs.writeFileSync(outputPath, JSON.stringify(userContracts, null, 2));
+    console.log("✅ User-to-contract mapping saved to", outputPath);
+}
+
 async function main() {
-    // generateWallets(NUM_USERS);
-    // generateSecrets();
-    // await fund();
-    // await deployUserDataContractTraditionalBatch();
-    // await deployUserDataContractWithPrivacy();
-    // await createAndRegisterSmartWallets();
-    await deployUserDataWithSmartAccount();
-    // await deployUserDataContractWithPrivacy();
+    // generateAttackerPriorKnowledge();
+    identifyDeployedContracts();
 }
 
 main().then(() => process.exit(0))
@@ -41,4 +71,3 @@ main().then(() => process.exit(0))
         console.error(error);
         process.exit(1);
     });
-
