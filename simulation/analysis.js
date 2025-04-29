@@ -21,6 +21,7 @@ function filterTransactionsByAddressRecursive(transactions, address) {
     const target = address.toLowerCase();
 
     return transactions.filter(tx => {
+        // console.log("Filtering transaction:", tx);
         const result = tx.result;
         const fromMatch = result.from?.toLowerCase() === target;
         const toMatch = result.to?.toLowerCase() === target;
@@ -49,11 +50,13 @@ async function main() {
     console.log(`Filtered transaction data written to ${filteredDataPath}`);
 }
 
-main().then(() => process.exit(0))
-    .catch(error => {
-        console.error(error);
-        process.exit(1);
-    });
+if (require.main === module) {
+    main().then(() => process.exit(0))
+        .catch(error => {
+            console.error(error);
+            process.exit(1);
+        });
+}
 
 module.exports = {
     callTreeInvolvesAddress,

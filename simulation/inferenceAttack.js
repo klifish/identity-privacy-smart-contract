@@ -52,9 +52,11 @@ function identifyDeployedContracts(txs, attackerKnowledge) {
         }
     });
 
-    const outputPath = path.join(__dirname, "user_contract_mapping.json");
-    fs.writeFileSync(outputPath, JSON.stringify(userContracts, null, 2));
-    console.log("✅ User-to-contract mapping saved to", outputPath);
+    return userContracts;
+
+    // const outputPath = path.join(__dirname, "user_contract_mapping.json");
+    // fs.writeFileSync(outputPath, JSON.stringify(userContracts, null, 2));
+    // console.log("✅ User-to-contract mapping saved to", outputPath);
 }
 
 async function main() {
@@ -67,11 +69,19 @@ async function main() {
     identifyDeployedContracts(txs, attackerKnowledge);
 }
 
-main().then(() => process.exit(0))
-    .catch(error => {
-        console.error(error);
-        process.exit(1);
-    });
+if (require.main === module) {
+    main()
+        .then(() => process.exit(0))
+        .catch(error => {
+            console.error(error);
+            process.exit(1);
+        });
+}
+// main().then(() => process.exit(0))
+//     .catch(error => {
+//         console.error(error);
+//         process.exit(1);
+//     });
 
 module.exports = {
     generateAttackerPriorKnowledge,

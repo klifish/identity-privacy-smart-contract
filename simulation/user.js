@@ -1,7 +1,8 @@
 const { createSmartWallet, registerUserSmartWallet } = require('./smartAccountManager')
 const { deployUserDataWithSmartAccountSingle, deployUserDataContractWithPrivacySingle } = require('./userDataDeployer')
-const { retrieveBlockRangeData, getTransactionHashesFromBlocks, getTransactionByHash, getAllTransactionData } = require('./retrieveBlockData');
+const { retrieveBlockRangeData, getTransactionHashesFromBlocks, getTransactionByHash, getAllTransactionData, readAllBlockData, readAllTransactionData } = require('./retrieveBlockData');
 const { identifyDeployedContracts } = require('./inferenceAttack');
+const { filterTransactionsByAddressRecursive } = require('./analysis');
 
 const walletsFilePath = "./simulation/wallets.json";
 const fs = require("fs");
@@ -70,8 +71,8 @@ async function simulateMultipleUsers(wallets, mode) {
     const allTransactionHashes = getTransactionHashesFromBlocks(allBlockData);
     const allTransactionData = await getAllTransactionData(allTransactionHashes);
 
-    const walletsPath = path.join(__dirname, "wallets.json");
-    const wallets = getWalletsFromFile(walletsPath);
+    // const walletsPath = path.join(__dirname, "wallets.json");
+    // const wallets = getWalletsFromFile(walletsPath);
     const smartAccountAddresses = getAllSmartAccountAddresses(wallets);
     const filteredTransactions = await filterTransactions(allTransactionData, smartAccountAddresses);
 
@@ -93,22 +94,48 @@ async function simulateMultipleUsersWithStandard(wallets) {
 }
 
 async function main() {
-    // current block number
-    const blockNumber = await ethers.provider.getBlockNumber();
-    console.log("Current block number:", blockNumber);
-    logToFile("Current block number: " + blockNumber);
+    // const mode = "privacy"
+    // const blockNumberStart = 20884500;
+    // const blockNumberEnd = 20884900;
 
-    const wallets = JSON.parse(fs.readFileSync(walletsFilePath));
-    for (let wallet of wallets) {
-        const secret = wallet.secret;
-        await simulateSingleUser(secret, "privacy");
-        // await simulateSingleUser(secret, "standard");
-        // console.log("Simulation completed for wallet:", wallet.index);
-    }
+    const mode = "standard"
+    const blockNumberStart = 20642700;
+    const blockNumberEnd = 20642900;
 
-    const blockNumber2 = await ethers.provider.getBlockNumber();
-    console.log("Current block number:", blockNumber2);
-    logToFile("Current block number: " + blockNumber2);
+    console.log("Retrieving block data...");
+    // const allBlockData = await retrieveBlockRangeData(blockNumberStart, blockNumberEnd);
+    const allBlockData = readAllBlockData(blockNumberStart, blockNumberEnd);
+    console.log(`Read ${allBlockData.length} block data files.`);
+
+    console.log("Retrieving transaction hashes...");
+    const allTransactionHashes = getTransactionHashesFromBlocks(allBlockData);
+
+    console.log("Retrieving transaction data...");
+    // const allTransactionData = await getAllTransactionData(allTransactionHashes);
+    const allTransactionData = readAllTransactionData(allTransactionHashes);
+    console.log(`Read ${allTransactionData.length} transaction data files.`);
+
+    const walletsPath = path.join(__dirname, "wallets.json");
+    const wallets = getWalletsFromFile(walletsPath);
+
+    console.log("getting smart account addresses...");
+    const smartAccountAddresses = getAllSmartAccountAddresses(wallets);
+
+    console.log("Filtering transactions...");
+    const filteredTransactions = await filterTransactions(allTransactionData, smartAccountAddresses);
+
+    console.log("get attacker knowledge...");
+    const attackerKnowledgePath = path.join(__dirname, "attacker_prior_knowledge.json");
+    const attackerKnowledge = JSON.parse(fs.readFileSync(attackerKnowledgePath, "utf8"));
+
+    console.log("Identifying deployed contracts...");
+    const userContracts = identifyDeployedContracts(filteredTransactions, attackerKnowledge);
+    const outputPath = path.join(__dirname, `user_contract_mapping_${mode}.json`);
+    fs.writeFileSync(outputPath, JSON.stringify(userContracts, null, 2));
+    console.log(`User-to-contract mapping saved to ${outputPath}`);
+    logToFile(`User-to-contract mapping saved to ${outputPath}`);
+
+
 }
 
 main().then(() => process.exit(0))

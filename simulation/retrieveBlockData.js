@@ -2,16 +2,21 @@ const { ethers } = require("hardhat");
 const fs = require('fs');
 const path = require('path');
 const { getTransactionByHash } = require('./transactionGraph');
-const { all } = require("express/lib/application");
 
 async function retrieveBlockRangeData(startBlock, endBlock) {
     const allBlockData = [];
-    for (let blockNumber = startBlock; blockNumber <= endBlock; blockNumber++) {
-        console.log(`Retrieving data for block number: ${blockNumber}`);
-        const blockData = await retrieveBlockData(blockNumber);
-        console.log(`Data for block number ${blockNumber} retrieved successfully.`);
-        allBlockData.push(blockData);
+    try {
+        console.log(`Start retrieving block data from ${startBlock} to ${endBlock}`);
+        for (let blockNumber = startBlock; blockNumber <= endBlock; blockNumber++) {
+            // console.log(`Retrieving data for block number: ${blockNumber}`);
+            const blockData = await retrieveBlockData(blockNumber);
+            // console.log(`Data for block number ${blockNumber} retrieved successfully.`);
+            allBlockData.push(blockData);
+        }
+    } catch (err) {
+        console.error('Error retrieving block range data:', err);
     }
+    console.log(`Finished retrieving block data from ${startBlock} to ${endBlock}`);
     return allBlockData;
 }
 
@@ -32,13 +37,23 @@ async function retrieveBlockData(blockNumber) {
         return blockData;
     } catch (err) {
         console.error('Error retrieving block data:', err);
+        throw err;
     }
 
 }
 
-function readAllBlockData() {
+function readAllBlockData(blockNumberStart, blockNumberEnd) {
     const dataDir = path.join(__dirname, "data");
-    const files = fs.readdirSync(dataDir).filter(file => file.endsWith(".json"));
+    const files = fs.readdirSync(dataDir)
+        .filter(file => file.endsWith(".json"))
+        .filter(file => {
+            const match = file.match(/blockData_(\d+)\.json/);
+            if (match) {
+                const blockNumber = parseInt(match[1], 10);
+                return blockNumber >= blockNumberStart && blockNumber <= blockNumberEnd;
+            }
+            return false;
+        });
     const allBlockData = files.map(file => {
         const content = fs.readFileSync(path.join(dataDir, file), "utf-8");
         return JSON.parse(content);
@@ -47,9 +62,19 @@ function readAllBlockData() {
     return allBlockData;
 }
 
-function readAllTransactionData() {
+function readAllTransactionData(txHashes = null) {
     const dataDir = path.join(__dirname, "data", "transactions");
-    const files = fs.readdirSync(dataDir).filter(file => file.endsWith(".json"));
+    const files = fs.readdirSync(dataDir)
+        .filter(file => file.endsWith(".json"))
+        .filter(file => {
+            if (!txHashes) return true;
+            const match = file.match(/^(.+)\.json$/);
+            if (match) {
+                const txHash = match[1];
+                return txHashes.includes(txHash);
+            }
+            return false;
+        });
     const allTransactionData = files.map(file => {
         const content = fs.readFileSync(path.join(dataDir, file), "utf-8");
         return JSON.parse(content);
@@ -72,7 +97,7 @@ function getTransactionHashesFromBlocks(blockDataArray) {
 async function getAllTransactionData(txHashes) {
     const allTransactionData = [];
     for (const hash of txHashes) {
-        console.log(`Tracing transaction ${hash}`);
+        // console.log(`Tracing transaction ${hash}`);
         const transactionData = await getTransactionByHash(hash, `${hash}.json`);
         allTransactionData.push(transactionData);
     }
@@ -92,11 +117,14 @@ async function main() {
     fs.writeFileSync(outputPath, JSON.stringify(allTransactionData, null, 2));
     console.log(`All transaction data written to ${outputPath}`);
 }
-main().then(() => process.exit(0))
-    .catch(error => {
-        console.error(error);
-        process.exit(1);
-    });
+
+if (require.main === module) {
+    main().then(() => process.exit(0))
+        .catch(error => {
+            console.error(error);
+            process.exit(1);
+        });
+}
 
 module.exports = {
     retrieveBlockRangeData,
