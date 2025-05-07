@@ -5,10 +5,22 @@ const snarkjs = require("snarkjs");
 const NUM_USERS = 10;
 const { alchemyProvider, signer } = require('../scripts/constants');
 const { getCommitmentVerifierAddress, getVerifyingPaymsaterAddress, getFirstRunnerAddress } = require('../scripts/isDeployed');
-const { computePedersenHash, groth16ExportSolidityCallData } = require("../scripts/utils");
+const { computePedersenHash, groth16ExportSolidityCallData, computeDomainSeparateCommitment } = require("../scripts/utils");
 const { createSmartAccount, getSender } = require('../scripts/userManagement/createSmartAccount');
 const { calculateLeaf, registerUserWithLeaf, generateProof } = require('../scripts/registerUser');
 const { getUserOpHash, getDefaultUserOp, getCallData, fillUserOp, packUserOp } = require('../scripts/userOp');
+const { getUserOperationByHash } = require('./transactionGraph');
+
+// Utility: Wait for user operation to be packed and return txHash
+async function waitForUserOperationToBePacked(userOpHash, maxAttempts = 20, delayMs = 3000) {
+    for (let i = 0; i < maxAttempts; i++) {
+        const txHash = await getUserOperationByHash(userOpHash);
+        if (txHash) return txHash;
+        console.log(`⏳ Waiting for bundler to process UserOperation... (attempt ${i + 1})`);
+        await new Promise((res) => setTimeout(res, delayMs));
+    }
+    throw new Error("❌ Timeout: UserOperation was not packed by bundler.");
+}
 const ffjavascript = require("ffjavascript");
 const { ZeroAddress } = require("ethers");
 const { c } = require("circom_tester");
@@ -39,9 +51,7 @@ async function signUserOpByAdmin(hash) {
     return sig;
 }
 
-
-async function deployUserDataWithSmartAccountSingle(secret, smartAccountAddress) {
-
+async function updateUserDataWithSmartAccount(secret, smartAccountAddress, userDataAddress) {
     // get runner
     const myAccountAddress = smartAccountAddress;
     const myAccount = await ethers.getContractAt("MyAccount", myAccountAddress);
@@ -56,14 +66,16 @@ async function deployUserDataWithSmartAccountSingle(secret, smartAccountAddress)
     const proof = await generateUserCommitmentProof(secret);
     userOperation.signature = proof;
 
-    // callData of deploying a UserData contract
-    const userDataContract = await ethers.getContractFactory("UserData");
-    const verifierAddress = await getCommitmentVerifierAddress();
-    const commitment = await computePedersenHash(secret);
-    const deployUserData = await userDataContract.getDeployTransaction(verifierAddress, commitment, "My User Data");
-    const deployFunc = deployUserData.data;
-    const userDataCallData = getCallData(ZeroAddress, 0, deployFunc);
-    userOperation.callData = userDataCallData;
+    const contractName = "UserData";
+    const userDataFactory = await ethers.getContractFactory(contractName);
+    const userDataInterface = userDataFactory.interface;
+    const userDataCommitmentProof = await generateUserCommitmentProof(secret + contractName);
+    // const userDataCommitmentProof = proof;
+
+
+    const updateFunc = userDataInterface.encodeFunctionData("update", ["new data", userDataCommitmentProof]);
+    const updateUserDataCallData = getCallData(userDataAddress, 0, updateFunc);
+    userOperation.callData = updateUserDataCallData;
 
     const entryPoint = new ethers.Contract(ENTRY_POINT_ADDRESS, entryPointAbi, alchemyProvider);
     const userOp1 = await fillUserOp(userOperation, entryPoint, 'getNonce');
@@ -83,7 +95,7 @@ async function deployUserDataWithSmartAccountSingle(secret, smartAccountAddress)
     }, entryPoint)
 
     UserOp.nonce = ethers.toBeHex(UserOp.nonce);
-    console.log("User operation:", UserOp);
+    // console.log("User operation:", UserOp);
     // delete UserOp.initCode
 
     const userOpHashLocal = getUserOpHash(UserOp, ENTRY_POINT_ADDRESS, 80002);
@@ -116,6 +128,144 @@ async function deployUserDataWithSmartAccountSingle(secret, smartAccountAddress)
             throw new Error(errMsg);
         }
         console.log(data);
+        if (data.result) {
+            const uoHash = data.result;
+            console.log("User Operation hash:", uoHash);
+            const txHash = await waitForUserOperationToBePacked(uoHash);
+            console.log("Transaction hash:", txHash);
+
+            let receipt = null;
+            const maxAttempts = 20;
+            const delayMs = 3000;
+            let attempts = 0;
+
+            while (!receipt && attempts < maxAttempts) {
+                receipt = await alchemyProvider.getTransactionReceipt(txHash);
+                if (receipt && receipt.blockNumber) {
+                    console.log("✅ Transaction included in block:", receipt.blockNumber);
+                    break;
+                }
+                console.log(`⏳ Waiting for transaction to be mined... (attempt ${attempts + 1})`);
+                await new Promise((res) => setTimeout(res, delayMs));
+                attempts++;
+            }
+
+            if (!receipt) {
+                console.log("❌ Transaction not mined after waiting period.");
+            }
+        }
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+async function deployUserDataWithSmartAccountSingle(secret, smartAccountAddress) {
+
+    // get runner
+    const myAccountAddress = smartAccountAddress;
+    const myAccount = await ethers.getContractAt("MyAccount", myAccountAddress);
+
+    const runnerAddress = myAccountAddress;
+    const runner = myAccount;
+
+    const paymasterAddress = await getVerifyingPaymsaterAddress();
+    const userOperation = getDefaultUserOp(runnerAddress, paymasterAddress);
+
+    // generate user commitment proof to execute the user operation
+    const proof = await generateUserCommitmentProof(secret);
+    userOperation.signature = proof;
+
+    // callData of deploying a UserData contract
+    const contractName = "UserData";
+    const userDataContract = await ethers.getContractFactory(contractName);
+    const verifierAddress = await getCommitmentVerifierAddress();
+    const commitment = await computePedersenHash(secret + contractName);
+    // const commitment = await computeDomainSeparateCommitment(secret, contractName);
+    const deployUserData = await userDataContract.getDeployTransaction(verifierAddress, commitment, "My User Data");
+    const deployFunc = deployUserData.data;
+    const userDataCallData = getCallData(ZeroAddress, 0, deployFunc);
+
+    userOperation.callData = userDataCallData;
+
+    const entryPoint = new ethers.Contract(ENTRY_POINT_ADDRESS, entryPointAbi, alchemyProvider);
+    const userOp1 = await fillUserOp(userOperation, entryPoint, 'getNonce');
+    const packedUserOp = packUserOp(userOp1);
+
+    const verifyingPaymasterAddress = await getVerifyingPaymsaterAddress();
+    const verifyingPaymaster = await ethers.getContractAt("VerifyingPaymaster", verifyingPaymasterAddress);
+    const hash = await verifyingPaymaster.getHash(packedUserOp, MOCK_VALID_UNTIL, MOCK_VALID_AFTER);
+    const sig = await signUserOpByAdmin(hash); // Admin sign the UserOp to request the paymaster to pay
+
+    // delete userOperation.nonce;
+    const UserOp = await fillUserOp({
+        ...userOperation,
+        paymaster: verifyingPaymasterAddress,
+        paymasterData: ethers.concat([ethers.AbiCoder.defaultAbiCoder().encode(['uint48', 'uint48'], [MOCK_VALID_UNTIL, MOCK_VALID_AFTER]), sig])
+
+    }, entryPoint)
+
+    UserOp.nonce = ethers.toBeHex(UserOp.nonce);
+    // console.log("User operation:", UserOp);
+    // delete UserOp.initCode
+
+    const userOpHashLocal = getUserOpHash(UserOp, ENTRY_POINT_ADDRESS, 80002);
+    console.log("User operation hash local:", userOpHashLocal);
+
+    const tx = await runner.preVerifySignature(userOperation.signature, userOpHashLocal);
+    await tx.wait();
+    console.log("User operation signature verified");
+
+    const currentBlock = await alchemyProvider.getBlockNumber();
+
+    // send the user operation to Bundler
+    const options1 = {
+        method: 'POST',
+        headers: { accept: 'application/json', 'content-type': 'application/json' },
+        body: JSON.stringify({
+            id: 1,
+            jsonrpc: '2.0',
+            method: 'eth_sendUserOperation',
+            params: [UserOp, "0x0000000071727De22E5E9d8BAf0edAc6f37da032"]
+        })
+    };
+
+    try {
+        const response = await fetch('https://polygon-amoy.g.alchemy.com/v2/VG6iwUaOlQPYcDCb3AlkyAxrAXF7UzU9', options1)
+        const data = await response.json();
+
+        if (data.error) {
+            const errMsg = `Bundler Error: ${data.error.message || 'Unknown error'} - ${data.error.data?.reason || 'No reason provided'}`;
+            throw new Error(errMsg);
+        }
+
+        if (data.result) {
+            const uoHash = data.result;
+            console.log("User Operation hash:", uoHash);
+            const txHash = await waitForUserOperationToBePacked(uoHash);
+            console.log("Transaction hash:", txHash);
+
+            let receipt = null;
+            const maxAttempts = 20;
+            const delayMs = 3000;
+            let attempts = 0;
+
+            while (!receipt && attempts < maxAttempts) {
+                receipt = await alchemyProvider.getTransactionReceipt(txHash);
+                if (receipt && receipt.blockNumber) {
+                    console.log("✅ Transaction included in block:", receipt.blockNumber);
+                    break;
+                }
+                console.log(`⏳ Waiting for transaction to be mined... (attempt ${attempts + 1})`);
+                await new Promise((res) => setTimeout(res, delayMs));
+                attempts++;
+            }
+
+            if (!receipt) {
+                console.log("❌ Transaction not mined after waiting period.");
+            }
+        }
     }
     catch (error) {
         console.error(error);
@@ -139,8 +289,6 @@ async function deployUserDataWithSmartAccountSingle(secret, smartAccountAddress)
 
     if (events.length === 0) {
         console.log("Event not found after retries.");
-    } else {
-        console.log("New event(s):", events);
     }
     const event = events[events.length - 1];
     const userDataAddress = event.args[0];
@@ -382,5 +530,6 @@ module.exports = {
     deployUserDataWithSmartAccount,
     deployUserDataContractWithPrivacy,
     deployUserDataWithSmartAccountSingle,
-    deployUserDataContractWithPrivacySingle
+    deployUserDataContractWithPrivacySingle,
+    updateUserDataWithSmartAccount
 }

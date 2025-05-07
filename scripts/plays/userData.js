@@ -1,7 +1,7 @@
 const { ethers } = require("hardhat");
 
 async function main() {
-    const userDataAddress = "0x141ea3F12cDbaF9Eb724c19A402abB95CEfdd8B3"
+    const userDataAddress = "0x637a2232D9664fE31D4aC4DC259168A00E578685"
 
     const userDataContract = await ethers.getContractAt("UserData", userDataAddress);
 

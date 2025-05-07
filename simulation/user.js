@@ -138,9 +138,30 @@ async function main() {
 
 }
 
-main().then(() => process.exit(0))
-    .catch(error => {
-        console.error(error);
-        logToFile(error.toString());
-        process.exit(1);
-    });
+// main().then(() => process.exit(0))
+//     .catch(error => {
+//         console.error(error);
+//         logToFile(error.toString());
+//         process.exit(1);
+//     });
+
+if (require.main === module) {
+    main()
+        .then(() => process.exit(0))
+        .catch(error => {
+            console.error(error);
+            logToFile(error.toString());
+            process.exit(1);
+        });
+}
+
+
+module.exports = {
+    simulateSingleUser,
+    simulateMultipleUsersWithPrivacy,
+    simulateMultipleUsersWithStandard,
+    getSmartAccountAddress,
+    getAllSmartAccountAddresses,
+    getWalletsFromFile,
+    filterTransactions
+};
