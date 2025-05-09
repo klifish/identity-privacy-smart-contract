@@ -61,6 +61,8 @@ async function updateUserDataWithSmartAccount(secret, smartAccountAddress, userD
 
     const paymasterAddress = await getVerifyingPaymsaterAddress();
     const userOperation = getDefaultUserOp(runnerAddress, paymasterAddress);
+    userOperation.preVerificationGas = ethers.toBeHex(BigInt(userOperation.preVerificationGas) * 20n);
+    userOperation.verificationGasLimit = ethers.toBeHex(BigInt(userOperation.verificationGasLimit) * 4n);
 
     // generate user commitment proof to execute the user operation
     const proof = await generateUserCommitmentProof(secret);
@@ -172,6 +174,8 @@ async function deployUserDataWithSmartAccountSingle(secret, smartAccountAddress)
 
     const paymasterAddress = await getVerifyingPaymsaterAddress();
     const userOperation = getDefaultUserOp(runnerAddress, paymasterAddress);
+    userOperation.preVerificationGas = ethers.toBeHex(BigInt(userOperation.preVerificationGas) * 20n);
+    userOperation.verificationGasLimit = ethers.toBeHex(BigInt(userOperation.verificationGasLimit) * 4n);
 
     // generate user commitment proof to execute the user operation
     const proof = await generateUserCommitmentProof(secret);
@@ -309,6 +313,8 @@ async function deployUserDataContractWithPrivacySingle(secret, smartAccountAddre
 
     const paymaster = await getVerifyingPaymsaterAddress();
     const userOperation = getDefaultUserOp(runnerAddress, paymaster);
+    userOperation.preVerificationGas = ethers.toBeHex(BigInt(userOperation.preVerificationGas) * 20n);
+    userOperation.verificationGasLimit = ethers.toBeHex(BigInt(userOperation.verificationGasLimit) * 4n);
 
     const proof = await generateProof(smartAccountAddress, secret, nullifier); // generate registration proof
     userOperation.signature = proof;
