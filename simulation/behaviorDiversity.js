@@ -43,20 +43,20 @@ function weightedChoice(weights) {
 // ---------------------------
 const ROLES = {
     doctor: {
-        actionMix: { deploy: 0, share: 6, claim: 0 },
-        activeHours: [...Array(10).keys()].map((i) => i + 8), // 08–17
+        actionMix: { deploy: 1, share: 6, claim: 0 },
+        activeHours: [...Array(10).keys()].map(i => i + 8), // 08–17
     },
     analyst: {
-        actionMix: { deploy: 0, share: 4, claim: 0 },
+        actionMix: { deploy: 1, share: 4, claim: 0 },
         activeHours: [...Array(6).keys()], // 00–05
     },
     insurer: {
         actionMix: { deploy: 1, share: 0, claim: 3 },
-        activeHours: [...Array(6).keys()].map((i) => i + 10), // 10–15
+        activeHours: [...Array(6).keys()].map(i => i + 10), // 10–15
     },
     researcher: {
-        actionMix: { deploy: 0, share: 5, claim: 0 },
-        activeHours: [...Array(8).keys()].map((i) => i + 12), // 12–19
+        actionMix: { deploy: 1, share: 5, claim: 0 },
+        activeHours: [...Array(8).keys()].map(i => i + 12), // 12–19
     },
 };
 
@@ -102,7 +102,7 @@ function sampleTimestamp(baseDate, hourArray) {
 
 function emitUserOp(user, action, timestamp) {
     const [minGas, maxGas] = GAS_LOOKUP[action];
-    return {
+    const base = {
         uid: user.uid,
         role: user.role,
         action,
@@ -110,6 +110,7 @@ function emitUserOp(user, action, timestamp) {
         timestamp: Math.floor(timestamp / 1000),
         txHash: randomUUID(), // stub placeholder
     };
+    return base;
 }
 
 function generateTrace(population, { days = 1, actionsPerDay = 8 } = {}) {
@@ -119,8 +120,14 @@ function generateTrace(population, { days = 1, actionsPerDay = 8 } = {}) {
     for (let d = 0; d < days; d++) {
         const dayBase = new Date(baseDate.getTime() + d * 864e5);
         population.forEach((user) => {
+            // mandatory first deploy exactly once per user
+            if (d === 0) {
+                const firstTs = sampleTimestamp(dayBase, user.activeHours);
+                trace.push(emitUserOp(user, "deploy", firstTs));
+            }
             for (let i = 0; i < actionsPerDay; i++) {
-                const action = weightedChoice(user.actionMix);
+                let action = weightedChoice(user.actionMix);
+                if (action === "deploy") action = "share";
                 const ts = sampleTimestamp(dayBase, user.activeHours);
                 trace.push(emitUserOp(user, action, ts));
             }
