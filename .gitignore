@@ -6,3 +6,5 @@ build
 simulation/wallets.json
 simulation/data/
 simulation/*.json
+
+simulation/accountShuffling/venv

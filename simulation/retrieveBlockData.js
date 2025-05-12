@@ -8,7 +8,7 @@ async function retrieveBlockRangeData(startBlock, endBlock) {
     try {
         console.log(`Start retrieving block data from ${startBlock} to ${endBlock}`);
         for (let blockNumber = startBlock; blockNumber <= endBlock; blockNumber++) {
-            // console.log(`Retrieving data for block number: ${blockNumber}`);
+            console.log(`Retrieving data for block number: ${blockNumber}`);
             const blockData = await retrieveBlockData(blockNumber);
             // console.log(`Data for block number ${blockNumber} retrieved successfully.`);
             allBlockData.push(blockData);
@@ -62,6 +62,47 @@ function readAllBlockData(blockNumberStart, blockNumberEnd) {
     return allBlockData;
 }
 
+function readAllTransactionDataWithTimestamp(txHashesWithTimestamp = null) {
+    const dataDir = path.join(__dirname, "data", "transactions");
+
+    const txHashSet = txHashesWithTimestamp ? new Set(txHashesWithTimestamp.map(tx => tx.txHash)) : null;
+    const hashToTimestamp = {};
+    if (txHashesWithTimestamp) {
+        for (const tx of txHashesWithTimestamp) {
+            hashToTimestamp[tx.txHash] = {
+                timestamp: tx.timestamp,
+                blockNumber: tx.blockNumber
+            };
+        }
+    }
+
+    const files = fs.readdirSync(dataDir)
+        .filter(file => file.endsWith(".json"))
+        .filter(file => {
+            if (!txHashSet) return true;
+            const match = file.match(/^(.+)\.json$/);
+            if (match) {
+                const txHash = match[1];
+                return txHashSet.has(txHash);
+            }
+            return false;
+        });
+
+    const allTransactionData = files.map(file => {
+        const content = fs.readFileSync(path.join(dataDir, file), "utf-8");
+        const txData = JSON.parse(content);
+        const txHash = path.basename(file, ".json");
+        txData.txHash = txHash;
+        if (hashToTimestamp[txHash]) {
+            txData.timestamp = hashToTimestamp[txHash].timestamp;
+            txData.blockNumber = hashToTimestamp[txHash].blockNumber;
+        }
+        return txData;
+    });
+    console.log(`Read ${allTransactionData.length} transaction data files.`);
+    return allTransactionData;
+}
+
 function readAllTransactionData(txHashes = null) {
     const dataDir = path.join(__dirname, "data", "transactions");
     const files = fs.readdirSync(dataDir)
@@ -86,6 +127,7 @@ function readAllTransactionData(txHashes = null) {
 function getTransactionHashesFromBlocks(blockDataArray) {
     const txHashes = [];
     for (const data of blockDataArray) {
+        // console.log(`Processing block data for block number: ${data.block.number}`);
         if (data.block && Array.isArray(data.block.transactions)) {
             txHashes.push(...data.block.transactions);
         }
@@ -94,10 +136,28 @@ function getTransactionHashesFromBlocks(blockDataArray) {
     return txHashes;
 }
 
+function getTransactionHashesFromBlocksWithTimestamp(blockDataArray) {
+    const txDetails = [];
+    for (const data of blockDataArray) {
+        if (data.block && Array.isArray(data.block.transactions)) {
+            const { number: blockNumber, timestamp } = data.block;
+            for (const txHash of data.block.transactions) {
+                txDetails.push({
+                    txHash,
+                    blockNumber,
+                    timestamp
+                });
+            }
+        }
+    }
+    console.log(`Extracted ${txDetails.length} transactions with timestamp from blocks.`);
+    return txDetails;
+}
+
 async function getAllTransactionData(txHashes) {
     const allTransactionData = [];
     for (const hash of txHashes) {
-        // console.log(`Tracing transaction ${hash}`);
+        console.log(`Tracing transaction ${hash}`);
         const transactionData = await getTransactionByHash(hash, `${hash}.json`);
         allTransactionData.push(transactionData);
     }
@@ -132,5 +192,7 @@ module.exports = {
     readAllBlockData,
     readAllTransactionData,
     getTransactionHashesFromBlocks,
-    getAllTransactionData
+    getAllTransactionData,
+    getTransactionHashesFromBlocksWithTimestamp,
+    readAllTransactionDataWithTimestamp
 };
