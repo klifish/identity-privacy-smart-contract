@@ -53,6 +53,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
     "fixed-merkle-tree": "^0.7.3",
+    "ml-kmeans": "^6.0.0",
     "snarkjs": "^0.7.5"
   }
 }
