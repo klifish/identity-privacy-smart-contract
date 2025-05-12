@@ -1,0 +1,110 @@
+2025-05-11T10:23:10.620Z [INFO] Start block number: 21530679
+2025-05-11T10:23:10.623Z [INFO] Read 40 traces from file
+2025-05-11T10:23:10.623Z [DEBUG] Processing trace: UID=6, Action=deploy, Timestamp=1746835517
+2025-05-11T10:23:27.172Z [DEPLOY] UID 6 | Address: 0x0A7e54999C1651Bc7119A7e8b1b246f02EC92105 | Action: deploy | Result: 0x9c3DC3E5b904C6C8A714ed87E2db0107128755a5
+2025-05-11T10:23:27.172Z [DEBUG] Processing trace: UID=5, Action=share, Timestamp=1746835836
+2025-05-11T10:23:27.172Z [INFO] UID 5 | Not explicitly deployed yet, checking for lazy deploy
+2025-05-11T10:23:27.172Z [INFO] UID 5 | No contract found, deploying before update
+2025-05-11T10:23:41.486Z [DEPLOY] UID 5 | Address: 0x0b59d9BB1761344823953A7FdF266E720A1bF50B | Action: lazy-deploy | Result: 0xfF08008038C26A56e04E4c3db116fEf3442f5F29
+2025-05-11T10:23:51.412Z [UPDATE] UID 5 | Address: 0x0b59d9BB1761344823953A7FdF266E720A1bF50B | Action: share | Contract: 0xfF08008038C26A56e04E4c3db116fEf3442f5F29 | Result: update completed
+2025-05-11T10:23:51.412Z [DEBUG] Processing trace: UID=1, Action=share, Timestamp=1746837317
+2025-05-11T10:23:51.413Z [INFO] UID 1 | Not explicitly deployed yet, checking for lazy deploy
+2025-05-11T10:23:51.413Z [INFO] UID 1 | No contract found, deploying before update
+2025-05-11T10:24:05.252Z [DEPLOY] UID 1 | Address: 0x9360ee38b1B5A26973d466e8eD9E92D7eD3A178b | Action: lazy-deploy | Result: 0x7F1E16A9444C6b738b2d015dA72D035191a71E89
+2025-05-11T10:24:15.351Z [UPDATE] UID 1 | Address: 0x9360ee38b1B5A26973d466e8eD9E92D7eD3A178b | Action: share | Contract: 0x7F1E16A9444C6b738b2d015dA72D035191a71E89 | Result: update completed
+2025-05-11T10:24:15.352Z [DEBUG] Processing trace: UID=6, Action=share, Timestamp=1746838195
+2025-05-11T10:24:25.354Z [UPDATE] UID 6 | Address: 0x0A7e54999C1651Bc7119A7e8b1b246f02EC92105 | Action: share | Contract: 0x9c3DC3E5b904C6C8A714ed87E2db0107128755a5 | Result: update completed
+2025-05-11T10:24:25.354Z [DEBUG] Processing trace: UID=6, Action=share, Timestamp=1746839301
+2025-05-11T10:24:35.425Z [UPDATE] UID 6 | Address: 0x2Bbd64D7ddDA3E56F1832db9F966CE11FA12A3bb | Action: share | Contract: 0x9c3DC3E5b904C6C8A714ed87E2db0107128755a5 | Result: update completed
+2025-05-11T10:24:35.425Z [DEBUG] Processing trace: UID=1, Action=share, Timestamp=1746843315
+2025-05-11T10:24:45.356Z [UPDATE] UID 1 | Address: 0xa237EA273F9d9895198Afc4C58eeB36EcdAee93F | Action: share | Contract: 0x7F1E16A9444C6b738b2d015dA72D035191a71E89 | Result: update completed
+2025-05-11T10:24:45.356Z [DEBUG] Processing trace: UID=5, Action=share, Timestamp=1746843527
+2025-05-11T10:24:55.609Z [UPDATE] UID 5 | Address: 0x4C0a4E797BC670Ce137249D3e5B87CD86031c2A8 | Action: share | Contract: 0xfF08008038C26A56e04E4c3db116fEf3442f5F29 | Result: update completed
+2025-05-11T10:24:55.609Z [DEBUG] Processing trace: UID=6, Action=share, Timestamp=1746843929
+2025-05-11T10:25:05.220Z [UPDATE] UID 6 | Address: 0x2Bbd64D7ddDA3E56F1832db9F966CE11FA12A3bb | Action: share | Contract: 0x9c3DC3E5b904C6C8A714ed87E2db0107128755a5 | Result: update completed
+2025-05-11T10:25:05.220Z [DEBUG] Processing trace: UID=1, Action=share, Timestamp=1746844558
+2025-05-11T10:25:17.041Z [UPDATE] UID 1 | Address: 0x9360ee38b1B5A26973d466e8eD9E92D7eD3A178b | Action: share | Contract: 0x7F1E16A9444C6b738b2d015dA72D035191a71E89 | Result: update completed
+2025-05-11T10:25:17.041Z [DEBUG] Processing trace: UID=5, Action=deploy, Timestamp=1746846701
+2025-05-11T10:25:17.042Z [SKIP] UID 5 | Already deployed
+2025-05-11T10:25:17.042Z [DEBUG] Processing trace: UID=5, Action=share, Timestamp=1746851082
+2025-05-11T10:25:37.315Z [UPDATE] UID 5 | Address: 0x0b59d9BB1761344823953A7FdF266E720A1bF50B | Action: share | Contract: 0xfF08008038C26A56e04E4c3db116fEf3442f5F29 | Result: update completed
+2025-05-11T10:25:37.315Z [DEBUG] Processing trace: UID=1, Action=deploy, Timestamp=1746853779
+2025-05-11T10:25:47.371Z [SKIP] UID 1 | Already deployed
+2025-05-11T10:25:47.371Z [DEBUG] Processing trace: UID=7, Action=share, Timestamp=1746870236
+2025-05-11T10:28:08.641Z [INFO] UID 7 | Not explicitly deployed yet, checking for lazy deploy
+2025-05-11T10:28:08.645Z [INFO] UID 7 | No contract found, deploying before update
+2025-05-11T10:28:23.551Z [DEPLOY] UID 7 | Address: 0xa99EFC483c705f0F37505C8F1a899C20F45ecBed | Action: lazy-deploy | Result: 0x5561f0bB067dD8308C57Ca80453B07D9BB15cbdD
+2025-05-11T10:28:33.710Z [UPDATE] UID 7 | Address: 0xa99EFC483c705f0F37505C8F1a899C20F45ecBed | Action: share | Contract: 0x5561f0bB067dD8308C57Ca80453B07D9BB15cbdD | Result: update completed
+2025-05-11T10:28:33.710Z [DEBUG] Processing trace: UID=0, Action=share, Timestamp=1746871089
+2025-05-11T10:28:33.710Z [INFO] UID 0 | Not explicitly deployed yet, checking for lazy deploy
+2025-05-11T10:28:33.710Z [INFO] UID 0 | No contract found, deploying before update
+2025-05-11T10:28:47.042Z [DEPLOY] UID 0 | Address: 0x4617f2760072B83c1A1f8535486a7aebe4cE4157 | Action: lazy-deploy | Result: 0xbF1CfC71F0B4D7A6cad7eB3975D49941dc6AC0A8
+2025-05-11T10:28:57.574Z [UPDATE] UID 0 | Address: 0x4617f2760072B83c1A1f8535486a7aebe4cE4157 | Action: share | Contract: 0xbF1CfC71F0B4D7A6cad7eB3975D49941dc6AC0A8 | Result: update completed
+2025-05-11T10:28:57.574Z [DEBUG] Processing trace: UID=2, Action=share, Timestamp=1746872213
+2025-05-11T10:28:57.574Z [INFO] UID 2 | Not explicitly deployed yet, checking for lazy deploy
+2025-05-11T10:28:57.574Z [INFO] UID 2 | No contract found, deploying before update
+2025-05-11T10:29:07.416Z [DEPLOY] UID 2 | Address: 0x8616A6E4F575FDD23F49C4e631DF84B4ce75CD81 | Action: lazy-deploy | Result: 0xD2e5d35A776ACa5c336d73Af8185a27C16F2eF0e
+2025-05-11T10:29:17.259Z [UPDATE] UID 2 | Address: 0x8616A6E4F575FDD23F49C4e631DF84B4ce75CD81 | Action: share | Contract: 0xD2e5d35A776ACa5c336d73Af8185a27C16F2eF0e | Result: update completed
+2025-05-11T10:29:17.259Z [DEBUG] Processing trace: UID=9, Action=share, Timestamp=1746872872
+2025-05-11T10:29:17.259Z [INFO] UID 9 | Not explicitly deployed yet, checking for lazy deploy
+2025-05-11T10:29:17.259Z [INFO] UID 9 | No contract found, deploying before update
+2025-05-11T10:29:32.242Z [DEPLOY] UID 9 | Address: 0xc6cfaccd69b8b4A926229ec1109abA0F86009bFd | Action: lazy-deploy | Result: 0x43283BBa7e1b5b90Ed8396fCc7e83303C25E72c1
+2025-05-11T10:29:47.463Z [UPDATE] UID 9 | Address: 0xc6cfaccd69b8b4A926229ec1109abA0F86009bFd | Action: share | Contract: 0x43283BBa7e1b5b90Ed8396fCc7e83303C25E72c1 | Result: update completed
+2025-05-11T10:29:47.463Z [DEBUG] Processing trace: UID=8, Action=share, Timestamp=1746875147
+2025-05-11T10:29:47.463Z [INFO] UID 8 | Not explicitly deployed yet, checking for lazy deploy
+2025-05-11T10:29:47.463Z [INFO] UID 8 | No contract found, deploying before update
+2025-05-11T10:30:01.078Z [DEPLOY] UID 8 | Address: 0x33B02bF97f38d56f7Cc7BEa0f774E085Fe0b35e1 | Action: lazy-deploy | Result: 0x909cA61e515057d97c1bB7aA3fA5C07E64c452B6
+2025-05-11T10:30:10.916Z [UPDATE] UID 8 | Address: 0x33B02bF97f38d56f7Cc7BEa0f774E085Fe0b35e1 | Action: share | Contract: 0x909cA61e515057d97c1bB7aA3fA5C07E64c452B6 | Result: update completed
+2025-05-11T10:30:10.916Z [DEBUG] Processing trace: UID=8, Action=share, Timestamp=1746876196
+2025-05-11T10:30:23.184Z [UPDATE] UID 8 | Address: 0x33B02bF97f38d56f7Cc7BEa0f774E085Fe0b35e1 | Action: share | Contract: 0x909cA61e515057d97c1bB7aA3fA5C07E64c452B6 | Result: update completed
+2025-05-11T10:30:23.184Z [DEBUG] Processing trace: UID=9, Action=claim, Timestamp=1746876300
+2025-05-11T10:30:33.671Z [UPDATE] UID 9 | Address: 0xB73FaC9eD2a336Da1c73D3fFEa614b822bC48389 | Action: claim | Contract: 0x43283BBa7e1b5b90Ed8396fCc7e83303C25E72c1 | Result: update completed
+2025-05-11T10:30:33.671Z [DEBUG] Processing trace: UID=8, Action=deploy, Timestamp=1746879162
+2025-05-11T10:30:33.671Z [SKIP] UID 8 | Already deployed
+2025-05-11T10:30:33.671Z [DEBUG] Processing trace: UID=9, Action=share, Timestamp=1746881748
+2025-05-11T10:30:47.177Z [UPDATE] UID 9 | Address: 0xc6cfaccd69b8b4A926229ec1109abA0F86009bFd | Action: share | Contract: 0x43283BBa7e1b5b90Ed8396fCc7e83303C25E72c1 | Result: update completed
+2025-05-11T10:30:47.177Z [DEBUG] Processing trace: UID=0, Action=deploy, Timestamp=1746882428
+2025-05-11T10:30:47.177Z [SKIP] UID 0 | Already deployed
+2025-05-11T10:30:47.177Z [DEBUG] Processing trace: UID=8, Action=share, Timestamp=1746882930
+2025-05-11T10:30:59.791Z [UPDATE] UID 8 | Address: 0x33B02bF97f38d56f7Cc7BEa0f774E085Fe0b35e1 | Action: share | Contract: 0x909cA61e515057d97c1bB7aA3fA5C07E64c452B6 | Result: update completed
+2025-05-11T10:30:59.792Z [DEBUG] Processing trace: UID=7, Action=share, Timestamp=1746883032
+2025-05-11T10:31:13.053Z [UPDATE] UID 7 | Address: 0xa99EFC483c705f0F37505C8F1a899C20F45ecBed | Action: share | Contract: 0x5561f0bB067dD8308C57Ca80453B07D9BB15cbdD | Result: update completed
+2025-05-11T10:31:13.053Z [DEBUG] Processing trace: UID=7, Action=deploy, Timestamp=1746883109
+2025-05-11T10:31:13.053Z [SKIP] UID 7 | Already deployed
+2025-05-11T10:31:13.053Z [DEBUG] Processing trace: UID=0, Action=share, Timestamp=1746883295
+2025-05-11T10:31:23.708Z [UPDATE] UID 0 | Address: 0x4617f2760072B83c1A1f8535486a7aebe4cE4157 | Action: share | Contract: 0xbF1CfC71F0B4D7A6cad7eB3975D49941dc6AC0A8 | Result: update completed
+2025-05-11T10:31:23.709Z [DEBUG] Processing trace: UID=2, Action=deploy, Timestamp=1746883328
+2025-05-11T10:31:23.709Z [SKIP] UID 2 | Already deployed
+2025-05-11T10:31:23.709Z [DEBUG] Processing trace: UID=4, Action=share, Timestamp=1746884240
+2025-05-11T10:31:23.709Z [INFO] UID 4 | Not explicitly deployed yet, checking for lazy deploy
+2025-05-11T10:31:23.709Z [INFO] UID 4 | No contract found, deploying before update
+2025-05-11T10:31:37.440Z [DEPLOY] UID 4 | Address: 0xBf3921b2D6c4Fe505816D63A2CDeaBB7FD39d1f9 | Action: lazy-deploy | Result: 0x99E11ecfb5bd9f897cDC496695B095361FfaEd63
+2025-05-11T10:31:47.550Z [UPDATE] UID 4 | Address: 0xBf3921b2D6c4Fe505816D63A2CDeaBB7FD39d1f9 | Action: share | Contract: 0x99E11ecfb5bd9f897cDC496695B095361FfaEd63 | Result: update completed
+2025-05-11T10:31:47.550Z [DEBUG] Processing trace: UID=2, Action=share, Timestamp=1746885049
+2025-05-11T10:31:57.525Z [UPDATE] UID 2 | Address: 0x8616A6E4F575FDD23F49C4e631DF84B4ce75CD81 | Action: share | Contract: 0xD2e5d35A776ACa5c336d73Af8185a27C16F2eF0e | Result: update completed
+2025-05-11T10:31:57.526Z [DEBUG] Processing trace: UID=9, Action=deploy, Timestamp=1746885771
+2025-05-11T10:31:57.526Z [SKIP] UID 9 | Already deployed
+2025-05-11T10:31:57.526Z [DEBUG] Processing trace: UID=3, Action=share, Timestamp=1746886032
+2025-05-11T10:31:57.526Z [INFO] UID 3 | Not explicitly deployed yet, checking for lazy deploy
+2025-05-11T10:31:57.526Z [INFO] UID 3 | No contract found, deploying before update
+2025-05-11T10:32:11.182Z [DEPLOY] UID 3 | Address: 0xBA2e9b04b5f5a66c15D4A63A97aCBB68b37c7030 | Action: lazy-deploy | Result: 0x201166AfB47E8364B09f844a6fC840054b4ba36B
+2025-05-11T10:32:21.213Z [UPDATE] UID 3 | Address: 0xBA2e9b04b5f5a66c15D4A63A97aCBB68b37c7030 | Action: share | Contract: 0x201166AfB47E8364B09f844a6fC840054b4ba36B | Result: update completed
+2025-05-11T10:32:21.213Z [DEBUG] Processing trace: UID=7, Action=share, Timestamp=1746890417
+2025-05-11T10:32:31.184Z [UPDATE] UID 7 | Address: 0xa99EFC483c705f0F37505C8F1a899C20F45ecBed | Action: share | Contract: 0x5561f0bB067dD8308C57Ca80453B07D9BB15cbdD | Result: update completed
+2025-05-11T10:32:31.184Z [DEBUG] Processing trace: UID=0, Action=claim, Timestamp=1746890532
+2025-05-11T10:32:41.728Z [UPDATE] UID 0 | Address: 0xADbF1abf9584a9653d1F68bf71455F001180b1dD | Action: claim | Contract: 0xbF1CfC71F0B4D7A6cad7eB3975D49941dc6AC0A8 | Result: update completed
+2025-05-11T10:32:41.728Z [DEBUG] Processing trace: UID=3, Action=deploy, Timestamp=1746890986
+2025-05-11T10:32:41.728Z [SKIP] UID 3 | Already deployed
+2025-05-11T10:32:41.728Z [DEBUG] Processing trace: UID=2, Action=share, Timestamp=1746891457
+2025-05-11T10:32:54.956Z [UPDATE] UID 2 | Address: 0x8616A6E4F575FDD23F49C4e631DF84B4ce75CD81 | Action: share | Contract: 0xD2e5d35A776ACa5c336d73Af8185a27C16F2eF0e | Result: update completed
+2025-05-11T10:32:54.956Z [DEBUG] Processing trace: UID=4, Action=share, Timestamp=1746892821
+2025-05-11T10:33:05.498Z [UPDATE] UID 4 | Address: 0xC1C7aD141B7D611e01b0f1D80892f82c77E0062c | Action: share | Contract: 0x99E11ecfb5bd9f897cDC496695B095361FfaEd63 | Result: update completed
+2025-05-11T10:33:05.498Z [DEBUG] Processing trace: UID=3, Action=share, Timestamp=1746894246
+2025-05-11T10:33:15.583Z [UPDATE] UID 3 | Address: 0xBA2e9b04b5f5a66c15D4A63A97aCBB68b37c7030 | Action: share | Contract: 0x201166AfB47E8364B09f844a6fC840054b4ba36B | Result: update completed
+2025-05-11T10:33:15.583Z [DEBUG] Processing trace: UID=3, Action=share, Timestamp=1746904329
+2025-05-11T10:33:29.077Z [UPDATE] UID 3 | Address: 0x9b68aa9F9db98a9b52eF26C5E4a4Fc86af5A3a90 | Action: share | Contract: 0x201166AfB47E8364B09f844a6fC840054b4ba36B | Result: update completed
+2025-05-11T10:33:29.078Z [DEBUG] Processing trace: UID=4, Action=deploy, Timestamp=1746905119
+2025-05-11T10:33:29.078Z [SKIP] UID 4 | Already deployed
+2025-05-11T10:33:29.078Z [DEBUG] Processing trace: UID=4, Action=share, Timestamp=1746905422
+2025-05-11T10:33:42.802Z [UPDATE] UID 4 | Address: 0xBf3921b2D6c4Fe505816D63A2CDeaBB7FD39d1f9 | Action: share | Contract: 0x99E11ecfb5bd9f897cDC496695B095361FfaEd63 | Result: update completed
+2025-05-11T10:33:42.953Z [INFO] End block number: 21530976

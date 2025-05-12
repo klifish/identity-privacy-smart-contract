@@ -147,7 +147,7 @@ function arg(name, def) {
 
 const USERS = arg("users", 10);
 const DAYS = arg("days", 1);
-const ACTIONS = arg("actions", 8);
+const ACTIONS = arg("actions", 3);
 
 const population = generatePopulation(USERS);
 const trace = generateTrace(population, { days: DAYS, actionsPerDay: ACTIONS });

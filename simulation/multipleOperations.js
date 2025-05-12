@@ -1,8 +1,12 @@
+const fs = require("fs");
+const { ethers } = require("hardhat");
+
 const {
     deployUserDataWithSmartAccountSingle,
     updateUserDataWithSmartAccount,
 } = require("./userDataDeployer");
-const fs = require("fs");
+const { alchemyProvider } = require("../scripts/constants");
+
 
 // ---- persistent log file ----
 const LOG_PATH = "./simulation/replay.log";
@@ -50,6 +54,9 @@ async function main() {
         walletsArr.map((w, idx) => [w.uid ?? idx, w])
     );
 
+    const startBlock = await alchemyProvider.getBlockNumber();
+    log(`Starting at block ${startBlock}`);
+
     for (const op of trace) {
         const now = Math.floor(Date.now() / 1000);
         const scaledTs = firstSimTs + Math.floor((op.timestamp - firstSimTs) / SCALE);
@@ -95,12 +102,14 @@ async function main() {
             );
             log(`[${op.uid}] share/update`);
         }
-        break;
     }
 
     // persist any newly created contract addresses
     fs.writeFileSync(walletsFilePath, JSON.stringify(walletsArr, null, 2));
     log("wallets.json updated with new contract addresses");
+
+    const endBlock = await alchemyProvider.getBlockNumber();
+    log(`Finished at block ${endBlock}`);
 }
 
 main()
