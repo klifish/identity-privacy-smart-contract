@@ -3,7 +3,7 @@
 const clustering = require("density-clustering");
 const fs = require("fs");
 const path = require("path");
-const rawData = JSON.parse(fs.readFileSync(path.join(__dirname, "addressFeatures.json"), "utf-8"));
+const rawData = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "addressFeatures.json"), "utf-8"));
 
 const features = [];
 const addressList = [];
@@ -20,7 +20,7 @@ for (const [address, feat] of Object.entries(rawData)) {
 }
 
 const dbscan = new clustering.DBSCAN();
-const clusters = dbscan.run(features, 5, 2); // eps=0.5, minPts=2 (tunable)
+const clusters = dbscan.run(features, 10, 2); // eps=0.5, minPts=2 (tunable)
 const noise = dbscan.noise;
 
 const summaryLines = [];

@@ -108,3 +108,226 @@
 2025-05-11T10:33:29.078Z [DEBUG] Processing trace: UID=4, Action=share, Timestamp=1746905422
 2025-05-11T10:33:42.802Z [UPDATE] UID 4 | Address: 0xBf3921b2D6c4Fe505816D63A2CDeaBB7FD39d1f9 | Action: share | Contract: 0x99E11ecfb5bd9f897cDC496695B095361FfaEd63 | Result: update completed
 2025-05-11T10:33:42.953Z [INFO] End block number: 21530976
+2025-05-13T12:25:18.463Z [INFO] Start block number: 21615220
+2025-05-13T12:25:18.467Z [INFO] Read 40 traces from file
+2025-05-13T12:25:47.493Z [INFO] Start block number: 21615233
+2025-05-13T12:25:47.497Z [INFO] Read 40 traces from file
+2025-05-13T12:25:47.497Z [CONFIG] MAX_TRACE = 1
+2025-05-13T12:25:47.497Z [CONFIG] Simulation duration = 3600s
+2025-05-13T12:25:47.497Z [CONFIG] Trace count = 40
+2025-05-13T12:25:47.497Z [CONFIG] Time span (realistic): 1746835517 → 1746905422 (69905s)
+2025-05-13T12:25:47.498Z [CONFIG] Scale factor: 51.4985
+2025-05-13T12:25:47.498Z [DEBUG] Processing trace: Role=analyst, Action=deploy, Timestamp=1746835517
+2025-05-13T12:25:47.499Z [TRACE] Role=analyst | OriginalTime=1746835517 | Delay=0ms | Now=1747139147498 | Target=1747139147497 | Wait=-1ms
+2025-05-13T12:25:47.499Z [SEND] Role=analyst | Timestamp=2025-05-13T12:25:47.499Z | Action=deploy | Selected=0x0b59d9bb1761344823953a7fdf266e720a1bf50b
+2025-05-13T12:26:03.386Z [DEPLOY] Role analyst | Address: 0x0b59d9bb1761344823953a7fdf266e720a1bf50b | Action: deploy | Result: 0x55cc2Cd54c513b5B1C719d6f10067B693Df25f85
+2025-05-13T12:26:03.386Z [SUMMARY] Total processed: 1
+2025-05-13T12:26:03.386Z [SUMMARY] Contracts deployed: 1
+2025-05-13T12:26:03.386Z [SUMMARY] Roles deployed: analyst
+2025-05-13T12:26:03.386Z [SUMMARY] Update counts per role: {}
+2025-05-13T12:26:03.524Z [INFO] End block number: 21615241
+2025-05-13T12:28:08.319Z [INFO] Start block number: 21615300
+2025-05-13T12:28:08.322Z [INFO] Read 40 traces from file
+2025-05-13T12:28:08.323Z [CONFIG] MAX_TRACE = 3
+2025-05-13T12:28:08.323Z [CONFIG] Simulation duration = 3600s
+2025-05-13T12:28:08.323Z [CONFIG] Trace count = 40
+2025-05-13T12:28:08.323Z [CONFIG] Time span (realistic): 1746835517 → 1746905422 (69905s)
+2025-05-13T12:28:08.323Z [CONFIG] Scale factor: 51.4985
+2025-05-13T12:28:08.323Z [DEBUG] Processing trace: Role=analyst, Action=deploy, Timestamp=1746835517
+2025-05-13T12:28:08.324Z [TRACE] Role=analyst | OriginalTime=1746835517 | Delay=0ms | Now=1747139288323 | Target=1747139288322 | Wait=-1ms
+2025-05-13T12:28:08.324Z [SEND] Role=analyst | Timestamp=2025-05-13T12:28:08.324Z | Action=deploy | Selected=0x0a7e54999c1651bc7119a7e8b1b246f02ec92105
+2025-05-13T12:28:22.843Z [DEPLOY] Role analyst | Address: 0x0a7e54999c1651bc7119a7e8b1b246f02ec92105 | Action: deploy | Result: 0x51E640E5a2fC0B6aD0d23186cefd947e4A514585
+2025-05-13T12:28:22.843Z [DEBUG] Processing trace: Role=analyst, Action=share, Timestamp=1746835836
+2025-05-13T12:28:22.843Z [TRACE] Role=analyst | OriginalTime=1746835836 | Delay=16428ms | Now=1747139302843 | Target=1747139304750 | Wait=1907ms
+2025-05-13T12:28:24.752Z [SEND] Role=analyst | Timestamp=2025-05-13T12:28:24.752Z | Action=share | Selected=0x2bbd64d7ddda3e56f1832db9f966ce11fa12a3bb
+2025-05-13T12:28:39.104Z [UPDATE] Role=analyst | Update #1 | Address: 0x2bbd64d7ddda3e56f1832db9f966ce11fa12a3bb | Contract: 0x51E640E5a2fC0B6aD0d23186cefd947e4A514585
+2025-05-13T12:28:39.104Z [DEBUG] Processing trace: Role=analyst, Action=share, Timestamp=1746837317
+2025-05-13T12:28:39.104Z [TRACE] Role=analyst | OriginalTime=1746837317 | Delay=92697ms | Now=1747139319104 | Target=1747139381019 | Wait=61915ms
+2025-05-13T12:29:41.020Z [SEND] Role=analyst | Timestamp=2025-05-13T12:29:41.019Z | Action=share | Selected=0xdc6e87fd8ff10c6d2a2b5dd97fb56f6832e30cd4
+2025-05-13T12:29:51.281Z [UPDATE] Role=analyst | Update #2 | Address: 0xdc6e87fd8ff10c6d2a2b5dd97fb56f6832e30cd4 | Contract: 0x51E640E5a2fC0B6aD0d23186cefd947e4A514585
+2025-05-13T12:29:51.281Z [SUMMARY] Total processed: 3
+2025-05-13T12:29:51.281Z [SUMMARY] Contracts deployed: 1
+2025-05-13T12:29:51.281Z [SUMMARY] Roles deployed: analyst
+2025-05-13T12:29:51.281Z [SUMMARY] Update counts per role: {"analyst":2}
+2025-05-13T12:29:51.411Z [INFO] End block number: 21615348
+2025-05-13T12:32:53.599Z [INFO] Start block number: 21615434
+2025-05-13T12:32:53.604Z [INFO] Read 40 traces from file
+2025-05-13T12:32:53.604Z [CONFIG] MAX_TRACE = 40
+2025-05-13T12:32:53.604Z [CONFIG] Simulation duration = 3600s
+2025-05-13T12:32:53.604Z [CONFIG] Trace count = 40
+2025-05-13T12:32:53.604Z [CONFIG] Time span (realistic): 1746835517 → 1746905422 (69905s)
+2025-05-13T12:32:53.604Z [CONFIG] Scale factor: 51.4985
+2025-05-13T12:32:53.605Z [DEBUG] Processing trace: Role=analyst, Action=deploy, Timestamp=1746835517
+2025-05-13T12:32:53.605Z [TRACE] Role=analyst | OriginalTime=1746835517 | Delay=0ms | Now=1747139573605 | Target=1747139573604 | Wait=-1ms
+2025-05-13T12:32:53.605Z [SEND] Role=analyst | Timestamp=2025-05-13T12:32:53.605Z | Action=deploy | Selected=0xcba1c6f82af25f8eb8fad986ea3cef024e0ee810
+2025-05-13T12:33:09.542Z [DEPLOY] Role analyst | Address: 0xcba1c6f82af25f8eb8fad986ea3cef024e0ee810 | Action: deploy | Result: 0xc42f363d955E3704cD04647ea579a790ee57A1Aa
+2025-05-13T12:33:09.544Z [DEBUG] Processing trace: Role=analyst, Action=share, Timestamp=1746835836
+2025-05-13T12:33:09.544Z [TRACE] Role=analyst | OriginalTime=1746835836 | Delay=16428ms | Now=1747139589544 | Target=1747139590032 | Wait=488ms
+2025-05-13T12:33:10.033Z [SEND] Role=analyst | Timestamp=2025-05-13T12:33:10.033Z | Action=share | Selected=0x2bbd64d7ddda3e56f1832db9f966ce11fa12a3bb
+2025-05-13T12:33:19.697Z [UPDATE] Role=analyst | Update #1 | Address: 0x2bbd64d7ddda3e56f1832db9f966ce11fa12a3bb | Contract: 0xc42f363d955E3704cD04647ea579a790ee57A1Aa
+2025-05-13T12:33:19.697Z [DEBUG] Processing trace: Role=analyst, Action=share, Timestamp=1746837317
+2025-05-13T12:33:19.697Z [TRACE] Role=analyst | OriginalTime=1746837317 | Delay=92697ms | Now=1747139599697 | Target=1747139666301 | Wait=66604ms
+2025-05-13T12:34:26.302Z [SEND] Role=analyst | Timestamp=2025-05-13T12:34:26.301Z | Action=share | Selected=0x2bbd64d7ddda3e56f1832db9f966ce11fa12a3bb
+2025-05-13T12:34:41.170Z [UPDATE] Role=analyst | Update #2 | Address: 0x2bbd64d7ddda3e56f1832db9f966ce11fa12a3bb | Contract: 0xc42f363d955E3704cD04647ea579a790ee57A1Aa
+2025-05-13T12:34:41.170Z [DEBUG] Processing trace: Role=analyst, Action=share, Timestamp=1746838195
+2025-05-13T12:34:41.170Z [TRACE] Role=analyst | OriginalTime=1746838195 | Delay=137912ms | Now=1747139681170 | Target=1747139711516 | Wait=30346ms
+2025-05-13T12:35:11.532Z [SEND] Role=analyst | Timestamp=2025-05-13T12:35:11.528Z | Action=share | Selected=0x0a7e54999c1651bc7119a7e8b1b246f02ec92105
+2025-05-13T12:35:25.139Z [UPDATE] Role=analyst | Update #3 | Address: 0x0a7e54999c1651bc7119a7e8b1b246f02ec92105 | Contract: 0xc42f363d955E3704cD04647ea579a790ee57A1Aa
+2025-05-13T12:35:25.139Z [DEBUG] Processing trace: Role=analyst, Action=share, Timestamp=1746839301
+2025-05-13T12:35:25.139Z [TRACE] Role=analyst | OriginalTime=1746839301 | Delay=194870ms | Now=1747139725139 | Target=1747139768474 | Wait=43335ms
+2025-05-13T12:36:08.503Z [SEND] Role=analyst | Timestamp=2025-05-13T12:36:08.493Z | Action=share | Selected=0xf30c6a1224516d23c79b5e3b96f72b6081c655a2
+2025-05-13T12:36:19.128Z [UPDATE] Role=analyst | Update #4 | Address: 0xf30c6a1224516d23c79b5e3b96f72b6081c655a2 | Contract: 0xc42f363d955E3704cD04647ea579a790ee57A1Aa
+2025-05-13T12:36:19.129Z [DEBUG] Processing trace: Role=analyst, Action=share, Timestamp=1746843315
+2025-05-13T12:36:19.129Z [TRACE] Role=analyst | OriginalTime=1746843315 | Delay=401585ms | Now=1747139779129 | Target=1747139975189 | Wait=196060ms
+2025-05-13T12:39:35.210Z [SEND] Role=analyst | Timestamp=2025-05-13T12:39:35.199Z | Action=share | Selected=0x4c0a4e797bc670ce137249d3e5b87cd86031c2a8
+2025-05-13T12:39:45.496Z [UPDATE] Role=analyst | Update #5 | Address: 0x4c0a4e797bc670ce137249d3e5b87cd86031c2a8 | Contract: 0xc42f363d955E3704cD04647ea579a790ee57A1Aa
+2025-05-13T12:39:45.496Z [DEBUG] Processing trace: Role=analyst, Action=share, Timestamp=1746843527
+2025-05-13T12:39:45.497Z [TRACE] Role=analyst | OriginalTime=1746843527 | Delay=412502ms | Now=1747139985496 | Target=1747139986106 | Wait=610ms
+2025-05-13T12:39:46.108Z [SEND] Role=analyst | Timestamp=2025-05-13T12:39:46.108Z | Action=share | Selected=0x9360ee38b1b5a26973d466e8ed9e92d7ed3a178b
+2025-05-13T12:39:59.130Z [UPDATE] Role=analyst | Update #6 | Address: 0x9360ee38b1b5a26973d466e8ed9e92d7ed3a178b | Contract: 0xc42f363d955E3704cD04647ea579a790ee57A1Aa
+2025-05-13T12:39:59.130Z [DEBUG] Processing trace: Role=analyst, Action=share, Timestamp=1746843929
+2025-05-13T12:39:59.130Z [TRACE] Role=analyst | OriginalTime=1746843929 | Delay=433205ms | Now=1747139999130 | Target=1747140006809 | Wait=7679ms
+2025-05-13T12:40:06.811Z [SEND] Role=analyst | Timestamp=2025-05-13T12:40:06.810Z | Action=share | Selected=0x9360ee38b1b5a26973d466e8ed9e92d7ed3a178b
+2025-05-13T12:40:17.548Z [UPDATE] Role=analyst | Update #7 | Address: 0x9360ee38b1b5a26973d466e8ed9e92d7ed3a178b | Contract: 0xc42f363d955E3704cD04647ea579a790ee57A1Aa
+2025-05-13T12:40:17.548Z [DEBUG] Processing trace: Role=analyst, Action=share, Timestamp=1746844558
+2025-05-13T12:40:17.548Z [TRACE] Role=analyst | OriginalTime=1746844558 | Delay=465597ms | Now=1747140017548 | Target=1747140039201 | Wait=21653ms
+2025-05-13T12:40:39.210Z [SEND] Role=analyst | Timestamp=2025-05-13T12:40:39.209Z | Action=share | Selected=0xf30c6a1224516d23c79b5e3b96f72b6081c655a2
+2025-05-13T12:40:53.236Z [UPDATE] Role=analyst | Update #8 | Address: 0xf30c6a1224516d23c79b5e3b96f72b6081c655a2 | Contract: 0xc42f363d955E3704cD04647ea579a790ee57A1Aa
+2025-05-13T12:40:53.237Z [DEBUG] Processing trace: Role=analyst, Action=deploy, Timestamp=1746846701
+2025-05-13T12:40:53.237Z [TRACE] Role=analyst | OriginalTime=1746846701 | Delay=575958ms | Now=1747140053237 | Target=1747140149562 | Wait=96325ms
+2025-05-13T12:42:29.586Z [SEND] Role=analyst | Timestamp=2025-05-13T12:42:29.580Z | Action=deploy | Selected=0xa237ea273f9d9895198afc4c58eeb36ecdaee93f
+2025-05-13T12:42:29.588Z [SKIP] Role analyst | Already deployed
+2025-05-13T12:42:29.589Z [DEBUG] Processing trace: Role=analyst, Action=share, Timestamp=1746851082
+2025-05-13T12:42:29.589Z [TRACE] Role=analyst | OriginalTime=1746851082 | Delay=801573ms | Now=1747140149589 | Target=1747140375177 | Wait=225588ms
+2025-05-13T12:46:15.194Z [SEND] Role=analyst | Timestamp=2025-05-13T12:46:15.183Z | Action=share | Selected=0x0b59d9bb1761344823953a7fdf266e720a1bf50b
+2025-05-13T12:46:25.308Z [UPDATE] Role=analyst | Update #9 | Address: 0x0b59d9bb1761344823953a7fdf266e720a1bf50b | Contract: 0xc42f363d955E3704cD04647ea579a790ee57A1Aa
+2025-05-13T12:46:25.308Z [DEBUG] Processing trace: Role=analyst, Action=deploy, Timestamp=1746853779
+2025-05-13T12:46:25.309Z [TRACE] Role=analyst | OriginalTime=1746853779 | Delay=940464ms | Now=1747140385308 | Target=1747140514068 | Wait=128760ms
+2025-05-13T12:48:34.097Z [SEND] Role=analyst | Timestamp=2025-05-13T12:48:34.085Z | Action=deploy | Selected=0xcba1c6f82af25f8eb8fad986ea3cef024e0ee810
+2025-05-13T12:48:34.099Z [SKIP] Role analyst | Already deployed
+2025-05-13T12:48:34.100Z [DEBUG] Processing trace: Role=doctor, Action=share, Timestamp=1746870236
+2025-05-13T12:48:34.101Z [TRACE] Role=doctor | OriginalTime=1746870236 | Delay=1787975ms | Now=1747140514100 | Target=1747141361579 | Wait=847479ms
+2025-05-13T13:02:41.584Z [SEND] Role=doctor | Timestamp=2025-05-13T13:02:41.579Z | Action=share | Selected=0x8616a6e4f575fdd23f49c4e631df84b4ce75cd81
+2025-05-13T13:02:41.586Z [INFO] Role doctor | Not explicitly deployed yet, checking for lazy deploy
+2025-05-13T13:02:41.586Z [INFO] Role doctor | No contract found, deploying before update
+2025-05-13T13:02:55.092Z [DEPLOY] Role doctor | Address: 0x8616a6e4f575fdd23f49c4e631df84b4ce75cd81 | Action: lazy-deploy | Result: 0x4049960c917C4536694fE0ef4Ed145BCE71d4649
+2025-05-13T13:03:05.840Z [UPDATE] Role=doctor | Update #1 | Address: 0x8616a6e4f575fdd23f49c4e631df84b4ce75cd81 | Contract: 0x4049960c917C4536694fE0ef4Ed145BCE71d4649
+2025-05-13T13:03:05.840Z [DEBUG] Processing trace: Role=insurer, Action=share, Timestamp=1746871089
+2025-05-13T13:03:05.840Z [TRACE] Role=insurer | OriginalTime=1746871089 | Delay=1831903ms | Now=1747141385840 | Target=1747141405507 | Wait=19667ms
+2025-05-13T13:03:25.508Z [SEND] Role=insurer | Timestamp=2025-05-13T13:03:25.508Z | Action=share | Selected=0xadbf1abf9584a9653d1f68bf71455f001180b1dd
+2025-05-13T13:03:25.508Z [INFO] Role insurer | Not explicitly deployed yet, checking for lazy deploy
+2025-05-13T13:03:25.508Z [INFO] Role insurer | No contract found, deploying before update
+2025-05-13T13:03:41.357Z [DEPLOY] Role insurer | Address: 0xadbf1abf9584a9653d1f68bf71455f001180b1dd | Action: lazy-deploy | Result: 0x77932840D5cFD912638a5bAD1F678a9BED2e8b48
+2025-05-13T13:03:51.626Z [UPDATE] Role=insurer | Update #1 | Address: 0xadbf1abf9584a9653d1f68bf71455f001180b1dd | Contract: 0x77932840D5cFD912638a5bAD1F678a9BED2e8b48
+2025-05-13T13:03:51.626Z [DEBUG] Processing trace: Role=doctor, Action=share, Timestamp=1746872213
+2025-05-13T13:03:51.626Z [TRACE] Role=doctor | OriginalTime=1746872213 | Delay=1889787ms | Now=1747141431626 | Target=1747141463391 | Wait=31765ms
+2025-05-13T13:04:23.392Z [SEND] Role=doctor | Timestamp=2025-05-13T13:04:23.392Z | Action=share | Selected=0xa99efc483c705f0f37505c8f1a899c20f45ecbed
+2025-05-13T13:04:33.608Z [UPDATE] Role=doctor | Update #2 | Address: 0xa99efc483c705f0f37505c8f1a899c20f45ecbed | Contract: 0x4049960c917C4536694fE0ef4Ed145BCE71d4649
+2025-05-13T13:04:33.608Z [DEBUG] Processing trace: Role=insurer, Action=share, Timestamp=1746872872
+2025-05-13T13:04:33.608Z [TRACE] Role=insurer | OriginalTime=1746872872 | Delay=1923725ms | Now=1747141473608 | Target=1747141497329 | Wait=23721ms
+2025-05-13T13:04:57.333Z [SEND] Role=insurer | Timestamp=2025-05-13T13:04:57.331Z | Action=share | Selected=0xb73fac9ed2a336da1c73d3ffea614b822bc48389
+2025-05-13T13:05:07.627Z [UPDATE] Role=insurer | Update #2 | Address: 0xb73fac9ed2a336da1c73d3ffea614b822bc48389 | Contract: 0x77932840D5cFD912638a5bAD1F678a9BED2e8b48
+2025-05-13T13:05:07.627Z [DEBUG] Processing trace: Role=doctor, Action=share, Timestamp=1746875147
+2025-05-13T13:05:07.627Z [TRACE] Role=doctor | OriginalTime=1746875147 | Delay=2040884ms | Now=1747141507627 | Target=1747141614488 | Wait=106861ms
+2025-05-13T13:06:54.488Z [SEND] Role=doctor | Timestamp=2025-05-13T13:06:54.487Z | Action=share | Selected=0x7bf58445fbd457f3f5818a60140302d99c01a844
+2025-05-13T13:07:08.699Z [UPDATE] Role=doctor | Update #3 | Address: 0x7bf58445fbd457f3f5818a60140302d99c01a844 | Contract: 0x4049960c917C4536694fE0ef4Ed145BCE71d4649
+2025-05-13T13:07:08.699Z [DEBUG] Processing trace: Role=doctor, Action=share, Timestamp=1746876196
+2025-05-13T13:07:08.699Z [TRACE] Role=doctor | OriginalTime=1746876196 | Delay=2094905ms | Now=1747141628699 | Target=1747141668509 | Wait=39810ms
+2025-05-13T13:07:48.509Z [SEND] Role=doctor | Timestamp=2025-05-13T13:07:48.509Z | Action=share | Selected=0x33b02bf97f38d56f7cc7bea0f774e085fe0b35e1
+2025-05-13T13:07:57.478Z [UPDATE] Role=doctor | Update #4 | Address: 0x33b02bf97f38d56f7cc7bea0f774e085fe0b35e1 | Contract: 0x4049960c917C4536694fE0ef4Ed145BCE71d4649
+2025-05-13T13:07:57.478Z [DEBUG] Processing trace: Role=insurer, Action=claim, Timestamp=1746876300
+2025-05-13T13:07:57.478Z [TRACE] Role=insurer | OriginalTime=1746876300 | Delay=2100261ms | Now=1747141677478 | Target=1747141673865 | Wait=-3613ms
+2025-05-13T13:07:57.478Z [SEND] Role=insurer | Timestamp=2025-05-13T13:07:57.478Z | Action=claim | Selected=0x4617f2760072b83c1a1f8535486a7aebe4ce4157
+2025-05-13T13:08:11.029Z [UPDATE] Role=insurer | Update #3 | Address: 0x4617f2760072b83c1a1f8535486a7aebe4ce4157 | Contract: 0x77932840D5cFD912638a5bAD1F678a9BED2e8b48
+2025-05-13T13:08:11.029Z [DEBUG] Processing trace: Role=doctor, Action=deploy, Timestamp=1746879162
+2025-05-13T13:08:11.029Z [TRACE] Role=doctor | OriginalTime=1746879162 | Delay=2247650ms | Now=1747141691029 | Target=1747141821254 | Wait=130225ms
+2025-05-13T13:10:21.256Z [SEND] Role=doctor | Timestamp=2025-05-13T13:10:21.255Z | Action=deploy | Selected=0x33b02bf97f38d56f7cc7bea0f774e085fe0b35e1
+2025-05-13T13:10:21.257Z [SKIP] Role doctor | Already deployed
+2025-05-13T13:10:21.257Z [DEBUG] Processing trace: Role=insurer, Action=share, Timestamp=1746881748
+2025-05-13T13:10:21.257Z [TRACE] Role=insurer | OriginalTime=1746881748 | Delay=2380825ms | Now=1747141821257 | Target=1747141954429 | Wait=133172ms
+2025-05-13T13:12:34.459Z [SEND] Role=insurer | Timestamp=2025-05-13T13:12:34.446Z | Action=share | Selected=0xadbf1abf9584a9653d1f68bf71455f001180b1dd
+2025-05-13T13:12:51.900Z [UPDATE] Role=insurer | Update #4 | Address: 0xadbf1abf9584a9653d1f68bf71455f001180b1dd | Contract: 0x77932840D5cFD912638a5bAD1F678a9BED2e8b48
+2025-05-13T13:12:51.901Z [DEBUG] Processing trace: Role=insurer, Action=deploy, Timestamp=1746882428
+2025-05-13T13:12:51.901Z [TRACE] Role=insurer | OriginalTime=1746882428 | Delay=2415844ms | Now=1747141971901 | Target=1747141989448 | Wait=17547ms
+2025-05-13T13:13:09.452Z [SEND] Role=insurer | Timestamp=2025-05-13T13:13:09.449Z | Action=deploy | Selected=0x4617f2760072b83c1a1f8535486a7aebe4ce4157
+2025-05-13T13:13:09.453Z [SKIP] Role insurer | Already deployed
+2025-05-13T13:13:09.453Z [DEBUG] Processing trace: Role=doctor, Action=share, Timestamp=1746882930
+2025-05-13T13:13:09.453Z [TRACE] Role=doctor | OriginalTime=1746882930 | Delay=2441696ms | Now=1747141989453 | Target=1747142015300 | Wait=25847ms
+2025-05-13T13:13:35.303Z [SEND] Role=doctor | Timestamp=2025-05-13T13:13:35.302Z | Action=share | Selected=0x6db8548d08808088ad405ee31fbbe32df043682a
+2025-05-13T13:13:45.481Z [UPDATE] Role=doctor | Update #5 | Address: 0x6db8548d08808088ad405ee31fbbe32df043682a | Contract: 0x4049960c917C4536694fE0ef4Ed145BCE71d4649
+2025-05-13T13:13:45.482Z [DEBUG] Processing trace: Role=doctor, Action=share, Timestamp=1746883032
+2025-05-13T13:13:45.482Z [TRACE] Role=doctor | OriginalTime=1746883032 | Delay=2446949ms | Now=1747142025482 | Target=1747142020553 | Wait=-4929ms
+2025-05-13T13:13:45.482Z [SEND] Role=doctor | Timestamp=2025-05-13T13:13:45.482Z | Action=share | Selected=0x8616a6e4f575fdd23f49c4e631df84b4ce75cd81
+2025-05-13T13:13:58.493Z [UPDATE] Role=doctor | Update #6 | Address: 0x8616a6e4f575fdd23f49c4e631df84b4ce75cd81 | Contract: 0x4049960c917C4536694fE0ef4Ed145BCE71d4649
+2025-05-13T13:13:58.493Z [DEBUG] Processing trace: Role=doctor, Action=deploy, Timestamp=1746883109
+2025-05-13T13:13:58.493Z [TRACE] Role=doctor | OriginalTime=1746883109 | Delay=2450914ms | Now=1747142038493 | Target=1747142024518 | Wait=-13975ms
+2025-05-13T13:13:58.493Z [SEND] Role=doctor | Timestamp=2025-05-13T13:13:58.493Z | Action=deploy | Selected=0xec913c328adf7030bbe02ba724d744fc0ff0f93b
+2025-05-13T13:13:58.493Z [SKIP] Role doctor | Already deployed
+2025-05-13T13:13:58.493Z [DEBUG] Processing trace: Role=insurer, Action=share, Timestamp=1746883295
+2025-05-13T13:13:58.493Z [TRACE] Role=insurer | OriginalTime=1746883295 | Delay=2460493ms | Now=1747142038493 | Target=1747142034097 | Wait=-4396ms
+2025-05-13T13:13:58.494Z [SEND] Role=insurer | Timestamp=2025-05-13T13:13:58.494Z | Action=share | Selected=0x85299bb7767ab0101c8c560269c4cc59e106f066
+2025-05-13T13:14:07.279Z [UPDATE] Role=insurer | Update #5 | Address: 0x85299bb7767ab0101c8c560269c4cc59e106f066 | Contract: 0x77932840D5cFD912638a5bAD1F678a9BED2e8b48
+2025-05-13T13:14:07.279Z [DEBUG] Processing trace: Role=doctor, Action=deploy, Timestamp=1746883328
+2025-05-13T13:14:07.279Z [TRACE] Role=doctor | OriginalTime=1746883328 | Delay=2462192ms | Now=1747142047279 | Target=1747142035796 | Wait=-11483ms
+2025-05-13T13:14:07.279Z [SEND] Role=doctor | Timestamp=2025-05-13T13:14:07.279Z | Action=deploy | Selected=0xda091d32f681e093d6a1b6d7881314dba7f72925
+2025-05-13T13:14:07.279Z [SKIP] Role doctor | Already deployed
+2025-05-13T13:14:07.279Z [DEBUG] Processing trace: Role=researcher, Action=share, Timestamp=1746884240
+2025-05-13T13:14:07.279Z [TRACE] Role=researcher | OriginalTime=1746884240 | Delay=2509159ms | Now=1747142047279 | Target=1747142082763 | Wait=35484ms
+2025-05-13T13:14:42.767Z [SEND] Role=researcher | Timestamp=2025-05-13T13:14:42.766Z | Action=share | Selected=0xbf3921b2d6c4fe505816d63a2cdeabb7fd39d1f9
+2025-05-13T13:14:42.768Z [INFO] Role researcher | Not explicitly deployed yet, checking for lazy deploy
+2025-05-13T13:14:42.768Z [INFO] Role researcher | No contract found, deploying before update
+2025-05-13T13:14:57.317Z [DEPLOY] Role researcher | Address: 0xbf3921b2d6c4fe505816d63a2cdeabb7fd39d1f9 | Action: lazy-deploy | Result: 0x2D8123438B85BDCEEc764f15b29D88FD3FD0385B
+2025-05-13T13:15:09.413Z [UPDATE] Role=researcher | Update #1 | Address: 0xbf3921b2d6c4fe505816d63a2cdeabb7fd39d1f9 | Contract: 0x2D8123438B85BDCEEc764f15b29D88FD3FD0385B
+2025-05-13T13:15:09.413Z [DEBUG] Processing trace: Role=doctor, Action=share, Timestamp=1746885049
+2025-05-13T13:15:09.413Z [TRACE] Role=doctor | OriginalTime=1746885049 | Delay=2550821ms | Now=1747142109413 | Target=1747142124425 | Wait=15012ms
+2025-05-13T13:15:24.426Z [SEND] Role=doctor | Timestamp=2025-05-13T13:15:24.426Z | Action=share | Selected=0xf549736facc962ea7a5233abee62dca0fe952446
+2025-05-13T13:15:38.818Z [UPDATE] Role=doctor | Update #7 | Address: 0xf549736facc962ea7a5233abee62dca0fe952446 | Contract: 0x4049960c917C4536694fE0ef4Ed145BCE71d4649
+2025-05-13T13:15:38.818Z [DEBUG] Processing trace: Role=insurer, Action=deploy, Timestamp=1746885771
+2025-05-13T13:15:38.818Z [TRACE] Role=insurer | OriginalTime=1746885771 | Delay=2588003ms | Now=1747142138818 | Target=1747142161607 | Wait=22789ms
+2025-05-13T13:16:01.610Z [SEND] Role=insurer | Timestamp=2025-05-13T13:16:01.609Z | Action=deploy | Selected=0xadbf1abf9584a9653d1f68bf71455f001180b1dd
+2025-05-13T13:16:01.611Z [SKIP] Role insurer | Already deployed
+2025-05-13T13:16:01.611Z [DEBUG] Processing trace: Role=researcher, Action=share, Timestamp=1746886032
+2025-05-13T13:16:01.611Z [TRACE] Role=researcher | OriginalTime=1746886032 | Delay=2601444ms | Now=1747142161611 | Target=1747142175048 | Wait=13437ms
+2025-05-13T13:16:15.051Z [SEND] Role=researcher | Timestamp=2025-05-13T13:16:15.050Z | Action=share | Selected=0xd8424e605dd498a02ed3ab2342b8c78039799e11
+2025-05-13T13:16:24.982Z [UPDATE] Role=researcher | Update #2 | Address: 0xd8424e605dd498a02ed3ab2342b8c78039799e11 | Contract: 0x2D8123438B85BDCEEc764f15b29D88FD3FD0385B
+2025-05-13T13:16:24.982Z [DEBUG] Processing trace: Role=doctor, Action=share, Timestamp=1746890417
+2025-05-13T13:16:24.983Z [TRACE] Role=doctor | OriginalTime=1746890417 | Delay=2827265ms | Now=1747142184982 | Target=1747142400869 | Wait=215887ms
+2025-05-13T13:20:00.895Z [SEND] Role=doctor | Timestamp=2025-05-13T13:20:00.882Z | Action=share | Selected=0xa99efc483c705f0f37505c8f1a899c20f45ecbed
+2025-05-13T13:20:13.157Z [UPDATE] Role=doctor | Update #8 | Address: 0xa99efc483c705f0f37505c8f1a899c20f45ecbed | Contract: 0x4049960c917C4536694fE0ef4Ed145BCE71d4649
+2025-05-13T13:20:13.157Z [DEBUG] Processing trace: Role=insurer, Action=claim, Timestamp=1746890532
+2025-05-13T13:20:13.157Z [TRACE] Role=insurer | OriginalTime=1746890532 | Delay=2833187ms | Now=1747142413157 | Target=1747142406791 | Wait=-6366ms
+2025-05-13T13:20:13.158Z [SEND] Role=insurer | Timestamp=2025-05-13T13:20:13.158Z | Action=claim | Selected=0xb73fac9ed2a336da1c73d3ffea614b822bc48389
+2025-05-13T13:20:23.394Z [UPDATE] Role=insurer | Update #6 | Address: 0xb73fac9ed2a336da1c73d3ffea614b822bc48389 | Contract: 0x77932840D5cFD912638a5bAD1F678a9BED2e8b48
+2025-05-13T13:20:23.394Z [DEBUG] Processing trace: Role=researcher, Action=deploy, Timestamp=1746890986
+2025-05-13T13:20:23.394Z [TRACE] Role=researcher | OriginalTime=1746890986 | Delay=2856568ms | Now=1747142423394 | Target=1747142430172 | Wait=6778ms
+2025-05-13T13:20:30.173Z [SEND] Role=researcher | Timestamp=2025-05-13T13:20:30.173Z | Action=deploy | Selected=0xd8424e605dd498a02ed3ab2342b8c78039799e11
+2025-05-13T13:20:30.174Z [SKIP] Role researcher | Already deployed
+2025-05-13T13:20:30.174Z [DEBUG] Processing trace: Role=doctor, Action=share, Timestamp=1746891457
+2025-05-13T13:20:30.174Z [TRACE] Role=doctor | OriginalTime=1746891457 | Delay=2880823ms | Now=1747142430174 | Target=1747142454427 | Wait=24253ms
+2025-05-13T13:20:54.429Z [SEND] Role=doctor | Timestamp=2025-05-13T13:20:54.427Z | Action=share | Selected=0x8616a6e4f575fdd23f49c4e631df84b4ce75cd81
+2025-05-13T13:21:09.469Z [UPDATE] Role=doctor | Update #9 | Address: 0x8616a6e4f575fdd23f49c4e631df84b4ce75cd81 | Contract: 0x4049960c917C4536694fE0ef4Ed145BCE71d4649
+2025-05-13T13:21:09.469Z [DEBUG] Processing trace: Role=researcher, Action=share, Timestamp=1746892821
+2025-05-13T13:21:09.469Z [TRACE] Role=researcher | OriginalTime=1746892821 | Delay=2951067ms | Now=1747142469469 | Target=1747142524671 | Wait=55202ms
+2025-05-13T13:22:04.695Z [SEND] Role=researcher | Timestamp=2025-05-13T13:22:04.688Z | Action=share | Selected=0x9b68aa9f9db98a9b52ef26c5e4a4fc86af5a3a90
+2025-05-13T13:22:19.120Z [UPDATE] Role=researcher | Update #3 | Address: 0x9b68aa9f9db98a9b52ef26c5e4a4fc86af5a3a90 | Contract: 0x2D8123438B85BDCEEc764f15b29D88FD3FD0385B
+2025-05-13T13:22:19.120Z [DEBUG] Processing trace: Role=researcher, Action=share, Timestamp=1746894246
+2025-05-13T13:22:19.121Z [TRACE] Role=researcher | OriginalTime=1746894246 | Delay=3024453ms | Now=1747142539120 | Target=1747142598057 | Wait=58937ms
+2025-05-13T13:23:18.099Z [SEND] Role=researcher | Timestamp=2025-05-13T13:23:18.082Z | Action=share | Selected=0xd8424e605dd498a02ed3ab2342b8c78039799e11
+2025-05-13T13:23:27.585Z [UPDATE] Role=researcher | Update #4 | Address: 0xd8424e605dd498a02ed3ab2342b8c78039799e11 | Contract: 0x2D8123438B85BDCEEc764f15b29D88FD3FD0385B
+2025-05-13T13:23:27.585Z [DEBUG] Processing trace: Role=researcher, Action=share, Timestamp=1746904329
+2025-05-13T13:23:27.585Z [TRACE] Role=researcher | OriginalTime=1746904329 | Delay=3543712ms | Now=1747142607585 | Target=1747143117316 | Wait=509731ms
+2025-05-13T13:31:57.333Z [SEND] Role=researcher | Timestamp=2025-05-13T13:31:57.321Z | Action=share | Selected=0xc9b89bd5e5c474fba64b834f323e407f0226ab48
+2025-05-13T13:32:09.528Z [UPDATE] Role=researcher | Update #5 | Address: 0xc9b89bd5e5c474fba64b834f323e407f0226ab48 | Contract: 0x2D8123438B85BDCEEc764f15b29D88FD3FD0385B
+2025-05-13T13:32:09.528Z [DEBUG] Processing trace: Role=researcher, Action=deploy, Timestamp=1746905119
+2025-05-13T13:32:09.528Z [TRACE] Role=researcher | OriginalTime=1746905119 | Delay=3584395ms | Now=1747143129528 | Target=1747143157999 | Wait=28471ms
+2025-05-13T13:32:37.999Z [SEND] Role=researcher | Timestamp=2025-05-13T13:32:37.999Z | Action=deploy | Selected=0xc9b89bd5e5c474fba64b834f323e407f0226ab48
+2025-05-13T13:32:37.999Z [SKIP] Role researcher | Already deployed
+2025-05-13T13:32:37.999Z [DEBUG] Processing trace: Role=researcher, Action=share, Timestamp=1746905422
+2025-05-13T13:32:37.999Z [TRACE] Role=researcher | OriginalTime=1746905422 | Delay=3600000ms | Now=1747143157999 | Target=1747143173604 | Wait=15605ms
+2025-05-13T13:32:53.606Z [SEND] Role=researcher | Timestamp=2025-05-13T13:32:53.606Z | Action=share | Selected=0xd8424e605dd498a02ed3ab2342b8c78039799e11
+2025-05-13T13:33:07.205Z [UPDATE] Role=researcher | Update #6 | Address: 0xd8424e605dd498a02ed3ab2342b8c78039799e11 | Contract: 0x2D8123438B85BDCEEc764f15b29D88FD3FD0385B
+2025-05-13T13:33:07.205Z [SUMMARY] Total processed: 40
+2025-05-13T13:33:07.205Z [SUMMARY] Contracts deployed: 4
+2025-05-13T13:33:07.205Z [SUMMARY] Roles deployed: analyst, doctor, insurer, researcher
+2025-05-13T13:33:07.205Z [SUMMARY] Update counts per role: {"analyst":9,"doctor":9,"insurer":6,"researcher":6}
+2025-05-13T13:33:07.335Z [INFO] End block number: 21617134
