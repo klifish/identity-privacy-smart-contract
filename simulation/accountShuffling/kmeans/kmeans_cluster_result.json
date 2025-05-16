@@ -1,0 +1,107 @@
+[
+  {
+    "address": "0xcba1c6f82af25f8eb8fad986ea3cef024e0ee810",
+    "cluster": 1,
+    "role": "analyst"
+  },
+  {
+    "address": "0x2bbd64d7ddda3e56f1832db9f966ce11fa12a3bb",
+    "cluster": 1,
+    "role": "analyst"
+  },
+  {
+    "address": "0x0a7e54999c1651bc7119a7e8b1b246f02ec92105",
+    "cluster": 1,
+    "role": "analyst"
+  },
+  {
+    "address": "0xf30c6a1224516d23c79b5e3b96f72b6081c655a2",
+    "cluster": 2,
+    "role": "analyst"
+  },
+  {
+    "address": "0x4c0a4e797bc670ce137249d3e5b87cd86031c2a8",
+    "cluster": 1,
+    "role": "analyst"
+  },
+  {
+    "address": "0x9360ee38b1b5a26973d466e8ed9e92d7ed3a178b",
+    "cluster": 1,
+    "role": "analyst"
+  },
+  {
+    "address": "0x0b59d9bb1761344823953a7fdf266e720a1bf50b",
+    "cluster": 1,
+    "role": "analyst"
+  },
+  {
+    "address": "0x8616a6e4f575fdd23f49c4e631df84b4ce75cd81",
+    "cluster": 0,
+    "role": "doctor"
+  },
+  {
+    "address": "0xadbf1abf9584a9653d1f68bf71455f001180b1dd",
+    "cluster": 4,
+    "role": "insurer"
+  },
+  {
+    "address": "0xa99efc483c705f0f37505c8f1a899c20f45ecbed",
+    "cluster": 3,
+    "role": "doctor"
+  },
+  {
+    "address": "0xb73fac9ed2a336da1c73d3ffea614b822bc48389",
+    "cluster": 3,
+    "role": "insurer"
+  },
+  {
+    "address": "0x7bf58445fbd457f3f5818a60140302d99c01a844",
+    "cluster": 1,
+    "role": "doctor"
+  },
+  {
+    "address": "0x33b02bf97f38d56f7cc7bea0f774e085fe0b35e1",
+    "cluster": 1,
+    "role": "doctor"
+  },
+  {
+    "address": "0x4617f2760072b83c1a1f8535486a7aebe4ce4157",
+    "cluster": 1,
+    "role": "insurer"
+  },
+  {
+    "address": "0x6db8548d08808088ad405ee31fbbe32df043682a",
+    "cluster": 1,
+    "role": "doctor"
+  },
+  {
+    "address": "0x85299bb7767ab0101c8c560269c4cc59e106f066",
+    "cluster": 1,
+    "role": "insurer"
+  },
+  {
+    "address": "0xbf3921b2d6c4fe505816d63a2cdeabb7fd39d1f9",
+    "cluster": 1,
+    "role": "researcher"
+  },
+  {
+    "address": "0xf549736facc962ea7a5233abee62dca0fe952446",
+    "cluster": 1,
+    "role": "doctor"
+  },
+  {
+    "address": "0xd8424e605dd498a02ed3ab2342b8c78039799e11",
+    "cluster": 0,
+    "role": "researcher"
+  },
+  {
+    "address": "0x9b68aa9f9db98a9b52ef26c5e4a4fc86af5a3a90",
+    "cluster": 1,
+    "role": "researcher"
+  },
+  {
+    "address": "0xc9b89bd5e5c474fba64b834f323e407f0226ab48",
+    "cluster": 1,
+    "role": "researcher"
+  }
+]

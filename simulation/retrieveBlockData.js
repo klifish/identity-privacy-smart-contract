@@ -156,9 +156,11 @@ function getTransactionHashesFromBlocksWithTimestamp(blockDataArray) {
 
 async function getAllTransactionData(txHashes) {
     const allTransactionData = [];
-    for (const hash of txHashes) {
-        console.log(`Tracing transaction ${hash}`);
-        const transactionData = await getTransactionByHash(hash, `${hash}.json`);
+    for (let i = 0; i < txHashes.length; i++) {
+        const hash = txHashes[i];
+        console.log(`Tracing transaction ${i + 1}/${txHashes.length}: ${hash.txHash}`);
+        const transactionData = await getTransactionByHash(hash.txHash, `${hash.txHash}.json`);
+        transactionData.txHash = hash.txHash;
         allTransactionData.push(transactionData);
     }
     return allTransactionData;

@@ -20,7 +20,7 @@ for (const [address, feat] of Object.entries(rawData)) {
 }
 
 const dbscan = new clustering.DBSCAN();
-const clusters = dbscan.run(features, 10, 2); // eps=0.5, minPts=2 (tunable)
+const clusters = dbscan.run(features, 0.1, 2); // eps=0.5, minPts=2 (tunable)
 const noise = dbscan.noise;
 
 const summaryLines = [];

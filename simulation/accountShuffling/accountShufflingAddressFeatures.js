@@ -11,21 +11,49 @@ const {
 const fs = require("fs");
 const path = require("path");
 
+const CACHE_DIR = path.join(__dirname, "cache");
+fs.mkdirSync(CACHE_DIR, { recursive: true });
+
+async function loadOrRetrieveBlockData(startBlockNumber, endBlockNumber) {
+    const cachePath = path.join(CACHE_DIR, `blockData-${startBlockNumber}-${endBlockNumber}.json`);
+    if (fs.existsSync(cachePath)) {
+        console.log("📦 Loading block data from cache...");
+        return JSON.parse(fs.readFileSync(cachePath, "utf-8"));
+    }
+
+    console.log("🌐 Fetching block data from remote...");
+    const blockData = await retrieveBlockRangeData(startBlockNumber, endBlockNumber);
+    fs.writeFileSync(cachePath, JSON.stringify(blockData, null, 2));
+    return blockData;
+}
+
+async function loadOrRetrieveTransactionData(allTransactionHashes) {
+    const cachePath = path.join(CACHE_DIR, `transactionData.json`);
+    if (fs.existsSync(cachePath)) {
+        console.log("📦 Loading transaction data from cache...");
+        return JSON.parse(fs.readFileSync(cachePath, "utf-8"));
+    }
+
+    console.log("🌐 Fetching transaction data from remote...");
+    const txData = await getAllTransactionData(allTransactionHashes);
+    fs.writeFileSync(cachePath, JSON.stringify(txData, null, 2));
+    return txData;
+}
+
 async function main() {
     const mode = "standard"; // or "privacy"
-    const startBlockNumber = 21530600
+    const startBlockNumber = 21615400
 
-    const endBlockNumber = 21531000
+    const endBlockNumber = 21617200
 
-    // const blockData = await retrieveBlockRangeData(startBlockNumber, endBlockNumber);
-    const allBlockData = readAllBlockData(startBlockNumber, endBlockNumber);
+    const allBlockData = await loadOrRetrieveBlockData(startBlockNumber, endBlockNumber);
 
     console.log("Retrieving transaction hashes...");
     const allTransactionHashes = getTransactionHashesFromBlocksWithTimestamp(allBlockData);
 
     console.log("Retrieving transaction data...");
-    // const allTransactionData = await getAllTransactionData(allTransactionHashes);
-    const allTransactionData = readAllTransactionDataWithTimestamp(allTransactionHashes);
+    const allTransactionData = await loadOrRetrieveTransactionData(allTransactionHashes);
+
 
     const hashToTimestamp = {};
     for (const tx of allTransactionHashes) {
@@ -36,7 +64,8 @@ async function main() {
     }
 
     for (const tx of allTransactionData) {
-        const extra = hashToTimestamp[tx.hash];
+
+        const extra = hashToTimestamp[tx.txHash];
         if (extra) {
             tx.timestamp = extra.timestamp;
             tx.blockNumber = extra.blockNumber;
@@ -44,8 +73,16 @@ async function main() {
     }
 
     // Write enriched transactions to file
-    fs.writeFileSync(path.join(__dirname, "enrichedTransactions.json"), JSON.stringify(allTransactionData, null, 2));
+    fs.writeFileSync(path.join(__dirname, "cache", "enrichedTransactions.json"), JSON.stringify(allTransactionData, null, 2));
     console.log("✅ enrichedTransactions.json exported.");
+
+    // check entrypoint 
+    const ENTRYPOINT_ADDRESS = "0x0000000071727De22E5E9d8BAf0edAc6f37da032".toLowerCase();
+    const entrypointTransactions = allTransactionData.filter(
+        tx => tx.to?.toLowerCase() === ENTRYPOINT_ADDRESS
+    );
+    // fs.writeFileSync(path.join(__dirname, "cache", "entrypointTransactions.json"), JSON.stringify(entrypointTransactions, null, 2));
+    // console.log("✅ entrypointTransactions.json exported.");
 
     // --- Temporal feature computation per address ---
     const addressToTimestamps = {};
@@ -65,15 +102,16 @@ async function main() {
         }
     }
 
-    for (const tx of allTransactionData) {
-        const topLevelFrom = tx.result.from.toLowerCase();
+
+    for (const tx of entrypointTransactions) {
+        const topLevelFrom = tx.from.toLowerCase();
         if (!addressToTimestamps[topLevelFrom]) {
             addressToTimestamps[topLevelFrom] = [];
         }
         addressToTimestamps[topLevelFrom].push(tx.timestamp);
 
-        if (tx.result.calls && Array.isArray(tx.result.calls)) {
-            collectInternalFromAddresses(tx.result.calls, tx.timestamp);
+        if (tx.calls && Array.isArray(tx.calls)) {
+            collectInternalFromAddresses(tx.calls, tx.timestamp);
         }
     }
 
