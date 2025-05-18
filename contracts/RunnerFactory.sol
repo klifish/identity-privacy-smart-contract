@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import "./Runner.sol";
 
 contract RunnerFactory {
-    Runner public immutable runnerImplementation;
+    Runner public runnerImplementation;
     address public admin;
 
     event RunnerCreated(address runnerAddress);
@@ -19,6 +19,12 @@ contract RunnerFactory {
     constructor(IEntryPoint _entryPoint, IRegistry aRegistry) {
         admin = msg.sender;
         runnerImplementation = new Runner(_entryPoint, aRegistry);
+    }
+
+    function updateRunnerImplementation(
+        address payable newImpl
+    ) public onlyAdmin {
+        runnerImplementation = Runner(newImpl);
     }
 
     function createRunner() public onlyAdmin returns (Runner ret) {

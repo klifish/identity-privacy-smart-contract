@@ -1,6 +1,7 @@
 [
   {
     "role": "insurer",
+    "deployedUserDataContract": "0x77932840D5cFD912638a5bAD1F678a9BED2e8b48",
     "addresses": [
       {
         "smartAccountAddress": "0x4617f2760072b83c1a1f8535486a7aebe4ce4157",
@@ -30,6 +31,7 @@
   },
   {
     "role": "analyst",
+    "deployedUserDataContract": "0xc42f363d955E3704cD04647ea579a790ee57A1Aa",
     "addresses": [
       {
         "smartAccountAddress": "0xa237ea273f9d9895198afc4c58eeb36ecdaee93f",
@@ -71,6 +73,7 @@
   },
   {
     "role": "doctor",
+    "deployedUserDataContract": "0x4049960c917C4536694fE0ef4Ed145BCE71d4649",
     "addresses": [
       {
         "smartAccountAddress": "0xec913c328adf7030bbe02ba724d744fc0ff0f93b",
@@ -112,6 +115,7 @@
   },
   {
     "role": "researcher",
+    "deployedUserDataContract": "0x2D8123438B85BDCEEc764f15b29D88FD3FD0385B",
     "addresses": [
       {
         "smartAccountAddress": "0xc9b89bd5e5c474fba64b834f323e407f0226ab48",

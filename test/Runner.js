@@ -213,8 +213,7 @@ describe('Runner', function () {
         let { pA, pB, pC, pubSignals } = await utils.groth16ExportSolidityCallData(proofJson, publicInputs);
         const serializedProofandPublicSignals = ethers.AbiCoder.defaultAbiCoder().encode(["uint[2]", "uint[2][2]", "uint[2]", "uint[2]"], [pA, pB, pC, pubSignals]);
 
-        const tx = await registry.verify(pA, pB, pC, pubSignals, { gasLimit: 1000000 });
-        const receipt = await tx.wait();
+        const isValid = await registry.verify(pA, pB, pC, pubSignals, { gasLimit: 1000000 });
 
         // const events = await registry.queryFilter(registry.filters.ProofVerified());
         // expect(events[0].args.result).to.be.true;
@@ -280,8 +279,8 @@ describe('Runner', function () {
 
         const decodedProof = await runner._deserializeProofAndPublicSignals(serializedProofandPublicSignals);
         // console.log("Decoded proof:", decodedProof);
-        await runner.verifyProof(serializedProofandPublicSignals, { gasLimit: 30000000 });
-
+        const result = await runner.verifyProof(serializedProofandPublicSignals, { gasLimit: 30000000 });
+        console.log("Result of verification:", result);
 
         // await runner.preVerifySignature(serializedProofandPublicSignals);
 

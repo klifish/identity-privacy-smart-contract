@@ -53,7 +53,7 @@ async function sendUserOperation() {
     const smart_account_address = "0xECc88Cc6a3c93AD477C6b72A486C14653803D044"
     const secret = "hello world";
     const nullifier = 0n;
-    // await registerUser(smart_account_address, secret, nullifier);
+    await registerUser(smart_account_address, secret, nullifier);
 
     console.log("Generating proof");
     const proof = await generateProof(smart_account_address, secret, nullifier);

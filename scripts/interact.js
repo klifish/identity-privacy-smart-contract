@@ -30,18 +30,20 @@ async function main() {
     await registerUserWithLeaf(leafToInsert);
     console.log("User registered");
 
-    // generate registry proof
-    const proof = await generateProof(address, secret, nullifier);
-    console.log("Proof generated: ", proof);
 
     // prepare user operation
     const runnerAddress = await getFirstRunnerAddress();
     const runner = await ethers.getContractAt("Runner", runnerAddress);
     const paymaster = await getVerifyingPaymsaterAddress();
     const userOperation = getDefaultUserOp(runnerAddress, paymaster);
+    // userOperation.verificationGasLimit = ethers.toBeHex(100000n);
+    // userOperation.paymasterVerificationGasLimit = ethers.toBeHex(50000n);
 
+
+    // generate registry proof
+    const proof = await generateProof(address, secret, nullifier);
+    console.log("Proof generated: ", proof);
     userOperation.signature = proof;
-
 
     // callData 
     const counterAddress = "0x59d0d591b90ac342752ea7872d52cdc3c573ab71"
@@ -64,7 +66,7 @@ async function main() {
     const hash = await verifyingPaymaster.getHash(packedUserOp, MOCK_VALID_UNTIL, MOCK_VALID_AFTER);
 
     const sig = await signer.signMessage(ethers.getBytes(hash));
-    console.log("userOperation", userOperation);
+    // console.log("userOperation", userOperation);
     // delete userOperation.nonce;
     const UserOp = await fillUserOp({
         ...userOperation,
@@ -74,20 +76,27 @@ async function main() {
     }, entryPoint)
 
 
-    UserOp.nonce = "0x" + UserOp.nonce.toString();
+
+    console.log("User operation nonce:", UserOp.nonce);
+    UserOp.nonce = ethers.toBeHex(UserOp.nonce);
     console.log("User operation:", UserOp);
     // delete UserOp.initCode
 
     // get user operation hash
-    // const userOpHash = await entryPoint.getUserOpHash(packUserOp(UserOp));
-    // console.log("User operation hash:", userOpHash);
+    const userOpHash = await entryPoint.getUserOpHash(packUserOp(UserOp));
+    console.log("User operation hash:", userOpHash);
+
 
     const userOpHashLocal = getUserOpHash(UserOp, ENTRY_POINT_ADDRESS, 80002);
     console.log("User operation hash local:", userOpHashLocal);
 
+    runner.once("ValidateSignature", (userOpHash, proofHash, result, event) => {
+        console.log("Caught ValidateSignature:", userOpHash, proofHash, result);
+    });
     const tx = await runner.preVerifySignature(userOperation.signature, userOpHashLocal);
-    await tx.wait();
-    console.log("User operation signature verified");
+    const receipt = await tx.wait();
+    console.log("Transaction hash:", receipt.hash);
+    console.log("User operation signature pre-verified", receipt.blockNumber);
 
     const options1 = {
         method: 'POST',
@@ -101,6 +110,7 @@ async function main() {
     };
 
     try {
+
         const response = await fetch('https://polygon-amoy.g.alchemy.com/v2/VG6iwUaOlQPYcDCb3AlkyAxrAXF7UzU9', options1)
         // console.log("response:", response);
         const data = await response.json();
@@ -110,38 +120,10 @@ async function main() {
         console.error(error);
         throw error;
     }
+
+    const events = await runner.queryFilter("ValidateSignature");
+
 }
-
-// function getCallData(dest, value, func) {
-//     const runnerExecuteInterfact = new ethers.Interface([
-//         "function execute(address dest,uint256 value,bytes calldata func) external"
-//     ]);
-
-//     const callData = runnerExecuteInterfact.encodeFunctionData("execute", [dest, value, func]);
-//     return callData;
-// }
-
-// function getDefaultUserOp(sender, paymaster) {
-//     return {
-//         sender: sender,
-//         callData: "0xb61d27f600000000000000000000000043f6bfbe9dad44cf0a60570c30c307d949be4cd40000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000645c833bfd000000000000000000000000613c64104b98b048b93289ed20aefd80912b3cde0000000000000000000000000000000000000000000000000de123e8a84f9901000000000000000000000000c9371ea30dea5ac745b71e191ba8cde2c4e66df500000000000000000000000000000000000000000000000000000000",
-//         callGasLimit: "0x7A1200",
-//         verificationGasLimit: "0x927C0",
-//         preVerificationGas: "0x15F90",
-//         maxFeePerGas: "0x956703D00",
-//         maxPriorityFeePerGas: "0x13AB668000",
-//         paymasterVerificationGasLimit: "0x927C0",
-//         paymasterPostOpGasLimit: "0x927C0",
-//         signature: "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c",
-//         paymaster: paymaster,
-//         paymasterData: ethers.concat(
-//             [
-//                 ethers.AbiCoder.defaultAbiCoder().encode(['uint48', 'uint48'], [MOCK_VALID_UNTIL, MOCK_VALID_AFTER]),
-//                 '0x' + '00'.repeat(65)
-//             ]
-//         )
-//     }
-// }
 
 main()
     .then(() => process.exit(0))

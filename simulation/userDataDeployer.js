@@ -51,6 +51,86 @@ async function signUserOpByAdmin(hash) {
     return sig;
 }
 
+async function updateUserDataWithPrivacy(secret, smartAccountAddress, userDataAddress) {
+    const runnerAddress = await getFirstRunnerAddress();
+    const runner = await ethers.getContractAt("Runner", runnerAddress);
+
+    const paymaster = await getVerifyingPaymsaterAddress();
+    const userOperation = getDefaultUserOp(runnerAddress, paymaster);
+    userOperation.preVerificationGas = ethers.toBeHex(BigInt(userOperation.preVerificationGas) * 20n);
+    userOperation.verificationGasLimit = ethers.toBeHex(BigInt(userOperation.verificationGasLimit) * 4n);
+
+    const proof = await generateProof(smartAccountAddress, secret, nullifier); // generate registration proof
+    userOperation.signature = proof;
+
+    const contractName = "UserData";
+    const userDataFactory = await ethers.getContractFactory(contractName);
+    const userDataInterface = userDataFactory.interface;
+    const userDataCommitmentProof = await generateUserCommitmentProof(secret + contractName);
+
+    const updateFunc = userDataInterface.encodeFunctionData("update", ["new data", userDataCommitmentProof]);
+    const updateUserDataCallData = getCallData(userDataAddress, 0, updateFunc);
+    userOperation.callData = updateUserDataCallData;
+
+
+    const entryPoint = new ethers.Contract(ENTRY_POINT_ADDRESS, entryPointAbi, alchemyProvider);
+    const userOp1 = await fillUserOp(userOperation, entryPoint, 'getNonce');
+    const packedUserOp = packUserOp(userOp1);
+
+    const verifyingPaymasterAddress = await getVerifyingPaymsaterAddress();
+    const verifyingPaymaster = await ethers.getContractAt("VerifyingPaymaster", verifyingPaymasterAddress);
+    const hash = await verifyingPaymaster.getHash(packedUserOp, MOCK_VALID_UNTIL, MOCK_VALID_AFTER);
+    const sig = await signUserOpByAdmin(hash); // Admin sign the UserOp to request the paymaster to pay
+
+    // delete userOperation.nonce;
+    const UserOp = await fillUserOp({
+        ...userOperation,
+        paymaster: verifyingPaymasterAddress,
+        paymasterData: ethers.concat([ethers.AbiCoder.defaultAbiCoder().encode(['uint48', 'uint48'], [MOCK_VALID_UNTIL, MOCK_VALID_AFTER]), sig])
+
+    }, entryPoint)
+
+    UserOp.nonce = ethers.toBeHex(UserOp.nonce);
+    console.log("User operation:", UserOp);
+    // delete UserOp.initCode
+
+    const userOpHashLocal = getUserOpHash(UserOp, ENTRY_POINT_ADDRESS, 80002);
+    console.log("User operation hash local:", userOpHashLocal);
+
+    const tx = await runner.preVerifySignature(userOperation.signature, userOpHashLocal);
+    await tx.wait();
+    console.log("User operation signature verified");
+
+    const currentBlock = await alchemyProvider.getBlockNumber();
+
+    // send the user operation to Bundler
+    const options1 = {
+        method: 'POST',
+        headers: { accept: 'application/json', 'content-type': 'application/json' },
+        body: JSON.stringify({
+            id: 1,
+            jsonrpc: '2.0',
+            method: 'eth_sendUserOperation',
+            params: [UserOp, "0x0000000071727De22E5E9d8BAf0edAc6f37da032"]
+        })
+    };
+
+    try {
+        const response = await fetch('https://polygon-amoy.g.alchemy.com/v2/VG6iwUaOlQPYcDCb3AlkyAxrAXF7UzU9', options1)
+        const data = await response.json();
+
+        if (data.error) {
+            const errMsg = `Bundler Error: ${data.error.message || 'Unknown error'} - ${data.error.data?.reason || 'No reason provided'}`;
+            throw new Error(errMsg);
+        }
+        console.log(data);
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
 async function updateUserDataWithSmartAccount(secret, smartAccountAddress, userDataAddress) {
     // get runner
     const myAccountAddress = smartAccountAddress;
@@ -312,17 +392,19 @@ async function deployUserDataContractWithPrivacySingle(secret, smartAccountAddre
     const runner = await ethers.getContractAt("Runner", runnerAddress);
 
     const paymaster = await getVerifyingPaymsaterAddress();
+
     const userOperation = getDefaultUserOp(runnerAddress, paymaster);
-    userOperation.preVerificationGas = ethers.toBeHex(BigInt(userOperation.preVerificationGas) * 20n);
-    userOperation.verificationGasLimit = ethers.toBeHex(BigInt(userOperation.verificationGasLimit) * 4n);
+    // userOperation.preVerificationGas = ethers.toBeHex(BigInt(userOperation.preVerificationGas));
+    userOperation.verificationGasLimit = ethers.toBeHex(BigInt(userOperation.verificationGasLimit) / 2n);
 
     const proof = await generateProof(smartAccountAddress, secret, nullifier); // generate registration proof
     userOperation.signature = proof;
 
     // callData of deploying a UserData contract
-    const userDataContract = await ethers.getContractFactory("UserData");
+    const contractName = "UserData";
+    const userDataContract = await ethers.getContractFactory(contractName);
     const verifierAddress = await getCommitmentVerifierAddress();
-    const commitment = await computePedersenHash(secret);
+    const commitment = await computePedersenHash(secret + contractName);
     const deployUserData = await userDataContract.getDeployTransaction(verifierAddress, commitment, "My User Data");
     const deployFunc = deployUserData.data;
     const userDataCallData = getCallData(ZeroAddress, 0, deployFunc);
@@ -346,7 +428,6 @@ async function deployUserDataContractWithPrivacySingle(secret, smartAccountAddre
     }, entryPoint)
 
     UserOp.nonce = ethers.toBeHex(UserOp.nonce);
-    console.log("User operation:", UserOp);
     // delete UserOp.initCode
 
     const userOpHashLocal = getUserOpHash(UserOp, ENTRY_POINT_ADDRESS, 80002);

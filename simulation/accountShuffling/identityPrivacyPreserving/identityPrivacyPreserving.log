@@ -1,0 +1,148 @@
+2025-05-16T12:54:46.053Z [INFO] Read 40 traces from file
+2025-05-16T12:54:46.053Z [CONFIG] MAX_TRACE = 3
+2025-05-16T12:54:46.053Z [CONFIG] Simulation duration = 3600s
+2025-05-16T12:54:46.053Z [CONFIG] Trace count = 40
+2025-05-16T12:54:46.053Z [CONFIG] Time span (realistic): 1746835517 → 1746905422 (69905s)
+2025-05-16T12:54:46.053Z [CONFIG] Scale factor: 51.4985
+2025-05-16T12:54:46.271Z [INFO] Start block number: 21736963
+2025-05-16T12:54:46.272Z [DEBUG] Processing trace: Role=analyst, Action=deploy, Timestamp=1746835517
+2025-05-16T12:54:46.272Z [TRACE] Role=analyst | OriginalTime=1746835517 | Delay=0ms | Now=1747400086272 | Target=1747400086053 | Wait=-219ms
+2025-05-16T12:54:46.273Z [SEND] Role=analyst | Timestamp=2025-05-16T12:54:46.272Z | Action=deploy | Selected=0xa237ea273f9d9895198afc4c58eeb36ecdaee93f
+2025-05-16T12:54:46.874Z [REGISTER] Role=analyst | Address: 0xa237ea273f9d9895198afc4c58eeb36ecdaee93f | Action: register
+2025-05-16T12:57:16.544Z [INFO] Read 40 traces from file
+2025-05-16T12:57:16.544Z [CONFIG] MAX_TRACE = 3
+2025-05-16T12:57:16.544Z [CONFIG] Simulation duration = 3600s
+2025-05-16T12:57:16.544Z [CONFIG] Trace count = 40
+2025-05-16T12:57:16.544Z [CONFIG] Time span (realistic): 1746835517 → 1746905422 (69905s)
+2025-05-16T12:57:16.544Z [CONFIG] Scale factor: 51.4985
+2025-05-16T12:57:16.749Z [INFO] Start block number: 21737034
+2025-05-16T12:57:16.749Z [DEBUG] Processing trace: Role=analyst, Action=deploy, Timestamp=1746835517
+2025-05-16T12:57:16.750Z [TRACE] Role=analyst | OriginalTime=1746835517 | Delay=0ms | Now=1747400236750 | Target=1747400236544 | Wait=-206ms
+2025-05-16T12:57:16.750Z [SEND] Role=analyst | Timestamp=2025-05-16T12:57:16.750Z | Action=deploy | Selected=0xa237ea273f9d9895198afc4c58eeb36ecdaee93f
+2025-05-16T12:57:17.340Z [REGISTER] Role=analyst | Address: 0xa237ea273f9d9895198afc4c58eeb36ecdaee93f | Action: register
+2025-05-16T12:58:37.635Z [INFO] Read 40 traces from file
+2025-05-16T12:58:37.635Z [CONFIG] MAX_TRACE = 3
+2025-05-16T12:58:37.635Z [CONFIG] Simulation duration = 3600s
+2025-05-16T12:58:37.635Z [CONFIG] Trace count = 40
+2025-05-16T12:58:37.635Z [CONFIG] Time span (realistic): 1746835517 → 1746905422 (69905s)
+2025-05-16T12:58:37.635Z [CONFIG] Scale factor: 51.4985
+2025-05-16T12:58:37.866Z [INFO] Start block number: 21737072
+2025-05-16T12:58:37.867Z [DEBUG] Processing trace: Role=analyst, Action=deploy, Timestamp=1746835517
+2025-05-16T12:58:37.867Z [TRACE] Role=analyst | OriginalTime=1746835517 | Delay=0ms | Now=1747400317867 | Target=1747400317635 | Wait=-232ms
+2025-05-16T12:58:37.867Z [SEND] Role=analyst | Timestamp=2025-05-16T12:58:37.867Z | Action=deploy | Selected=0xa237ea273f9d9895198afc4c58eeb36ecdaee93f
+2025-05-16T12:58:38.497Z [REGISTER] Role=analyst | Address: 0xa237ea273f9d9895198afc4c58eeb36ecdaee93f | Action: register
+2025-05-16T12:59:00.702Z [INFO] Read 40 traces from file
+2025-05-16T12:59:00.703Z [CONFIG] MAX_TRACE = 3
+2025-05-16T12:59:00.703Z [CONFIG] Simulation duration = 3600s
+2025-05-16T12:59:00.703Z [CONFIG] Trace count = 40
+2025-05-16T12:59:00.703Z [CONFIG] Time span (realistic): 1746835517 → 1746905422 (69905s)
+2025-05-16T12:59:00.703Z [CONFIG] Scale factor: 51.4985
+2025-05-16T12:59:00.915Z [INFO] Start block number: 21737083
+2025-05-16T12:59:00.916Z [DEBUG] Processing trace: Role=analyst, Action=deploy, Timestamp=1746835517
+2025-05-16T12:59:00.917Z [TRACE] Role=analyst | OriginalTime=1746835517 | Delay=0ms | Now=1747400340917 | Target=1747400340702 | Wait=-215ms
+2025-05-16T12:59:00.917Z [SEND] Role=analyst | Timestamp=2025-05-16T12:59:00.917Z | Action=deploy | Selected=0xa237ea273f9d9895198afc4c58eeb36ecdaee93f
+2025-05-16T12:59:01.539Z [REGISTER] Role=analyst | Address: 0xa237ea273f9d9895198afc4c58eeb36ecdaee93f | Action: register
+2025-05-16T13:01:21.332Z [INFO] Read 40 traces from file
+2025-05-16T13:01:21.332Z [CONFIG] MAX_TRACE = 3
+2025-05-16T13:01:21.332Z [CONFIG] Simulation duration = 3600s
+2025-05-16T13:01:21.332Z [CONFIG] Trace count = 40
+2025-05-16T13:01:21.332Z [CONFIG] Time span (realistic): 1746835517 → 1746905422 (69905s)
+2025-05-16T13:01:21.332Z [CONFIG] Scale factor: 51.4985
+2025-05-16T13:01:21.537Z [INFO] Start block number: 21737150
+2025-05-16T13:01:21.538Z [DEBUG] Processing trace: Role=analyst, Action=deploy, Timestamp=1746835517
+2025-05-16T13:01:21.539Z [TRACE] Role=analyst | OriginalTime=1746835517 | Delay=0ms | Now=1747400481539 | Target=1747400481332 | Wait=-207ms
+2025-05-16T13:01:21.539Z [SEND] Role=analyst | Timestamp=2025-05-16T13:01:21.539Z | Action=deploy | Selected=0xa237ea273f9d9895198afc4c58eeb36ecdaee93f
+2025-05-16T13:01:22.164Z [REGISTER] Role=analyst | Address: 0xa237ea273f9d9895198afc4c58eeb36ecdaee93f | Action: register
+2025-05-16T13:04:58.224Z [INFO] Read 40 traces from file
+2025-05-16T13:04:58.224Z [CONFIG] MAX_TRACE = 3
+2025-05-16T13:04:58.224Z [CONFIG] Simulation duration = 3600s
+2025-05-16T13:04:58.224Z [CONFIG] Trace count = 40
+2025-05-16T13:04:58.224Z [CONFIG] Time span (realistic): 1746835517 → 1746905422 (69905s)
+2025-05-16T13:04:58.224Z [CONFIG] Scale factor: 51.4985
+2025-05-16T13:04:58.488Z [INFO] Start block number: 21737251
+2025-05-16T13:04:58.489Z [DEBUG] Processing trace: Role=analyst, Action=deploy, Timestamp=1746835517
+2025-05-16T13:04:58.489Z [TRACE] Role=analyst | OriginalTime=1746835517 | Delay=0ms | Now=1747400698489 | Target=1747400698224 | Wait=-265ms
+2025-05-16T13:04:58.489Z [SEND] Role=analyst | Timestamp=2025-05-16T13:04:58.489Z | Action=deploy | Selected=0xa237ea273f9d9895198afc4c58eeb36ecdaee93f
+2025-05-16T13:04:59.079Z [REGISTER] Role=analyst | Address: 0xa237ea273f9d9895198afc4c58eeb36ecdaee93f | Action: register
+2025-05-16T13:05:52.817Z [INFO] Read 40 traces from file
+2025-05-16T13:05:52.817Z [CONFIG] MAX_TRACE = 3
+2025-05-16T13:05:52.818Z [CONFIG] Simulation duration = 3600s
+2025-05-16T13:05:52.818Z [CONFIG] Trace count = 40
+2025-05-16T13:05:52.818Z [CONFIG] Time span (realistic): 1746835517 → 1746905422 (69905s)
+2025-05-16T13:05:52.818Z [CONFIG] Scale factor: 51.4985
+2025-05-16T13:05:53.015Z [INFO] Start block number: 21737277
+2025-05-16T13:05:53.016Z [DEBUG] Processing trace: Role=analyst, Action=deploy, Timestamp=1746835517
+2025-05-16T13:05:53.016Z [TRACE] Role=analyst | OriginalTime=1746835517 | Delay=0ms | Now=1747400753016 | Target=1747400752817 | Wait=-199ms
+2025-05-16T13:05:53.016Z [SEND] Role=analyst | Timestamp=2025-05-16T13:05:53.016Z | Action=deploy | Selected=0xa237ea273f9d9895198afc4c58eeb36ecdaee93f
+2025-05-16T13:05:53.641Z [REGISTER] Role=analyst | Address: 0xa237ea273f9d9895198afc4c58eeb36ecdaee93f | Action: register
+2025-05-16T13:06:20.680Z [INFO] Read 40 traces from file
+2025-05-16T13:06:20.680Z [CONFIG] MAX_TRACE = 3
+2025-05-16T13:06:20.680Z [CONFIG] Simulation duration = 3600s
+2025-05-16T13:06:20.680Z [CONFIG] Trace count = 40
+2025-05-16T13:06:20.680Z [CONFIG] Time span (realistic): 1746835517 → 1746905422 (69905s)
+2025-05-16T13:06:20.681Z [CONFIG] Scale factor: 51.4985
+2025-05-16T13:06:20.891Z [INFO] Start block number: 21737290
+2025-05-16T13:06:20.892Z [DEBUG] Processing trace: Role=analyst, Action=deploy, Timestamp=1746835517
+2025-05-16T13:06:20.892Z [TRACE] Role=analyst | OriginalTime=1746835517 | Delay=0ms | Now=1747400780892 | Target=1747400780680 | Wait=-212ms
+2025-05-16T13:06:20.892Z [SEND] Role=analyst | Timestamp=2025-05-16T13:06:20.892Z | Action=deploy | Selected=0xa237ea273f9d9895198afc4c58eeb36ecdaee93f
+2025-05-16T13:06:21.502Z [REGISTER] Role=analyst | Address: 0xa237ea273f9d9895198afc4c58eeb36ecdaee93f | Action: register
+2025-05-16T13:08:41.587Z [INFO] Read 40 traces from file
+2025-05-16T13:08:41.587Z [CONFIG] MAX_TRACE = 3
+2025-05-16T13:08:41.587Z [CONFIG] Simulation duration = 3600s
+2025-05-16T13:08:41.587Z [CONFIG] Trace count = 40
+2025-05-16T13:08:41.587Z [CONFIG] Time span (realistic): 1746835517 → 1746905422 (69905s)
+2025-05-16T13:08:41.587Z [CONFIG] Scale factor: 51.4985
+2025-05-16T13:08:41.813Z [INFO] Start block number: 21737357
+2025-05-16T13:08:41.814Z [DEBUG] Processing trace: Role=analyst, Action=deploy, Timestamp=1746835517
+2025-05-16T13:08:41.814Z [TRACE] Role=analyst | OriginalTime=1746835517 | Delay=0ms | Now=1747400921814 | Target=1747400921587 | Wait=-227ms
+2025-05-16T13:08:41.814Z [SEND] Role=analyst | Timestamp=2025-05-16T13:08:41.814Z | Action=deploy | Selected=0xa237ea273f9d9895198afc4c58eeb36ecdaee93f
+2025-05-16T13:08:42.417Z [REGISTER] Role=analyst | Address: 0xa237ea273f9d9895198afc4c58eeb36ecdaee93f | Action: register
+2025-05-16T13:21:48.866Z [INFO] Read 40 traces from file
+2025-05-16T13:21:48.866Z [CONFIG] MAX_TRACE = 3
+2025-05-16T13:21:48.866Z [CONFIG] Simulation duration = 3600s
+2025-05-16T13:21:48.867Z [CONFIG] Trace count = 40
+2025-05-16T13:21:48.867Z [CONFIG] Time span (realistic): 1746835517 → 1746905422 (69905s)
+2025-05-16T13:21:48.867Z [CONFIG] Scale factor: 51.4985
+2025-05-16T13:21:49.115Z [INFO] Start block number: 21737727
+2025-05-16T13:21:49.116Z [DEBUG] Processing trace: Role=analyst, Action=deploy, Timestamp=1746835517
+2025-05-16T13:21:49.116Z [TRACE] Role=analyst | OriginalTime=1746835517 | Delay=0ms | Now=1747401709116 | Target=1747401708866 | Wait=-250ms
+2025-05-16T13:21:49.117Z [SEND] Role=analyst | Timestamp=2025-05-16T13:21:49.117Z | Action=deploy | Selected=0xa237ea273f9d9895198afc4c58eeb36ecdaee93f
+2025-05-16T13:21:49.720Z [REGISTER] Role=analyst | Address: 0xa237ea273f9d9895198afc4c58eeb36ecdaee93f | Action: register
+2025-05-18T10:11:39.763Z [INFO] Read 40 traces from file
+2025-05-18T10:11:39.763Z [CONFIG] MAX_TRACE = 3
+2025-05-18T10:11:39.763Z [CONFIG] Simulation duration = 3600s
+2025-05-18T10:11:39.763Z [CONFIG] Trace count = 40
+2025-05-18T10:11:39.763Z [CONFIG] Time span (realistic): 1746835517 → 1746905422 (69905s)
+2025-05-18T10:11:39.764Z [CONFIG] Scale factor: 51.4985
+2025-05-18T10:11:39.967Z [INFO] Start block number: 21813460
+2025-05-18T10:11:39.968Z [DEBUG] Processing trace: Role=analyst, Action=deploy, Timestamp=1746835517
+2025-05-18T10:11:39.968Z [TRACE] Role=analyst | OriginalTime=1746835517 | Delay=0ms | Now=1747563099968 | Target=1747563099763 | Wait=-205ms
+2025-05-18T10:11:39.968Z [SEND] Role=analyst | Timestamp=2025-05-18T10:11:39.968Z | Action=deploy | Selected=0xa237ea273f9d9895198afc4c58eeb36ecdaee93f
+2025-05-18T10:11:40.571Z [REGISTER] Role=analyst | Address: 0xa237ea273f9d9895198afc4c58eeb36ecdaee93f | Action: register
+2025-05-18T10:13:26.425Z [INFO] Read 40 traces from file
+2025-05-18T10:13:26.426Z [CONFIG] MAX_TRACE = 3
+2025-05-18T10:13:26.426Z [CONFIG] Simulation duration = 3600s
+2025-05-18T10:13:26.426Z [CONFIG] Trace count = 40
+2025-05-18T10:13:26.426Z [CONFIG] Time span (realistic): 1746835517 → 1746905422 (69905s)
+2025-05-18T10:13:26.426Z [CONFIG] Scale factor: 51.4985
+2025-05-18T10:13:26.632Z [INFO] Start block number: 21813510
+2025-05-18T10:13:26.633Z [DEBUG] Processing trace: Role=analyst, Action=deploy, Timestamp=1746835517
+2025-05-18T10:13:26.633Z [TRACE] Role=analyst | OriginalTime=1746835517 | Delay=0ms | Now=1747563206633 | Target=1747563206426 | Wait=-207ms
+2025-05-18T10:13:26.633Z [SEND] Role=analyst | Timestamp=2025-05-18T10:13:26.633Z | Action=deploy | Selected=0xa237ea273f9d9895198afc4c58eeb36ecdaee93f
+2025-05-18T10:13:27.248Z [REGISTER] Role=analyst | Address: 0xa237ea273f9d9895198afc4c58eeb36ecdaee93f | Action: register
+2025-05-18T10:14:07.333Z [INFO] Read 40 traces from file
+2025-05-18T10:14:07.333Z [CONFIG] MAX_TRACE = 3
+2025-05-18T10:14:07.333Z [CONFIG] Simulation duration = 3600s
+2025-05-18T10:14:07.333Z [CONFIG] Trace count = 40
+2025-05-18T10:14:07.333Z [CONFIG] Time span (realistic): 1746835517 → 1746905422 (69905s)
+2025-05-18T10:14:07.333Z [CONFIG] Scale factor: 51.4985
+2025-05-18T10:14:07.532Z [INFO] Start block number: 21813530
+2025-05-18T10:14:07.534Z [DEBUG] Processing trace: Role=analyst, Action=deploy, Timestamp=1746835517
+2025-05-18T10:14:07.534Z [TRACE] Role=analyst | OriginalTime=1746835517 | Delay=0ms | Now=1747563247534 | Target=1747563247333 | Wait=-201ms
+2025-05-18T10:14:07.534Z [SEND] Role=analyst | Timestamp=2025-05-18T10:14:07.534Z | Action=deploy | Selected=0xa237ea273f9d9895198afc4c58eeb36ecdaee93f
+2025-05-18T10:14:08.142Z [REGISTER] Role=analyst | Address: 0xa237ea273f9d9895198afc4c58eeb36ecdaee93f | Action: register
+2025-05-18T10:14:25.099Z [DEPLOY] Role analyst | Address: 0xa237ea273f9d9895198afc4c58eeb36ecdaee93f | Action: deploy | Result: 0xD0A3BC0C8654b751DD06A850F8faFA74e6E953Be
+2025-05-18T10:14:25.099Z [DEBUG] Processing trace: Role=analyst, Action=share, Timestamp=1746835836
+2025-05-18T10:14:25.099Z [TRACE] Role=analyst | OriginalTime=1746835836 | Delay=16428ms | Now=1747563265099 | Target=1747563263761 | Wait=-1338ms
+2025-05-18T10:14:25.099Z [SEND] Role=analyst | Timestamp=2025-05-18T10:14:25.099Z | Action=share | Selected=0xa237ea273f9d9895198afc4c58eeb36ecdaee93f
+2025-05-18T10:14:25.099Z [SKIP] Role=analyst | Address: 0xa237ea273f9d9895198afc4c58eeb36ecdaee93f already registered
