@@ -2,6 +2,10 @@
   {
     "role": "insurer",
     "deployedUserDataContract": "0x77932840D5cFD912638a5bAD1F678a9BED2e8b48",
+    "deployedUserDataContractWithPrivacy": [
+      "0x330F8C3d4809534Ba5381750BE1aF9c8C4d47D5f",
+      "0x1F4771cfe388f8e9A8D82Aa0496B4038F92Ebe00"
+    ],
     "addresses": [
       {
         "smartAccountAddress": "0x4617f2760072b83c1a1f8535486a7aebe4ce4157",
@@ -32,6 +36,9 @@
   {
     "role": "analyst",
     "deployedUserDataContract": "0xc42f363d955E3704cD04647ea579a790ee57A1Aa",
+    "deployedUserDataContractWithPrivacy": [
+      "0xb08D535E04C5924750829b06b8c343AA63d2535C"
+    ],
     "addresses": [
       {
         "smartAccountAddress": "0xa237ea273f9d9895198afc4c58eeb36ecdaee93f",
@@ -74,6 +81,10 @@
   {
     "role": "doctor",
     "deployedUserDataContract": "0x4049960c917C4536694fE0ef4Ed145BCE71d4649",
+    "deployedUserDataContractWithPrivacy": [
+      "0xAF167947acb0d5c2733B03a053c319520712EAcC",
+      "0xa1557B24eEfeB224C891aA7b8F3B00D36D15a9EC"
+    ],
     "addresses": [
       {
         "smartAccountAddress": "0xec913c328adf7030bbe02ba724d744fc0ff0f93b",
@@ -116,6 +127,9 @@
   {
     "role": "researcher",
     "deployedUserDataContract": "0x2D8123438B85BDCEEc764f15b29D88FD3FD0385B",
+    "deployedUserDataContractWithPrivacy": [
+      "0x0bE914C3e17D4f0f8f83b6DC52ee340A8AE68A42"
+    ],
     "addresses": [
       {
         "smartAccountAddress": "0xc9b89bd5e5c474fba64b834f323e407f0226ab48",

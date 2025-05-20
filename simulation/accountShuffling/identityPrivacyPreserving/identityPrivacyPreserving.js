@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const readline = require("readline");
 const { alchemyProvider } = require("../../../scripts/constants");
-const { deployUserDataContractWithPrivacySingle, updateUserDataWithSmartAccount } = require("../../userDataDeployer");
+const { deployUserDataContractWithPrivacySingle, updateUserDataWithSmartAccount, updateUserDataWithPrivacySingle } = require("../../userDataDeployer");
 const { registerUserSmartWallet } = require("../../smartAccountManager");
 
 const logPath = path.resolve(__dirname, "identityPrivacyPreserving.log");
@@ -16,7 +16,8 @@ function log(message) {
 
 
 async function processTraceFileByRole() {
-    const MAX_TRACE = 3;
+    const START_INDEX = 25;
+    const MAX_TRACE = 40;
     let processedCount = 0;
 
     const registeredAddresses = new Set();
@@ -44,7 +45,7 @@ async function processTraceFileByRole() {
         return;
     }
 
-    const startTimestamp = traces[0].timestamp;
+    const startTimestamp = traces[START_INDEX].timestamp;
     const endTimestamp = traces[traces.length - 1].timestamp;
     const timeSpan = endTimestamp - startTimestamp;
     const simulationDuration = 60 * 60 * 1000;
@@ -73,7 +74,8 @@ async function processTraceFileByRole() {
 
     const roleUpdateCounter = new Map();
 
-    for (const trace of traces) {
+    for (let i = START_INDEX; i < traces.length; i++) {
+        const trace = traces[i];
         const role = trace.role;
         log(`[DEBUG] Processing trace: Role=${role}, Action=${trace.action}, Timestamp=${trace.timestamp}`);
         const originalTime = trace.timestamp;
@@ -82,6 +84,7 @@ async function processTraceFileByRole() {
         const targetTime = simulationStartTime + delay;
         const waitTime = targetTime - now;
         log(`[TRACE] Role=${role} | OriginalTime=${originalTime} | Delay=${delay}ms | Now=${now} | Target=${targetTime} | Wait=${waitTime}ms`);
+        log(`[TRACE] Processed so far: ${processedCount + 1 - START_INDEX}/${traces.length}`);
         if (waitTime > 0) await new Promise(resolve => setTimeout(resolve, waitTime));
 
         const accounts = getRoleWallet(role);
@@ -128,7 +131,7 @@ async function processTraceFileByRole() {
                 deployedRoles.add(role);
                 log(`[DEPLOY] Role ${role} | Address: ${selectedAddress} | Action: lazy-deploy | Result: ${userDataAddress}`);
             }
-            await updateUserDataWithSmartAccount(selectedSecret, selectedAddress, userDataAddress);
+            await updateUserDataWithPrivacySingle(selectedSecret, selectedAddress, userDataAddress);
             const count = roleUpdateCounter.get(role) || 0;
             roleUpdateCounter.set(role, count + 1);
             log(`[UPDATE] Role=${role} | Update #${roleUpdateCounter.get(role)} | Address: ${selectedAddress} | Contract: ${userDataAddress}`);

@@ -51,14 +51,14 @@ async function signUserOpByAdmin(hash) {
     return sig;
 }
 
-async function updateUserDataWithPrivacy(secret, smartAccountAddress, userDataAddress) {
+async function updateUserDataWithPrivacySingle(secret, smartAccountAddress, userDataAddress, nullifier = 0n) {
     const runnerAddress = await getFirstRunnerAddress();
     const runner = await ethers.getContractAt("Runner", runnerAddress);
 
     const paymaster = await getVerifyingPaymsaterAddress();
     const userOperation = getDefaultUserOp(runnerAddress, paymaster);
-    userOperation.preVerificationGas = ethers.toBeHex(BigInt(userOperation.preVerificationGas) * 20n);
-    userOperation.verificationGasLimit = ethers.toBeHex(BigInt(userOperation.verificationGasLimit) * 4n);
+    // userOperation.preVerificationGas = ethers.toBeHex(BigInt(userOperation.preVerificationGas) * 20n);
+    userOperation.verificationGasLimit = ethers.toBeHex(BigInt(userOperation.verificationGasLimit) / 2n);
 
     const proof = await generateProof(smartAccountAddress, secret, nullifier); // generate registration proof
     userOperation.signature = proof;
@@ -618,5 +618,6 @@ module.exports = {
     deployUserDataContractWithPrivacy,
     deployUserDataWithSmartAccountSingle,
     deployUserDataContractWithPrivacySingle,
-    updateUserDataWithSmartAccount
+    updateUserDataWithSmartAccount,
+    updateUserDataWithPrivacySingle
 }
