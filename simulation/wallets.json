@@ -1,0 +1,73 @@
+[
+  {
+    "index": 0,
+    "address": "0x101Ca8248F9632DBB95c1F726F77d1dcBCd9aE3D",
+    "privateKey": "0xbbc0b642db3ba602a19ea9b400814a83d0e585ba85246b400cbe0974e84800dc",
+    "secret": "secret0",
+    "smartAccountAddress": "0x4617f2760072B83c1A1f8535486a7aebe4cE4157"
+  },
+  {
+    "index": 1,
+    "address": "0xe1E8e65F5726d6Ff88796294287a89B4a8589A99",
+    "privateKey": "0x5efff4c09a5dedde1c5ea702811e8a62a62a2f3db4f1c59e91b0486eb5e00825",
+    "secret": "secret1",
+    "smartAccountAddress": "0xa237EA273F9d9895198Afc4C58eeB36EcdAee93F"
+  },
+  {
+    "index": 2,
+    "address": "0x2bD5aC1c910Ad29B1D44c17E2a06Bd9a46B8dE8E",
+    "privateKey": "0x303f78b0779925e527bd886284d330741e484b9a0bc892285771d5daa386cee5",
+    "secret": "secret2",
+    "smartAccountAddress": "0xeC913c328AdF7030Bbe02Ba724D744Fc0fF0f93b"
+  },
+  {
+    "index": 3,
+    "address": "0xd6C9B9e624505CB0e117Bb7991de7dB1ac0C9cf3",
+    "privateKey": "0x98f4f73012d264bd384b6dce8a13944dae1d12b9fa33be3772c6fef6ee46f294",
+    "secret": "secret3",
+    "smartAccountAddress": "0xC9B89Bd5E5c474fbA64B834f323E407f0226ab48",
+    "userDataAddress": "0x9D95F138a27a8b65936EB5600319C4F6BBC1585d"
+  },
+  {
+    "index": 4,
+    "address": "0x0E4FfC8eFA0efb4432B56EA2aEC56745e2cd35f3",
+    "privateKey": "0xa99d559ff2c3170bcd1df0a80d643ff8bcf6b81bed2497885af375e1e14cd0df",
+    "secret": "secret4",
+    "smartAccountAddress": "0xC1C7aD141B7D611e01b0f1D80892f82c77E0062c"
+  },
+  {
+    "index": 5,
+    "address": "0x7185DE4878Fa7F22aDd09b30F54c958ccD73ef7C",
+    "privateKey": "0xe1a0d9de5b75779496cfae9e4d722b20876138f40dadab6ba98e37d561acb65c",
+    "secret": "secret5",
+    "smartAccountAddress": "0x4C0a4E797BC670Ce137249D3e5B87CD86031c2A8"
+  },
+  {
+    "index": 6,
+    "address": "0xef0a62416942E8A5BDAD58cea4f1568216265e7A",
+    "privateKey": "0x73e9c979319c0e9a2e9b5e223ed47ff6c60c7ff21415e1f105594f78fdf9e8d5",
+    "secret": "secret6",
+    "smartAccountAddress": "0x0A7e54999C1651Bc7119A7e8b1b246f02EC92105"
+  },
+  {
+    "index": 7,
+    "address": "0x8e0c77fF828eE7a19f382aA7303ABC3Afe655288",
+    "privateKey": "0x24aa294240fbfb9480608dbf8482189367d4800a69bbb060592d31595f6b6921",
+    "secret": "secret7",
+    "smartAccountAddress": "0xa99EFC483c705f0F37505C8F1a899C20F45ecBed"
+  },
+  {
+    "index": 8,
+    "address": "0x70AD0c9E8BA62dbAb43612844F96ED364DB226B1",
+    "privateKey": "0x5f73df6e48da4491b859c0cea1e4f8ad4c03c73fd07bcf681fbef01e5a0bc38e",
+    "secret": "secret8",
+    "smartAccountAddress": "0x7BF58445FBD457F3F5818A60140302D99c01a844"
+  },
+  {
+    "index": 9,
+    "address": "0x7044D7AC9c957Ed0F31c5964D0b000cc4abEB57d",
+    "privateKey": "0x4446e31897b4f2fb3c585d72029938aa3a92b2d5e4e41716bab0d4adc2fe4309",
+    "secret": "secret9",
+    "smartAccountAddress": "0xB73FaC9eD2a336Da1c73D3fFEa614b822bC48389"
+  }
+]
