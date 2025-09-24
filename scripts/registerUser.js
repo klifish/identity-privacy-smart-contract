@@ -85,7 +85,6 @@ async function generateProof(smart_account_address, secret, nullifier) {
     const events = await merkleRegistryContract.queryFilter("UserRegistered");
     const sortedEvents = events.sort((a, b) => (a.args.index < b.args.index ? -1 : a.args.index > b.args.index ? 1 : 0));
     let leafs = sortedEvents.map(event => event.args.leaf);
-    console.log("The leafs are: " + leafs);
 
     const treeOffChain = new merkleTree.MerkleTree(MERKLE_TREE_LEVEL, leafs, { hashFunction: (left, right) => hashLeftRight(hasher, left, right) });
 
@@ -113,8 +112,6 @@ async function generateProof(smart_account_address, secret, nullifier) {
     console.log("start proving")
 
     const { proof: proofJson, publicSignals: publicInputs } = await snarkjs.groth16.fullProve(input, wasm, zkey);
-    console.log("proofJson: ", proofJson);
-    console.log("publicInputs: ", publicInputs);
     const vkey = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "build", "circuits", "register_vk.json"), "utf-8"));
     const localVerification = await snarkjs.groth16.verify(vkey, publicInputs, proofJson);
     console.log("local verification: ", localVerification)
@@ -128,7 +125,6 @@ async function generateProof(smart_account_address, secret, nullifier) {
     const RegistryContract = await ethers.getContractFactory("MerkleRegistry", signer);
     const registry = await RegistryContract.attach(await getRegistryAddress());
     console.log("Verify proof in registry contract");
-
     const tx = await registry.verify(pA, pB, pC, pubSignals, { gasLimit: 1000000 });
     console.log("Proof verified: ", tx);
 

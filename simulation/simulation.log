@@ -1,0 +1,47 @@
+[2025-04-25T09:03:01.269Z] Current block number: 20884534
+[2025-04-25T09:03:09.249Z] Smart account created at address: 0x4617f2760072B83c1A1f8535486a7aebe4cE4157
+[2025-04-25T09:03:10.085Z] User registered with smart account: 0x4617f2760072B83c1A1f8535486a7aebe4cE4157
+[2025-04-25T09:03:25.325Z] Error: Bundler Error: precheck failed: paymaster deposit is 397086391576834560 but must be at least 399265794522451968 to pay for this operation - No reason provided
+[2025-04-25T09:08:31.855Z] Current block number: 20884690
+[2025-04-25T09:08:40.312Z] Smart account created at address: 0x4617f2760072B83c1A1f8535486a7aebe4cE4157
+[2025-04-25T09:08:41.146Z] User registered with smart account: 0x4617f2760072B83c1A1f8535486a7aebe4cE4157
+[2025-04-25T09:09:03.320Z] User data contract deployed with privacy at address: 0xd53c9B26b35Bf4Dcd8c7577DB2CC32254D60dD89
+[2025-04-25T09:09:10.881Z] Smart account created at address: 0xa237EA273F9d9895198Afc4C58eeB36EcdAee93F
+[2025-04-25T09:09:11.468Z] User registered with smart account: 0xa237EA273F9d9895198Afc4C58eeB36EcdAee93F
+[2025-04-25T09:09:27.724Z] User data contract deployed with privacy at address: 0x13Dba7141Ff2e0F91397A6bC51a8E0912e22dc2d
+[2025-04-25T09:09:38.361Z] Smart account created at address: 0xeC913c328AdF7030Bbe02Ba724D744Fc0fF0f93b
+[2025-04-25T09:09:38.952Z] User registered with smart account: 0xeC913c328AdF7030Bbe02Ba724D744Fc0fF0f93b
+[2025-04-25T09:09:58.605Z] User data contract deployed with privacy at address: 0x6d95525aF2653d61e1C5EE09cFc6dd174554962a
+[2025-04-25T09:10:05.758Z] Smart account created at address: 0xC9B89Bd5E5c474fbA64B834f323E407f0226ab48
+[2025-04-25T09:10:06.478Z] User registered with smart account: 0xC9B89Bd5E5c474fbA64B834f323E407f0226ab48
+[2025-04-25T09:10:25.273Z] User data contract deployed with privacy at address: 0x1230E659ACBc87Ca1fA30563376E41EF95a46B06
+[2025-04-25T09:10:32.178Z] Smart account created at address: 0xC1C7aD141B7D611e01b0f1D80892f82c77E0062c
+[2025-04-25T09:10:32.961Z] User registered with smart account: 0xC1C7aD141B7D611e01b0f1D80892f82c77E0062c
+[2025-04-25T09:10:51.441Z] User data contract deployed with privacy at address: 0x60B21e97f9a92EA71B550DA875cb8259e6d8ec4d
+[2025-04-25T09:10:58.068Z] Smart account created at address: 0x4C0a4E797BC670Ce137249D3e5B87CD86031c2A8
+[2025-04-25T09:10:58.872Z] User registered with smart account: 0x4C0a4E797BC670Ce137249D3e5B87CD86031c2A8
+[2025-04-25T09:11:18.319Z] User data contract deployed with privacy at address: 0x2589F830a6bF41aC5D333B29c10732f5aBF9714D
+[2025-04-25T09:11:24.955Z] Smart account created at address: 0x0A7e54999C1651Bc7119A7e8b1b246f02EC92105
+[2025-04-25T09:11:25.537Z] User registered with smart account: 0x0A7e54999C1651Bc7119A7e8b1b246f02EC92105
+[2025-04-25T09:11:44.489Z] User data contract deployed with privacy at address: 0x3BA1Eb52Df90331c07d22Cb4ae2e20F7A16b2226
+[2025-04-25T09:11:51.477Z] Smart account created at address: 0xa99EFC483c705f0F37505C8F1a899C20F45ecBed
+[2025-04-25T09:11:52.041Z] User registered with smart account: 0xa99EFC483c705f0F37505C8F1a899C20F45ecBed
+[2025-04-25T09:12:07.613Z] User data contract deployed with privacy at address: 0xd9880900e53DaEffE82ae00Aa54dc6FdC9b2Ec21
+[2025-04-25T09:12:15.148Z] Smart account created at address: 0x7BF58445FBD457F3F5818A60140302D99c01a844
+[2025-04-25T09:12:15.684Z] User registered with smart account: 0x7BF58445FBD457F3F5818A60140302D99c01a844
+[2025-04-25T09:12:36.587Z] User data contract deployed with privacy at address: 0xf0be9aaC4316DBcE502eceD74969Fc2c2EE1B41e
+[2025-04-25T09:12:43.343Z] Smart account created at address: 0xB73FaC9eD2a336Da1c73D3fFEa614b822bC48389
+[2025-04-25T09:12:43.881Z] User registered with smart account: 0xB73FaC9eD2a336Da1c73D3fFEa614b822bC48389
+[2025-04-25T09:13:02.973Z] User data contract deployed with privacy at address: 0xCd75FCA6a4B555bb694Cd893b4B44FE4FE24bfFb
+[2025-04-28T08:15:41.746Z] HardhatError: HH108: Cannot connect to the network localhost.
+Please make sure your node is running, and check your internet connection and networks config
+[2025-04-28T08:23:26.864Z] ReferenceError: filterTransactionsByAddressRecursive is not defined
+[2025-04-28T08:31:34.484Z] TypeError: Cannot read properties of undefined (reading 'from')
+[2025-04-28T08:52:35.192Z] ReferenceError: readAllTransactionData is not defined
+[2025-04-28T08:53:14.150Z] TypeError [ERR_INVALID_ARG_TYPE]: The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined
+[2025-04-28T08:54:04.553Z] TypeError [ERR_INVALID_ARG_TYPE]: The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined
+[2025-04-28T08:55:09.338Z] TypeError [ERR_INVALID_ARG_TYPE]: The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined
+[2025-04-28T08:55:59.920Z] TypeError [ERR_INVALID_ARG_TYPE]: The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined
+[2025-04-28T08:57:29.206Z] User-to-contract mapping saved to /Users/likun/src/phd/decentralized_healthcare/identity-privacy/turorials/alchemy/identity-privacy-smart-contract/simulation/user_contract_mapping_privacy.json
+[2025-04-28T08:57:58.214Z] User-to-contract mapping saved to /Users/likun/src/phd/decentralized_healthcare/identity-privacy/turorials/alchemy/identity-privacy-smart-contract/simulation/user_contract_mapping_privacy.json
+[2025-04-28T09:08:44.476Z] User-to-contract mapping saved to /Users/likun/src/phd/decentralized_healthcare/identity-privacy/turorials/alchemy/identity-privacy-smart-contract/simulation/user_contract_mapping_standard.json

@@ -1,0 +1,160 @@
+[
+  {
+    "role": "insurer",
+    "deployedUserDataContract": "0x77932840D5cFD912638a5bAD1F678a9BED2e8b48",
+    "deployedUserDataContractWithPrivacy": [
+      "0x330F8C3d4809534Ba5381750BE1aF9c8C4d47D5f",
+      "0x1F4771cfe388f8e9A8D82Aa0496B4038F92Ebe00"
+    ],
+    "addresses": [
+      {
+        "smartAccountAddress": "0x4617f2760072b83c1a1f8535486a7aebe4ce4157",
+        "secret": "secret0"
+      },
+      {
+        "smartAccountAddress": "0x85299bb7767ab0101c8c560269c4cc59e106f066",
+        "secret": "TFi7t5qMoyHBDAA7"
+      },
+      {
+        "smartAccountAddress": "0xadbf1abf9584a9653d1f68bf71455f001180b1dd",
+        "secret": "K2zPoweIxALa9r7L"
+      },
+      {
+        "smartAccountAddress": "0xb73fac9ed2a336da1c73d3ffea614b822bc48389",
+        "secret": "secret9"
+      },
+      {
+        "smartAccountAddress": "0x27150bc20ed05229d24ad2796b5943ede030d7d6",
+        "secret": "fpMd91P14ZTXwHkh"
+      },
+      {
+        "smartAccountAddress": "0xc6cfaccd69b8b4a926229ec1109aba0f86009bfd",
+        "secret": "NV22Q6v89ZBXyC0l"
+      }
+    ]
+  },
+  {
+    "role": "analyst",
+    "deployedUserDataContract": "0xc42f363d955E3704cD04647ea579a790ee57A1Aa",
+    "deployedUserDataContractWithPrivacy": [
+      "0xb08D535E04C5924750829b06b8c343AA63d2535C"
+    ],
+    "addresses": [
+      {
+        "smartAccountAddress": "0xa237ea273f9d9895198afc4c58eeb36ecdaee93f",
+        "secret": "secret1"
+      },
+      {
+        "smartAccountAddress": "0x9360ee38b1b5a26973d466e8ed9e92d7ed3a178b",
+        "secret": "6f2pXvPCBtwj6GVg"
+      },
+      {
+        "smartAccountAddress": "0xcba1c6f82af25f8eb8fad986ea3cef024e0ee810",
+        "secret": "Sd6MOrgAyrbA4yBD"
+      },
+      {
+        "smartAccountAddress": "0x4c0a4e797bc670ce137249d3e5b87cd86031c2a8",
+        "secret": "secret5"
+      },
+      {
+        "smartAccountAddress": "0x0b59d9bb1761344823953a7fdf266e720a1bf50b",
+        "secret": "YHuLGHeUIlBU3joT"
+      },
+      {
+        "smartAccountAddress": "0xf30c6a1224516d23c79b5e3b96f72b6081c655a2",
+        "secret": "c8pQFWWLYY7qvGqI"
+      },
+      {
+        "smartAccountAddress": "0x0a7e54999c1651bc7119a7e8b1b246f02ec92105",
+        "secret": "secret6"
+      },
+      {
+        "smartAccountAddress": "0xdc6e87fd8ff10c6d2a2b5dd97fb56f6832e30cd4",
+        "secret": "ZKcvlBy2IVRmyXUy"
+      },
+      {
+        "smartAccountAddress": "0x2bbd64d7ddda3e56f1832db9f966ce11fa12a3bb",
+        "secret": "jnJq0nNJfNKKJCHO"
+      }
+    ]
+  },
+  {
+    "role": "doctor",
+    "deployedUserDataContract": "0x4049960c917C4536694fE0ef4Ed145BCE71d4649",
+    "deployedUserDataContractWithPrivacy": [
+      "0xAF167947acb0d5c2733B03a053c319520712EAcC",
+      "0xa1557B24eEfeB224C891aA7b8F3B00D36D15a9EC"
+    ],
+    "addresses": [
+      {
+        "smartAccountAddress": "0xec913c328adf7030bbe02ba724d744fc0ff0f93b",
+        "secret": "secret2"
+      },
+      {
+        "smartAccountAddress": "0xb65b2c224ff1340f59099daf4fafc48adb45b157",
+        "secret": "egZs0YrpL6xxoT8T"
+      },
+      {
+        "smartAccountAddress": "0x8616a6e4f575fdd23f49c4e631df84b4ce75cd81",
+        "secret": "MuZ75CW1YZlpOWow"
+      },
+      {
+        "smartAccountAddress": "0xa99efc483c705f0f37505c8f1a899c20f45ecbed",
+        "secret": "secret7"
+      },
+      {
+        "smartAccountAddress": "0x6db8548d08808088ad405ee31fbbe32df043682a",
+        "secret": "CfNG4rLColDep47e"
+      },
+      {
+        "smartAccountAddress": "0xf549736facc962ea7a5233abee62dca0fe952446",
+        "secret": "OihBTP3eV8UryHk0"
+      },
+      {
+        "smartAccountAddress": "0x7bf58445fbd457f3f5818a60140302d99c01a844",
+        "secret": "secret8"
+      },
+      {
+        "smartAccountAddress": "0x33b02bf97f38d56f7cc7bea0f774e085fe0b35e1",
+        "secret": "qAnYCtQB2VNDYHG0"
+      },
+      {
+        "smartAccountAddress": "0xda091d32f681e093d6a1b6d7881314dba7f72925",
+        "secret": "xxG6fXI7L1TiGBjb"
+      }
+    ]
+  },
+  {
+    "role": "researcher",
+    "deployedUserDataContract": "0x2D8123438B85BDCEEc764f15b29D88FD3FD0385B",
+    "deployedUserDataContractWithPrivacy": [
+      "0x0bE914C3e17D4f0f8f83b6DC52ee340A8AE68A42"
+    ],
+    "addresses": [
+      {
+        "smartAccountAddress": "0xc9b89bd5e5c474fba64b834f323e407f0226ab48",
+        "secret": "secret3"
+      },
+      {
+        "smartAccountAddress": "0x9b68aa9f9db98a9b52ef26c5e4a4fc86af5a3a90",
+        "secret": "ets0ivYyn0GBsDva"
+      },
+      {
+        "smartAccountAddress": "0xba2e9b04b5f5a66c15d4a63a97acbb68b37c7030",
+        "secret": "oxsCN428dcsI9UhA"
+      },
+      {
+        "smartAccountAddress": "0xc1c7ad141b7d611e01b0f1d80892f82c77e0062c",
+        "secret": "secret4"
+      },
+      {
+        "smartAccountAddress": "0xbf3921b2d6c4fe505816d63a2cdeabb7fd39d1f9",
+        "secret": "bFet6pD3FhNLZe5q"
+      },
+      {
+        "smartAccountAddress": "0xd8424e605dd498a02ed3ab2342b8c78039799e11",
+        "secret": "9rHlS4GoE1SMwvyy"
+      }
+    ]
+  }
+]

@@ -1,0 +1,1190 @@
+{
+  "0xe1249c0ed30de2eef273ce84813c6fd54aba58fc": {
+    "n_tx": 2,
+    "duration": 12,
+    "mean_time_gap": 12,
+    "std_time_gap": 0,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ]
+  },
+  "0x433704940ad127f33b441418a3c17e4c47e45393": {
+    "n_tx": 1,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0x0000000071727de22e5e9d8baf0edac6f37da032": {
+    "n_tx": 246,
+    "duration": 3678,
+    "mean_time_gap": 15.012244897959183,
+    "std_time_gap": 51.348388415992225,
+    "activity_vector": [
+      30,
+      20,
+      25,
+      10,
+      31,
+      45,
+      20,
+      35,
+      15,
+      15
+    ]
+  },
+  "0x9be1b9b87d189df444f4f8a66f1a50398bceba37": {
+    "n_tx": 20,
+    "duration": 3552,
+    "mean_time_gap": 186.94736842105263,
+    "std_time_gap": 362.12377553657564,
+    "activity_vector": [
+      4,
+      0,
+      4,
+      0,
+      4,
+      0,
+      0,
+      4,
+      0,
+      4
+    ]
+  },
+  "0x777777777777aec03fd955926dbf81597e66834c": {
+    "n_tx": 5,
+    "duration": 3552,
+    "mean_time_gap": 888,
+    "std_time_gap": 18.708286933869708,
+    "activity_vector": [
+      1,
+      0,
+      1,
+      0,
+      1,
+      0,
+      0,
+      1,
+      0,
+      1
+    ]
+  },
+  "0x1254a2d5f367d476f2dd3f5adb94e03078fdf6ad": {
+    "n_tx": 5,
+    "duration": 1828,
+    "mean_time_gap": 457,
+    "std_time_gap": 545.5355167172894,
+    "activity_vector": [
+      1,
+      0,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ]
+  },
+  "0xcba1c6f82af25f8eb8fad986ea3cef024e0ee810": {
+    "n_tx": 4,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      4,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0xcb0bf4e57fecdca8d4e2fed075e5a1442909fc09": {
+    "n_tx": 34,
+    "duration": 3596,
+    "mean_time_gap": 108.96969696969697,
+    "std_time_gap": 190.66780326772127,
+    "activity_vector": [
+      5,
+      4,
+      1,
+      0,
+      2,
+      7,
+      5,
+      5,
+      3,
+      2
+    ]
+  },
+  "0xc42f363d955e3704cd04647ea579a790ee57a1aa": {
+    "n_tx": 10,
+    "duration": 796,
+    "mean_time_gap": 88.44444444444444,
+    "std_time_gap": 103.74232085220798,
+    "activity_vector": [
+      2,
+      2,
+      1,
+      0,
+      1,
+      3,
+      0,
+      0,
+      0,
+      1
+    ]
+  },
+  "0x43c53e1a2f24b1b3837f7021b178cf0efb84f732": {
+    "n_tx": 3,
+    "duration": 1874,
+    "mean_time_gap": 937,
+    "std_time_gap": 849,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2
+    ]
+  },
+  "0x2bbd64d7ddda3e56f1832db9f966ce11fa12a3bb": {
+    "n_tx": 6,
+    "duration": 80,
+    "mean_time_gap": 16,
+    "std_time_gap": 32,
+    "activity_vector": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3
+    ]
+  },
+  "0xec639bb4c5d0982508419b5543e7c1f297fe6d4b": {
+    "n_tx": 1,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0x966fb81da181f12c41868f71254f29d11da5c2cc": {
+    "n_tx": 2,
+    "duration": 842,
+    "mean_time_gap": 842,
+    "std_time_gap": 0,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ]
+  },
+  "0x0a7e54999c1651bc7119a7e8b1b246f02ec92105": {
+    "n_tx": 3,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0xed5cb0d4c07e939eeec6f9bbe74cfb2185d6f780": {
+    "n_tx": 2,
+    "duration": 1652,
+    "mean_time_gap": 1652,
+    "std_time_gap": 0,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ]
+  },
+  "0xf30c6a1224516d23c79b5e3b96f72b6081c655a2": {
+    "n_tx": 6,
+    "duration": 272,
+    "mean_time_gap": 54.4,
+    "std_time_gap": 108.8,
+    "activity_vector": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3
+    ]
+  },
+  "0x4c0a4e797bc670ce137249d3e5b87cd86031c2a8": {
+    "n_tx": 3,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0x9360ee38b1b5a26973d466e8ed9e92d7ed3a178b": {
+    "n_tx": 6,
+    "duration": 20,
+    "mean_time_gap": 4,
+    "std_time_gap": 8,
+    "activity_vector": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3
+    ]
+  },
+  "0x1eb327b7c38361da16f4139419baf19d157cd975": {
+    "n_tx": 4,
+    "duration": 2008,
+    "mean_time_gap": 669.3333333333334,
+    "std_time_gap": 334.09912035535535,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      1,
+      1
+    ]
+  },
+  "0x43370513f9a748ee8ee1cd856ea115756b8a7b5f": {
+    "n_tx": 1,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0xe7c246d6f426c0c54ac4011666d4a7d37037f79e": {
+    "n_tx": 4,
+    "duration": 2744,
+    "mean_time_gap": 914.6666666666666,
+    "std_time_gap": 940.6016986777961,
+    "activity_vector": [
+      2,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ]
+  },
+  "0x0b59d9bb1761344823953a7fdf266e720a1bf50b": {
+    "n_tx": 3,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0x4c8058ebd8bf4bf0f43d94f83389cb770fc93a0b": {
+    "n_tx": 11,
+    "duration": 370,
+    "mean_time_gap": 37,
+    "std_time_gap": 68.19530775647252,
+    "activity_vector": [
+      4,
+      4,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1
+    ]
+  },
+  "0x2cc0c7981d846b9f2a16276556f6e8cb52bfb633": {
+    "n_tx": 18,
+    "duration": 812,
+    "mean_time_gap": 47.76470588235294,
+    "std_time_gap": 77.18848543492109,
+    "activity_vector": [
+      4,
+      2,
+      0,
+      2,
+      2,
+      0,
+      0,
+      2,
+      2,
+      4
+    ]
+  },
+  "0xacff469895ccfbb12c9c40d429044d4d31c67a64": {
+    "n_tx": 5,
+    "duration": 2576,
+    "mean_time_gap": 644,
+    "std_time_gap": 381.1456414548119,
+    "activity_vector": [
+      1,
+      0,
+      1,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      1
+    ]
+  },
+  "0x2f9e0de0c8a7a9ed7af4a31225b6245b45d31c5a": {
+    "n_tx": 12,
+    "duration": 282,
+    "mean_time_gap": 25.636363636363637,
+    "std_time_gap": 66.8067398985145,
+    "activity_vector": [
+      4,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      4,
+      4
+    ]
+  },
+  "0xf7f3c788e90dbe6b5b9b9101142aa7e492dc247d": {
+    "n_tx": 1,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0x4337053498bf3de9bab4d55a345f727dba05d6af": {
+    "n_tx": 1,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0xefc2c1444ebcc4db75e7613d20c6a62ff67a167c": {
+    "n_tx": 1,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0x91e60e0613810449d098b0b5ec8b51a0fe8c8985": {
+    "n_tx": 1,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0xf67a4a140b2fc12f2e95bbd381d634fa15d1d9cb": {
+    "n_tx": 5,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      5,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0xb4a22b47b620b11479e41e39320e2f82f017754d": {
+    "n_tx": 3,
+    "duration": 1184,
+    "mean_time_gap": 592,
+    "std_time_gap": 216,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      1
+    ]
+  },
+  "0x91f51371d33e4e50e838057e8045265372f8d448": {
+    "n_tx": 6,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0xa827dd731491dfedd629f92fc8d983316c1991c1": {
+    "n_tx": 1,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0xc43f0ca07b12f8840f7b083a943066009ee4f21c": {
+    "n_tx": 6,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0x3f222df6ab18c1e10d0ec136503c3b0dfd929048": {
+    "n_tx": 2,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0x4337055bca06a9d578086e56546ca214a64ac271": {
+    "n_tx": 1,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0xc104ef25b252c5ba75b2ab20a16d426c25608d1a": {
+    "n_tx": 5,
+    "duration": 1284,
+    "mean_time_gap": 321,
+    "std_time_gap": 470.0244674482383,
+    "activity_vector": [
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      2
+    ]
+  },
+  "0x341b9d1a4fd9e7be4bd65b0711f71a1c781e5133": {
+    "n_tx": 9,
+    "duration": 10,
+    "mean_time_gap": 1.25,
+    "std_time_gap": 3.307189138830738,
+    "activity_vector": [
+      4,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      5
+    ]
+  },
+  "0x083154c9dcf1cf516ed34215d4171b0aa4eecf04": {
+    "n_tx": 7,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      7,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0x8616a6e4f575fdd23f49c4e631df84b4ce75cd81": {
+    "n_tx": 13,
+    "duration": 1094,
+    "mean_time_gap": 91.16666666666667,
+    "std_time_gap": 206.23846769105796,
+    "activity_vector": [
+      7,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      3
+    ]
+  },
+  "0x4049960c917c4536694fe0ef4ed145bce71d4649": {
+    "n_tx": 10,
+    "duration": 1094,
+    "mean_time_gap": 121.55555555555556,
+    "std_time_gap": 111.28652819647439,
+    "activity_vector": [
+      3,
+      0,
+      2,
+      0,
+      0,
+      1,
+      2,
+      0,
+      0,
+      2
+    ]
+  },
+  "0xc9e797cb3b43bfa52b42b540904f6a7ba8f89a13": {
+    "n_tx": 3,
+    "duration": 1082,
+    "mean_time_gap": 541,
+    "std_time_gap": 111,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      1
+    ]
+  },
+  "0x65ca40d512fa2dce789e534b0da900b825f2a1b7": {
+    "n_tx": 18,
+    "duration": 1082,
+    "mean_time_gap": 63.64705882352941,
+    "std_time_gap": 145.65589633931168,
+    "activity_vector": [
+      6,
+      0,
+      0,
+      0,
+      0,
+      3,
+      6,
+      0,
+      0,
+      3
+    ]
+  },
+  "0xadbf1abf9584a9653d1f68bf71455f001180b1dd": {
+    "n_tx": 10,
+    "duration": 552,
+    "mean_time_gap": 61.333333333333336,
+    "std_time_gap": 168.5836422801585,
+    "activity_vector": [
+      7,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3
+    ]
+  },
+  "0x77932840d5cfd912638a5bad1f678a9bed2e8b48": {
+    "n_tx": 7,
+    "duration": 1006,
+    "mean_time_gap": 167.66666666666666,
+    "std_time_gap": 126.67763110439911,
+    "activity_vector": [
+      3,
+      0,
+      1,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      1
+    ]
+  },
+  "0x902da2729a14112b062f99e9a3df7c74a71a4f8c": {
+    "n_tx": 2,
+    "duration": 538,
+    "mean_time_gap": 538,
+    "std_time_gap": 0,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ]
+  },
+  "0xa99efc483c705f0f37505c8f1a899c20f45ecbed": {
+    "n_tx": 6,
+    "duration": 940,
+    "mean_time_gap": 188,
+    "std_time_gap": 376,
+    "activity_vector": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3
+    ]
+  },
+  "0xe9ee9dbbe5009f3b6e11c219b183459965199f0d": {
+    "n_tx": 2,
+    "duration": 630,
+    "mean_time_gap": 630,
+    "std_time_gap": 0,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ]
+  },
+  "0xb73fac9ed2a336da1c73d3ffea614b822bc48389": {
+    "n_tx": 6,
+    "duration": 916,
+    "mean_time_gap": 183.2,
+    "std_time_gap": 366.4,
+    "activity_vector": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3
+    ]
+  },
+  "0x3e3d8eded44e4f1e87e02767f8171ede9a47cec0": {
+    "n_tx": 3,
+    "duration": 786,
+    "mean_time_gap": 393,
+    "std_time_gap": 17,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1
+    ]
+  },
+  "0x7bf58445fbd457f3f5818a60140302d99c01a844": {
+    "n_tx": 3,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0x33b02bf97f38d56f7cc7bea0f774e085fe0b35e1": {
+    "n_tx": 3,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0x4617f2760072b83c1a1f8535486a7aebe4ce4157": {
+    "n_tx": 3,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0x6db8548d08808088ad405ee31fbbe32df043682a": {
+    "n_tx": 3,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0x85299bb7767ab0101c8c560269c4cc59e106f066": {
+    "n_tx": 3,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0x5b4ea5968c2dd048f28b61a5f9c1c87fd54de66a": {
+    "n_tx": 3,
+    "duration": 90,
+    "mean_time_gap": 45,
+    "std_time_gap": 31,
+    "activity_vector": [
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ]
+  },
+  "0xbf3921b2d6c4fe505816d63a2cdeabb7fd39d1f9": {
+    "n_tx": 7,
+    "duration": 14,
+    "mean_time_gap": 2.3333333333333335,
+    "std_time_gap": 5.21749194749951,
+    "activity_vector": [
+      4,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3
+    ]
+  },
+  "0x2d8123438b85bdceec764f15b29d88fd3fd0385b": {
+    "n_tx": 7,
+    "duration": 1090,
+    "mean_time_gap": 181.66666666666666,
+    "std_time_gap": 188.13972349175907,
+    "activity_vector": [
+      3,
+      0,
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      2
+    ]
+  },
+  "0x30f8f900ff15c26f18c6005e963d6c369962a74b": {
+    "n_tx": 1,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0xf549736facc962ea7a5233abee62dca0fe952446": {
+    "n_tx": 3,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0x433705768549b21d1e681fe454a7d2ff26a22e1c": {
+    "n_tx": 1,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0xd8424e605dd498a02ed3ab2342b8c78039799e11": {
+    "n_tx": 9,
+    "duration": 1000,
+    "mean_time_gap": 125,
+    "std_time_gap": 219.99090890307264,
+    "activity_vector": [
+      3,
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      0,
+      3
+    ]
+  },
+  "0x9b68aa9f9db98a9b52ef26c5e4a4fc86af5a3a90": {
+    "n_tx": 3,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0x43370597af41d9345b1b91391849dcdb748c2838": {
+    "n_tx": 1,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "0xc9b89bd5e5c474fba64b834f323e407f0226ab48": {
+    "n_tx": 3,
+    "duration": 0,
+    "mean_time_gap": 0,
+    "std_time_gap": 0,
+    "activity_vector": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  }
+}

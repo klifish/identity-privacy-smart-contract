@@ -1,0 +1,14 @@
+digraph TransactionGraph {
+  "0x1c5fd981291b12a07676e07fc9ea8561f8a17247" -> "0x0000000071727de22e5e9d8baf0edac6f37da032" [label="CALL (1)", labelfontsize=10];
+  "0x0000000071727de22e5e9d8baf0edac6f37da032" -> "0x4617f2760072b83c1a1f8535486a7aebe4ce4157" [label="CALL (1)", labelfontsize=10];
+  "0x4617f2760072b83c1a1f8535486a7aebe4ce4157" -> "0x4c06f11a6974373dcf3d2c571a97ab66e2531fe1" [label="DELEGATECALL (1.1)", labelfontsize=10];
+  "0x0000000071727de22e5e9d8baf0edac6f37da032" -> "0xcb0bf4e57fecdca8d4e2fed075e5a1442909fc09" [label="CALL (2)", labelfontsize=10];
+  "0xcb0bf4e57fecdca8d4e2fed075e5a1442909fc09" -> "0x0000000000000000000000000000000000000001" [label="STATICCALL (2.1)", labelfontsize=10];
+  "0x0000000071727de22e5e9d8baf0edac6f37da032" -> "0x0000000071727de22e5e9d8baf0edac6f37da032" [label="CALL (3)", labelfontsize=10];
+  "0x0000000071727de22e5e9d8baf0edac6f37da032" -> "0x4617f2760072b83c1a1f8535486a7aebe4ce4157" [label="CALL (3.1)", labelfontsize=10];
+  "0x4617f2760072b83c1a1f8535486a7aebe4ce4157" -> "0x4c06f11a6974373dcf3d2c571a97ab66e2531fe1" [label="DELEGATECALL (3.1.1)", labelfontsize=10];
+  "0x4617f2760072b83c1a1f8535486a7aebe4ce4157" -> "0xa1fd029ddc506d0cb7484664a50c33db6622120e" [label="CREATE (3.1.1.1)", labelfontsize=10];
+  "0xa1fd029ddc506d0cb7484664a50c33db6622120e" -> "0x7190397111bf98bdf6af8c0fbdf413ef6ab36edf" [label="CREATE (3.1.1.1.1)", labelfontsize=10];
+  "0x4617f2760072b83c1a1f8535486a7aebe4ce4157" -> "0x000000000000000000636f6e736f6c652e6c6f67" [label="STATICCALL (3.1.1.2)", labelfontsize=10];
+  "0x0000000071727de22e5e9d8baf0edac6f37da032" -> "0x1c5fd981291b12a07676e07fc9ea8561f8a17247" [label="CALL (4)", labelfontsize=10];
+}

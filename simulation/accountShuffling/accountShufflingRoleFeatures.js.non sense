@@ -1,0 +1,67 @@
+const fs = require("fs");
+const path = require("path");
+
+// Load address features and wallets
+const features = JSON.parse(fs.readFileSync(path.join(__dirname, "addressFeatures.json")));
+
+// Load uid => role mapping from trace_features
+const tracePath = path.join(__dirname, "../trace_features.jsonl");
+const traceLines = fs.readFileSync(tracePath, "utf-8").split("\n").filter(Boolean);
+
+const uidToRole = {};
+for (const line of traceLines) {
+    const record = JSON.parse(line);
+    if (record.uid !== undefined && record.role) {
+        uidToRole[record.uid] = record.role;
+    }
+}
+
+// Load wallets and map addresses to roles via uid
+const wallets = JSON.parse(fs.readFileSync(path.join(__dirname, "../wallets_with_shuffling.json")));
+const addressToRole = {};
+
+wallets.forEach(w => {
+    const role = uidToRole[w.index];
+    if (w.smartAccountAddress) {
+        addressToRole[w.smartAccountAddress.toLowerCase()] = role;
+    }
+    (w.accountShuffling || []).forEach(a => {
+        if (a.smartAccountAddress) {
+            addressToRole[a.smartAccountAddress.toLowerCase()] = role;
+        }
+    });
+});
+
+// Collect feature vectors per role
+const roleVectors = {};
+const roleCounts = {};
+
+for (const [address, f] of Object.entries(features)) {
+    const role = addressToRole[address.toLowerCase()];
+    if (!role) continue;
+
+    const vector = [
+        f.n_tx,
+        f.duration,
+        f.mean_time_gap,
+        f.std_time_gap,
+        ...f.activity_vector
+    ];
+
+    if (!roleVectors[role]) {
+        roleVectors[role] = Array(vector.length).fill(0);
+        roleCounts[role] = 0;
+    }
+
+    roleVectors[role] = roleVectors[role].map((v, i) => v + vector[i]);
+    roleCounts[role]++;
+}
+
+// Average per role
+for (const role of Object.keys(roleVectors)) {
+    const count = roleCounts[role];
+    roleVectors[role] = roleVectors[role].map(v => v / count);
+}
+
+fs.writeFileSync(path.join(__dirname, "roleFeatures.json"), JSON.stringify(roleVectors, null, 2));
+console.log("✅ roleFeatures.json exported.");

@@ -99,6 +99,13 @@ function address2Uint8Array32(address) {
   return ret;
 }
 
+async function computeDomainSeparateCommitment(message, domain) {
+  const domainAndMessage = domain + message;
+  const domainAndMessageHash = await computePedersenHash(domainAndMessage);
+
+  return domainAndMessageHash;
+}
+
 async function computePedersenHash(message) {
   try {
     if (typeof message !== "string" || message.length === 0) {
@@ -224,5 +231,6 @@ module.exports = {
   numToBits,
   bitsToNum,
   pedersenHashMultipleInputs,
-  groth16ExportSolidityCallData
+  groth16ExportSolidityCallData,
+  computeDomainSeparateCommitment
 };

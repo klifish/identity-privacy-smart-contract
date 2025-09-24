@@ -24,6 +24,13 @@ contract Runner is BaseAccount, Initializable {
     address private _owner;
 
     mapping(bytes32 => bool) public verifiedProofs;
+    mapping(bytes32 => bytes32) public proofHashToUserOpHash;
+    event ContractDeployed(address indexed newContract);
+    event ValidateSignature(
+        bytes32 indexed userOpHash,
+        bytes32 indexed proofHash,
+        bool isPreverification
+    );
 
     constructor(IEntryPoint anEntryPoint, IRegistry aRegistry) {
         _entryPoint = anEntryPoint;
@@ -76,7 +83,22 @@ contract Runner is BaseAccount, Initializable {
         bytes calldata func
     ) external {
         _requireFromEntryPointOrOwner();
-        _call(dest, value, func);
+        // _call(dest, value, func);
+        if (dest == address(0)) {
+            address newContract = _deployContract(func);
+            emit ContractDeployed(newContract);
+        } else {
+            _call(dest, value, func);
+        }
+    }
+
+    function _deployContract(
+        bytes memory code
+    ) internal returns (address addr) {
+        assembly {
+            addr := create(0, add(code, 0x20), mload(code))
+        }
+        require(addr != address(0), "Deployment failed");
     }
 
     function _call(address target, uint256 value, bytes memory data) internal {
@@ -132,7 +154,12 @@ contract Runner is BaseAccount, Initializable {
         bytes32 userOpHash
     ) internal virtual override returns (uint256 validationData) {
         bytes32 proofHash = keccak256(userOp.signature);
+        emit ValidateSignature(userOpHash, proofHash, false);
         require(verifiedProofs[proofHash], "Signature not pre-verified");
+        require(
+            proofHashToUserOpHash[proofHash] == userOpHash,
+            "Proof does not match operation"
+        );
         return SIG_VALIDATION_SUCCESS;
     }
 
@@ -145,9 +172,15 @@ contract Runner is BaseAccount, Initializable {
         return SIG_VALIDATION_SUCCESS;
     }
 
-    function preVerifySignature(bytes calldata signature) external {
+    function preVerifySignature(
+        bytes calldata signature,
+        bytes32 userOpHash
+    ) external {
         require(_verifyProof(signature), "Invalid signature");
         bytes32 proofHash = keccak256(signature);
         verifiedProofs[proofHash] = true;
+        proofHashToUserOpHash[proofHash] = userOpHash;
+
+        emit ValidateSignature(userOpHash, proofHash, true);
     }
 }

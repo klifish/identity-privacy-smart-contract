@@ -3,11 +3,11 @@
   "RegisterVerifier": "0x226dCA0895859e015b683a10AB1BC604a1D51419",
   "CommitmentVerifier": "0x65Ca40d512FA2DCe789E534b0dA900B825F2A1B7",
   "Registry": "0xBA6EbCd1669a181434A6e4B8AafCe049123034E6",
-  "RunnerFactory": "0x373ccf6335ef44FdaD6211B0659094b9f439856e",
+  "RunnerFactory": "0x39d19fBee3fDa4ee0FC6cfba9567d0f8b5dCa6e9",
   "Runner": [
-    "0xfd54b99d0C0605a17310C1C1713BDd5a81E7C764"
+    "0x7a8D610A51C988E7c621d4Ff048845b48476D6b6"
   ],
-  "AccountFactory": "0xf2adB456b065eEb181781Fe7f6d2338Be279c7d6",
+  "AccountFactory": "0x1401D1d47F79bf8bF83d4eCc525c2763CBc7A491",
   "VerifyingPaymasterFactory": "0xaCfe1C9b4CD89cDeB0877f4Ce88C57994b7f5eE3",
   "VerifyingPaymaster": "0xCB0bF4e57FeCDCa8d4e2fED075e5a1442909fc09"
 }

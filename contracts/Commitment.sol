@@ -52,13 +52,16 @@ contract Commitment {
         );
     }
 
-    function verify(bytes calldata _proofAndPubSignals) public returns (bool) {
+    function verify(
+        bytes calldata _proofAndPubSignals
+    ) public view returns (bool) {
         (
             uint[2] memory _pA,
             uint[2][2] memory _pB,
             uint[2] memory _pC,
             uint[1] memory _pubSignals
         ) = _deserializeProofAndPublicSignals(_proofAndPubSignals);
+        require(_pubSignals[0] == commitment, "Invalid commitment");
         return verifier.verifyProof(_pA, _pB, _pC, _pubSignals);
     }
 
