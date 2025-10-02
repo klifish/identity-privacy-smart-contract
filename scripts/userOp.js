@@ -1,8 +1,6 @@
 const { ethers } = require('hardhat');
 const EntryPointSimulationsJson = require("../test/EntryPointSimulations.json");
-
-const MOCK_VALID_UNTIL = '0x00000000deadbeef'
-const MOCK_VALID_AFTER = '0x0000000000001234'
+const { MOCK_VALID_UNTIL, MOCK_VALID_AFTER } = require('./sharedConstants');
 
 function getDefaultUserOp(sender, paymaster) {
     return {
