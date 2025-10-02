@@ -1,27 +1,10 @@
 const snarkjs = require("snarkjs");
-const axios = require('axios')
-const path = require('path')
-const fs = require('fs')
+const path = require('path');
+const fs = require('fs');
+const { downloadFile } = require('./downloadUtils');
 
-const circuitsPath = __dirname + '/../build/circuits'
-const contractsPath = __dirname + '/../build/contracts'
-
-async function downloadFile({ url, path }) {
-  const writer = fs.createWriteStream(path)
-
-  const response = await axios({
-    url,
-    method: 'GET',
-    responseType: 'stream',
-  })
-
-  response.data.pipe(writer)
-
-  return new Promise((resolve, reject) => {
-    writer.on('finish', resolve)
-    writer.on('error', reject)
-  })
-}
+const circuitsPath = __dirname + '/../build/circuits';
+const contractsPath = __dirname + '/../build/contracts';
 
 (
   async () => {
