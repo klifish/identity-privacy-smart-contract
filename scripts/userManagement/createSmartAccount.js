@@ -18,7 +18,8 @@ async function createSmartAccount(commitment) {
 
 async function getSender(commitment, salt) {
     const MyAccountFactoryContract = await ethers.getContractFactory("MyAccountFactory", signer);
-    const myAccountFactory = MyAccountFactoryContract.attach(await getAccountFactoryAddress());
+    const accountFactoryAddress = await getAccountFactoryAddress();
+    const myAccountFactory = MyAccountFactoryContract.attach(accountFactoryAddress);
 
     const accountAddress = await myAccountFactory.getSender(commitment, salt);
     return accountAddress;
