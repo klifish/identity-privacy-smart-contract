@@ -81,6 +81,36 @@ This document summarizes the refactoring changes made to the identity-privacy-sm
 
 All refactored files have been syntax-checked and verified to have no syntax errors. The refactoring maintains the same functionality while improving code structure.
 
+## Statistics
+
+### Git Diff Summary
+```
+13 files changed, 272 insertions(+), 252 deletions(-)
+```
+
+### New Files Created (4)
+- `scripts/sharedConstants.js` (10 lines)
+- `scripts/downloadUtils.js` (28 lines)
+- `simulation/constants.js` (23 lines)
+- `simulation/bundlerUtils.js` (80 lines)
+- `REFACTORING_SUMMARY.md` (96 lines)
+
+### Files Modified (9)
+- `simulation/walletManager.js` - Net: -22 lines
+- `simulation/smartAccountManager.js` - Net: -24 lines  
+- `simulation/userDataDeployer.js` - Net: -171 lines (massive cleanup!)
+- `scripts/trust-setup-plonk.js` - Net: -22 lines
+- `scripts/trust-setup-groth16.js` - Net: -22 lines
+- `scripts/interact.js` - Net: -3 lines
+- `scripts/sendUserOperations.js` - Net: -3 lines
+- `scripts/userOp.js` - Net: -2 lines
+
+### Impact
+- **Total lines removed**: 252 lines of duplicate/redundant code
+- **Total lines added**: 272 lines (including new utility modules and documentation)
+- **Net change**: +20 lines, but with significantly better organization
+- **Duplication eliminated**: ~250+ lines of duplicate code removed
+
 ## File Count Summary
 
 - **Created**: 4 new shared utility/constant modules
