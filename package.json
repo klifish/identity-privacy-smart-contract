@@ -26,7 +26,7 @@
     "build:circuit:commitment": "npm run build:circuit:compile:commitment && npm run build:circuit:info:commitment && npm run build:circuit:setup && npm run build:circuit:export:verificationkey:commitment && npm run build:circuit:export:solidityverifier:commitment:groth16",
     "build:circuit": "npm run build:circuit:compile && npm run build:circuit:info && npm run build:circuit:setup && npm run build:circuit:export:verificationkey && npm run build:circuit:export:solidityverifier",
     "build": "npm run build:circuit",
-    "deploy": "npx hardhat run scripts/deploy.js --network polygonAmoy",
+    "deploy": "npx hardhat run scripts/deploy/deploy.js --network polygonAmoy",
     "runner:create": "npx hardhat run scripts/userManagement/createRunner.js --network polygonAmoy"
   },
   "author": "",

@@ -1,5 +1,5 @@
 const { ethers } = require("hardhat");
-const { getRandomRunnerAddress, getFirstRunnerAddress, getAccountFactoryAddress, getRunnerFactoryAddress } = require('./isDeployed');
+const { getRandomRunnerAddress, getFirstRunnerAddress, getAccountFactoryAddress, getRunnerFactoryAddress } = require('./deploy/isDeployed');
 
 
 const API_URL = process.env.API_URL;

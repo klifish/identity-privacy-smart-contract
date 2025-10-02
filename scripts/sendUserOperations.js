@@ -2,7 +2,7 @@
 const { ethers } = require('hardhat');
 
 const { generateProof, registerUser } = require('./registerUser');
-const { getVerifyingPaymsaterAddress, getFirstRunnerAddress, getAccountFactoryAddress } = require('./isDeployed');
+const { getVerifyingPaymsaterAddress, getFirstRunnerAddress, getAccountFactoryAddress } = require('./deploy/isDeployed');
 const { depositToRunner, withdrawAllFromRunner } = require('./runnerInteraction');
 const { getUserOpHash, getDefaultUserOp, getCallData, fillUserOp, packUserOp } = require('./userOp');
 

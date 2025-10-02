@@ -1,5 +1,5 @@
 const { withdrawAllFromRunner } = require('./runnerInteraction');
-const { getRandomRunnerAddress, getFirstRunnerAddress, getAccountFactoryAddress, getRunnerFactoryAddress } = require('./isDeployed');
+const { getRandomRunnerAddress, getFirstRunnerAddress, getAccountFactoryAddress, getRunnerFactoryAddress } = require('./deploy/isDeployed');
 
 
 async function main() {

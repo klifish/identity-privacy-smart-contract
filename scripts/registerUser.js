@@ -11,7 +11,7 @@ const circomlibjs = require("circomlibjs")
 const { hashLeftRight, setupHasher } = require("./utilities/hasher")
 const merkleTree = require('fixed-merkle-tree');
 const snarkjs = require("snarkjs");
-const { getRegistryAddress } = require("./isDeployed.js");
+const { getRegistryAddress } = require("./deploy/isDeployed.js");
 
 const contract = require("../artifacts/contracts/MerkleRegistry.sol/MerkleRegistry.json");
 const { verify } = require('crypto');

@@ -1,5 +1,5 @@
 const { ethers } = require("hardhat");
-const { getRunnerFactoryAddress, setDeployed } = require("../isDeployed");
+const { getRunnerFactoryAddress, setDeployed } = require("../deploy/isDeployed");
 
 const API_URL = process.env.API_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;

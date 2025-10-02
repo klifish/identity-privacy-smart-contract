@@ -1,7 +1,7 @@
 const { ethers } = require("hardhat");
 const { computePedersenHash } = require("../utils");
 const { signer } = require("../constants");
-const { getAccountFactoryAddress } = require("../isDeployed");
+const { getAccountFactoryAddress } = require("../deploy/isDeployed");
 
 // commitment is the hash of the secret+countId; countId is the number of times the user has verified their identity
 async function createSmartAccount(commitment) {
