@@ -63,7 +63,7 @@ async function main() {
 
     const hash = await verifyingPaymaster.getHash(packedUserOp, MOCK_VALID_UNTIL, MOCK_VALID_AFTER);
 
-    const sig = await signer.signMessage(ethers.getBytes(hash));
+    const sig = await signer.signMessage(ethers.getBytes(hash)); //used for paymaster
     // console.log("userOperation", userOperation);
     // delete userOperation.nonce;
     const UserOp = await fillUserOp({
@@ -91,6 +91,7 @@ async function main() {
     runner.once("ValidateSignature", (userOpHash, proofHash, result, event) => {
         console.log("Caught ValidateSignature:", userOpHash, proofHash, result);
     });
+
     const tx = await runner.preVerifySignature(userOperation.signature, userOpHashLocal);
     const receipt = await tx.wait();
     console.log("Transaction hash:", receipt.hash);
