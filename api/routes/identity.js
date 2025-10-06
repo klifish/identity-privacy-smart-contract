@@ -1,6 +1,6 @@
 const express = require('express');
 const { computePedersenHash } = require('../../scripts/utils');
-const { createSmartAccount, getSender } = require('../../scripts/userManagement/createSmartAccount');
+const { createSmartAccount } = require('../../scripts/userManagement/createSmartAccount');
 const { calculateLeaf, registerUserWithLeaf, generateProof } = require('../../scripts/registerUser');
 const {
   deployUserDataWithSmartAccountSingle,
@@ -23,14 +23,14 @@ router.post(
     }
 
     const commitment = await computePedersenHash(`${secret}${countId}`);
-    const smartAccountAddress = await getSender(commitment, salt);
-    await createSmartAccount(commitment);
+    const { address: smartAccountAddress, deployed } = await createSmartAccount(commitment, { salt });
 
     const response = {
       smartAccountAddress,
       commitment,
       salt,
       countId,
+      deployed,
     };
 
     if (register) {
