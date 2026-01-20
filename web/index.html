@@ -32,8 +32,94 @@
       font-size: 14px;
     }
 
-    main {
+    .layout {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
       padding: 24px;
+    }
+
+    main {
+      flex: 1;
+      padding: 0;
+    }
+
+    .sidebar {
+      width: 240px;
+      background: #111827;
+      color: #f8fafc;
+      padding: 20px 16px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+      position: sticky;
+      top: 24px;
+      align-self: flex-start;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+    }
+
+    .sidebar h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .nav-group {
+      margin-bottom: 20px;
+    }
+
+    .nav-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .nav-group h3 {
+      margin: 0 0 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #cbd5f5;
+    }
+
+    .nav-group a {
+      display: block;
+      padding: 6px 8px;
+      border-radius: 4px;
+      color: inherit;
+      text-decoration: none;
+      font-size: 14px;
+      transition: background 0.15s ease;
+    }
+
+    .nav-group a:hover {
+      background: rgba(148, 163, 184, 0.25);
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        flex-direction: column;
+        padding: 16px;
+      }
+
+      .sidebar {
+        position: static;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        max-height: none;
+      }
+
+      .nav-group {
+        margin: 0;
+        flex: 1 1 200px;
+        background: #1f2937;
+        border-radius: 8px;
+        padding: 12px;
+      }
+
+      .nav-group h3 {
+        margin-bottom: 6px;
+      }
     }
 
     .config {
@@ -63,6 +149,7 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      scroll-margin-top: 48px;
     }
 
     h2 {
@@ -147,15 +234,48 @@
     <h1>Identity Privacy API Tester</h1>
     <p>Configure the base URL below, then use the forms to call each endpoint. Responses appear under each section.</p>
   </header>
-  <main>
-    <div class="config">
+  <div class="layout">
+    <nav class="sidebar">
+      <h2>Endpoints</h2>
+      <div class="nav-group">
+        <h3>Setup</h3>
+        <a href="#config">API Base</a>
+      </div>
+      <div class="nav-group">
+        <h3>Identity</h3>
+        <a href="#smart-account">Smart Account</a>
+        <a href="#register-user">Register User</a>
+        <a href="#generate-proof">Generate Proof</a>
+        <a href="#deploy-user-data">Deploy User Data</a>
+        <a href="#update-user-data">Update User Data</a>
+      </div>
+      <div class="nav-group">
+        <h3>Simulation</h3>
+        <a href="#simulate-single">Single User</a>
+        <a href="#simulate-multiple">Multiple Users</a>
+        <a href="#wallet-utilities">Wallet Utilities</a>
+        <a href="#retrieve-blocks">Retrieve Blocks</a>
+        <a href="#trace-transaction">Trace Transaction</a>
+        <a href="#transaction-cache">Transaction Cache</a>
+      </div>
+      <div class="nav-group">
+        <h3>Operations</h3>
+        <a href="#send-userop">Send UserOp</a>
+        <a href="#userop-status">UserOp Status</a>
+        <a href="#transaction-status">Transaction Status</a>
+        <a href="#userop-hash">UserOp Hash</a>
+        <a href="#pack-userop">Pack UserOp</a>
+      </div>
+    </nav>
+    <main>
+      <div class="config" id="config">
       <label for="base-url">API base URL</label>
       <input id="base-url" type="url" placeholder="http://localhost:4000">
       <p class="note">Make sure the API server is running with <code>npm run start:api</code>.</p>
     </div>
 
-    <div class="grid">
-      <section>
+    <div class="grid sections-grid">
+      <section id="smart-account">
         <h2>Smart Account</h2>
         <form id="smart-account-form">
           <label>Secret<input name="secret" type="text" placeholder="secret phrase" required></label>
@@ -170,7 +290,7 @@
         <pre class="result"></pre>
       </section>
 
-      <section>
+      <section id="register-user">
         <h2>Registry Register</h2>
         <form id="register-user-form">
           <label>Smart Account Address<input name="smartAccountAddress" type="text" placeholder="0x..." required></label>
@@ -183,7 +303,7 @@
         <pre class="result"></pre>
       </section>
 
-      <section>
+      <section id="generate-proof">
         <h2>Generate Proof</h2>
         <form id="generate-proof-form">
           <label>Smart Account Address<input name="smartAccountAddress" type="text" placeholder="0x..." required></label>
@@ -196,7 +316,7 @@
         <pre class="result"></pre>
       </section>
 
-      <section>
+      <section id="deploy-user-data">
         <h2>Deploy User Data</h2>
         <form id="deploy-user-data-form">
           <label>Smart Account Address<input name="smartAccountAddress" type="text" placeholder="0x..." required></label>
@@ -211,7 +331,7 @@
         <pre class="result"></pre>
       </section>
 
-      <section>
+      <section id="update-user-data">
         <h2>Update User Data</h2>
         <form id="update-user-data-form">
           <label>Smart Account Address<input name="smartAccountAddress" type="text" placeholder="0x..." required></label>
@@ -226,7 +346,7 @@
         <pre class="result"></pre>
       </section>
 
-      <section>
+      <section id="simulate-single">
         <h2>Simulate Single User</h2>
         <form id="simulate-single-form">
           <label>Secret<input name="secret" type="text" placeholder="secret0" required></label>
@@ -238,7 +358,7 @@
         <pre class="result"></pre>
       </section>
 
-      <section>
+      <section id="simulate-multiple">
         <h2>Simulate Multiple Users</h2>
         <form id="simulate-multiple-form">
           <label>Wallets JSON
@@ -252,7 +372,7 @@
         <pre class="result"></pre>
       </section>
 
-      <section>
+      <section id="wallet-utilities">
         <h2>Wallet Utilities</h2>
         <form id="generate-wallets-form">
           <label>Wallet count<input name="count" type="number" value="10" min="1"></label>
@@ -271,7 +391,7 @@
         <pre class="result"></pre>
       </section>
 
-      <section>
+      <section id="retrieve-blocks">
         <h2>Retrieve Blocks</h2>
         <form id="retrieve-blocks-form">
           <label>Start block<input name="startBlock" type="number" required></label>
@@ -285,7 +405,7 @@
         <pre class="result"></pre>
       </section>
 
-      <section>
+      <section id="trace-transaction">
         <h2>Trace Transaction</h2>
         <form id="trace-transaction-form">
           <label>Transaction hash<input name="txHash" type="text" placeholder="0x..." required></label>
@@ -296,7 +416,7 @@
         <pre class="result"></pre>
       </section>
 
-      <section>
+      <section id="transaction-cache">
         <h2>Transaction Cache</h2>
         <form id="transaction-cache-form">
           <label>Start block (optional)<input name="startBlock" type="number" placeholder=""></label>
@@ -309,7 +429,7 @@
         <pre class="result"></pre>
       </section>
 
-      <section>
+      <section id="send-userop">
         <h2>Send User Operation</h2>
         <form id="send-userop-form">
           <label>UserOperation JSON
@@ -322,7 +442,7 @@
         <pre class="result"></pre>
       </section>
 
-      <section>
+      <section id="userop-status">
         <h2>UserOp Status</h2>
         <form id="userop-status-form">
           <label>UserOp hash<input name="userOpHash" type="text" placeholder="0x..." required></label>
@@ -335,7 +455,7 @@
         <pre class="result"></pre>
       </section>
 
-      <section>
+      <section id="transaction-status">
         <h2>Transaction Status</h2>
         <form id="transaction-status-form">
           <label>Transaction hash<input name="txHash" type="text" placeholder="0x..." required></label>
@@ -348,7 +468,7 @@
         <pre class="result"></pre>
       </section>
 
-      <section>
+      <section id="userop-hash">
         <h2>UserOp Hash</h2>
         <form id="userop-hash-form">
           <label>UserOperation JSON<textarea name="userOp" placeholder='{"sender":"0x..."}' required></textarea></label>
@@ -361,7 +481,7 @@
         <pre class="result"></pre>
       </section>
 
-      <section>
+      <section id="pack-userop">
         <h2>Pack UserOp</h2>
         <form id="pack-userop-form">
           <label>UserOperation JSON<textarea name="userOp" placeholder='{"sender":"0x..."}' required></textarea></label>
@@ -372,7 +492,8 @@
         <pre class="result"></pre>
       </section>
     </div>
-  </main>
+    </main>
+  </div>
 
   <script>
     const defaultBaseUrl = window.location.origin || 'http://localhost:4000';
