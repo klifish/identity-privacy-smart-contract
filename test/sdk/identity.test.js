@@ -126,6 +126,8 @@ describe('Identity Module - Integration Tests', function () {
   let identityClient;
   let accountFactory;
   let registry;
+  // Determines whether helpers talk to contracts directly (true) or through the IdentityClient SDK (false).
+  // 中文：控制测试是直接调用合约(true)，还是通过 IdentityClient SDK 间接调用(false)。
   let useDirectContracts = false;
 
   const MERKLE_TREE_LEVEL = 20;
