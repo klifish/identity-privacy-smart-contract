@@ -261,7 +261,12 @@ describe('Identity Module - Integration Tests', function () {
     // Create IdentityClient - only works with localhost network
     if (network.name === 'localhost') {
       const rpcUrl = 'http://127.0.0.1:8545';
-      const privateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
+      // Use an account derived from the default Hardhat mnemonic that differs from the deployer.
+      const hdWallet = ethers.Wallet.fromPhrase(
+        'test test test test test test test test test test test junk',
+        "m/44'/60'/0'/0/1"
+      );
+      const privateKey = hdWallet.privateKey;
 
       identityClient = new IdentityClient({
         rpcUrl: rpcUrl,

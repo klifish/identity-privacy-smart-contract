@@ -24,7 +24,7 @@ const MerkleRegistryABI = [
   'function verify(uint[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[2] calldata _pubSignals) external view returns (bool)',
   'function roots(uint256) external view returns (uint256)',
   'function currentRootIndex() external view returns (uint32)',
-  'event UserRegistered(uint256 indexed index, uint256 leaf)',
+  'event UserRegistered(uint256 leaf, uint32 index)',
 ];
 
 /**
@@ -41,7 +41,8 @@ class IdentityClient {
    */
   constructor(config) {
     this.provider = new ethers.JsonRpcProvider(config.rpcUrl);
-    this.signer = new ethers.Wallet(config.privateKey, this.provider);
+    const wallet = new ethers.Wallet(config.privateKey, this.provider);
+    this.signer = new ethers.NonceManager(wallet);
     this.accountFactoryAddress = config.accountFactoryAddress;
     this.registryAddress = config.registryAddress;
 

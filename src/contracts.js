@@ -204,7 +204,7 @@ const ABIs = {
     'function registerUser(uint256 leaf) external',
     'function isKnownRoot(uint256 root) external view returns (bool)',
     'function getLastRoot() external view returns (uint256)',
-    'event UserRegistered(uint256 indexed index, uint256 leaf)',
+    'event UserRegistered(uint256 leaf, uint32 index)',
   ],
 
   Runner: [
