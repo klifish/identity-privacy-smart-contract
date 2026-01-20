@@ -4,7 +4,7 @@ const {
     getFirstRunnerAddress,
     getAccountFactoryAddress,
     getRunnerFactoryAddress,
-    getVerifyingPaymsaterAddress } = require('./isDeployed');
+    getVerifyingPaymsaterAddress } = require('./deploy/isDeployed');
 const fs = require("fs");
 
 const API_URL = process.env.API_URL;

@@ -1,33 +1,3 @@
-// const fs = require("fs");
-
-// const registerPlonkVerifierPath = "contracts/RegisterPlonkVerifier.sol";
-// let registerPlonkVerifierContent = fs.readFileSync(registerPlonkVerifierPath, "utf8");
-// const registerPlonkVerifierName = "RegisterPlonkVerifier";
-// registerPlonkVerifierContent = registerPlonkVerifierContent.replace(/contract\s+\w+\s+{/g, `contract ${registerPlonkVerifierName} {`);
-// fs.writeFileSync(registerPlonkVerifierPath, registerPlonkVerifierContent, "utf8");
-// console.log(`Updated contract name to: ${registerPlonkVerifierName}`);
-
-// const commitmentPlonkVerifierPath = "contracts/CommitmentPlonkVerifier.sol";
-// let commitmentPlonkVerifierContent = fs.readFileSync(commitmentPlonkVerifierPath, "utf8");
-// const commitmentPlonkVerifierName = "CommitmentPlonkVerifier";
-// commitmentPlonkVerifierContent = commitmentPlonkVerifierContent.replace(/contract\s+\w+\s+{/g, `contract ${commitmentPlonkVerifierName} {`);
-// fs.writeFileSync(commitmentPlonkVerifierPath, commitmentPlonkVerifierContent, "utf8");
-// console.log(`Updated contract name to: ${commitmentPlonkVerifierName}`);
-
-// const registerGroth16VerifierPath = "contracts/RegisterGroth16Verifier.sol";
-// let registerGroth16VerifierContent = fs.readFileSync(registerGroth16VerifierPath, "utf8");
-// const registerGroth16VerifierName = "RegisterGroth16Verifier";
-// registerGroth16VerifierContent = registerGroth16VerifierContent.replace(/contract\s+\w+\s+{/g, `contract ${registerGroth16VerifierName} {`);
-// fs.writeFileSync(registerGroth16VerifierPath, registerGroth16VerifierContent, "utf8");
-// console.log(`Updated contract name to: ${registerGroth16VerifierName}`);
-
-// const commitmentGroth16VerifierPath = "contracts/CommitmentGroth16Verifier.sol";
-// let commitmentGroth16VerifierContent = fs.readFileSync(commitmentGroth16VerifierPath, "utf8");
-// const commitmentGroth16VerifierName = "CommitmentGroth16Verifier";
-// commitmentGroth16VerifierContent = commitmentGroth16VerifierContent.replace(/contract\s+\w+\s+{/g, `contract ${commitmentGroth16VerifierName} {`);
-// fs.writeFileSync(commitmentGroth16VerifierPath, commitmentGroth16VerifierContent, "utf8");
-// console.log(`Updated contract name to: ${commitmentGroth16VerifierName}`);
-
 const fs = require("fs");
 const path = require("path");
 

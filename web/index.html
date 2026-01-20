@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Identity Privacy API Tester</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f5f7fa;
+      color: #1f2933;
+    }
+
+    header {
+      background: #1f2933;
+      color: #fff;
+      padding: 16px 24px;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .layout {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      padding: 24px;
+    }
+
+    main {
+      flex: 1;
+      padding: 0;
+    }
+
+    .sidebar {
+      width: 240px;
+      background: #111827;
+      color: #f8fafc;
+      padding: 20px 16px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+      position: sticky;
+      top: 24px;
+      align-self: flex-start;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+    }
+
+    .sidebar h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .nav-group {
+      margin-bottom: 20px;
+    }
+
+    .nav-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .nav-group h3 {
+      margin: 0 0 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #cbd5f5;
+    }
+
+    .nav-group a {
+      display: block;
+      padding: 6px 8px;
+      border-radius: 4px;
+      color: inherit;
+      text-decoration: none;
+      font-size: 14px;
+      transition: background 0.15s ease;
+    }
+
+    .nav-group a:hover {
+      background: rgba(148, 163, 184, 0.25);
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        flex-direction: column;
+        padding: 16px;
+      }
+
+      .sidebar {
+        position: static;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        max-height: none;
+      }
+
+      .nav-group {
+        margin: 0;
+        flex: 1 1 200px;
+        background: #1f2937;
+        border-radius: 8px;
+        padding: 12px;
+      }
+
+      .nav-group h3 {
+        margin-bottom: 6px;
+      }
+    }
+
+    .config {
+      background: #fff;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
+      margin-bottom: 24px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    @media (min-width: 900px) {
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    section {
+      background: #fff;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-margin-top: 48px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 18px;
+      color: #0b7285;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="url"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+      background: #fff;
+      color: inherit;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button {
+      padding: 8px 14px;
+      background: #0b7285;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #086071;
+    }
+
+    .result {
+      font-size: 13px;
+      background: #0b72850d;
+      border-radius: 6px;
+      padding: 12px;
+      overflow: auto;
+      max-height: 220px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border: 1px solid #ced4da;
+    }
+
+    .note {
+      font-size: 12px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Identity Privacy API Tester</h1>
+    <p>Configure the base URL below, then use the forms to call each endpoint. Responses appear under each section.</p>
+  </header>
+  <div class="layout">
+    <nav class="sidebar">
+      <h2>Endpoints</h2>
+      <div class="nav-group">
+        <h3>Setup</h3>
+        <a href="#config">API Base</a>
+      </div>
+      <div class="nav-group">
+        <h3>Identity</h3>
+        <a href="#smart-account">Smart Account</a>
+        <a href="#register-user">Register User</a>
+        <a href="#generate-proof">Generate Proof</a>
+        <a href="#deploy-user-data">Deploy User Data</a>
+        <a href="#update-user-data">Update User Data</a>
+      </div>
+      <div class="nav-group">
+        <h3>Simulation</h3>
+        <a href="#simulate-single">Single User</a>
+        <a href="#simulate-multiple">Multiple Users</a>
+        <a href="#wallet-utilities">Wallet Utilities</a>
+        <a href="#retrieve-blocks">Retrieve Blocks</a>
+        <a href="#trace-transaction">Trace Transaction</a>
+        <a href="#transaction-cache">Transaction Cache</a>
+      </div>
+      <div class="nav-group">
+        <h3>Operations</h3>
+        <a href="#send-userop">Send UserOp</a>
+        <a href="#userop-status">UserOp Status</a>
+        <a href="#transaction-status">Transaction Status</a>
+        <a href="#userop-hash">UserOp Hash</a>
+        <a href="#pack-userop">Pack UserOp</a>
+      </div>
+    </nav>
+    <main>
+      <div class="config" id="config">
+      <label for="base-url">API base URL</label>
+      <input id="base-url" type="url" placeholder="http://localhost:4000">
+      <p class="note">Make sure the API server is running with <code>npm run start:api</code>.</p>
+    </div>
+
+    <div class="grid sections-grid">
+      <section id="smart-account">
+        <h2>Smart Account</h2>
+        <form id="smart-account-form">
+          <label>Secret<input name="secret" type="text" placeholder="secret phrase" required></label>
+          <label>Count ID<input name="countId" type="number" value="0" min="0"></label>
+          <label>Salt<input name="salt" type="number" value="1" min="0"></label>
+          <label><input name="register" type="checkbox"> Register user after creation</label>
+          <label>Nullifier (optional)<input name="nullifier" type="text" placeholder="0"></label>
+          <div class="actions">
+            <button type="submit">Create Smart Account</button>
+          </div>
+        </form>
+        <pre class="result"></pre>
+      </section>
+
+      <section id="register-user">
+        <h2>Registry Register</h2>
+        <form id="register-user-form">
+          <label>Smart Account Address<input name="smartAccountAddress" type="text" placeholder="0x..." required></label>
+          <label>Secret<input name="secret" type="text" placeholder="secret phrase" required></label>
+          <label>Nullifier (optional)<input name="nullifier" type="text" placeholder="0"></label>
+          <div class="actions">
+            <button type="submit">Register User</button>
+          </div>
+        </form>
+        <pre class="result"></pre>
+      </section>
+
+      <section id="generate-proof">
+        <h2>Generate Proof</h2>
+        <form id="generate-proof-form">
+          <label>Smart Account Address<input name="smartAccountAddress" type="text" placeholder="0x..." required></label>
+          <label>Secret<input name="secret" type="text" placeholder="secret phrase" required></label>
+          <label>Nullifier (optional)<input name="nullifier" type="text" placeholder="0"></label>
+          <div class="actions">
+            <button type="submit">Generate Proof</button>
+          </div>
+        </form>
+        <pre class="result"></pre>
+      </section>
+
+      <section id="deploy-user-data">
+        <h2>Deploy User Data</h2>
+        <form id="deploy-user-data-form">
+          <label>Smart Account Address<input name="smartAccountAddress" type="text" placeholder="0x..." required></label>
+          <label>Secret<input name="secret" type="text" placeholder="secret phrase" required></label>
+          <label>Mode<select name="mode"><option value="standard">standard</option><option value="privacy">privacy</option></select></label>
+          <label>Nullifier (optional)<input name="nullifier" type="text" placeholder="0"></label>
+          <label><input name="autoRegister" type="checkbox"> Auto register when using privacy mode</label>
+          <div class="actions">
+            <button type="submit">Deploy User Data</button>
+          </div>
+        </form>
+        <pre class="result"></pre>
+      </section>
+
+      <section id="update-user-data">
+        <h2>Update User Data</h2>
+        <form id="update-user-data-form">
+          <label>Smart Account Address<input name="smartAccountAddress" type="text" placeholder="0x..." required></label>
+          <label>User Data Address<input name="userDataAddress" type="text" placeholder="0x..." required></label>
+          <label>Secret<input name="secret" type="text" placeholder="secret phrase" required></label>
+          <label>Mode<select name="mode"><option value="standard">standard</option><option value="privacy">privacy</option></select></label>
+          <label>Nullifier (optional)<input name="nullifier" type="text" placeholder="0"></label>
+          <div class="actions">
+            <button type="submit">Update User Data</button>
+          </div>
+        </form>
+        <pre class="result"></pre>
+      </section>
+
+      <section id="simulate-single">
+        <h2>Simulate Single User</h2>
+        <form id="simulate-single-form">
+          <label>Secret<input name="secret" type="text" placeholder="secret0" required></label>
+          <label>Mode<select name="mode"><option value="standard">standard</option><option value="privacy">privacy</option></select></label>
+          <div class="actions">
+            <button type="submit">Run Simulation</button>
+          </div>
+        </form>
+        <pre class="result"></pre>
+      </section>
+
+      <section id="simulate-multiple">
+        <h2>Simulate Multiple Users</h2>
+        <form id="simulate-multiple-form">
+          <label>Wallets JSON
+            <textarea name="wallets" placeholder='[{"secret":"secret0","smartAccountAddress":"0x..."}]' required></textarea>
+          </label>
+          <label>Mode<select name="mode"><option value="standard">standard</option><option value="privacy">privacy</option></select></label>
+          <div class="actions">
+            <button type="submit">Run Simulation</button>
+          </div>
+        </form>
+        <pre class="result"></pre>
+      </section>
+
+      <section id="wallet-utilities">
+        <h2>Wallet Utilities</h2>
+        <form id="generate-wallets-form">
+          <label>Wallet count<input name="count" type="number" value="10" min="1"></label>
+          <label><input name="generateSecret" type="checkbox" checked> Generate secrets</label>
+          <label><input name="fundWallets" type="checkbox"> Fund wallets</label>
+          <div class="actions">
+            <button type="submit">Generate Wallets</button>
+          </div>
+        </form>
+        <form id="get-wallets-form">
+          <label>Custom path (optional)<input name="path" type="text" placeholder="./simulation/wallets.json"></label>
+          <div class="actions">
+            <button type="submit">Fetch Wallets</button>
+          </div>
+        </form>
+        <pre class="result"></pre>
+      </section>
+
+      <section id="retrieve-blocks">
+        <h2>Retrieve Blocks</h2>
+        <form id="retrieve-blocks-form">
+          <label>Start block<input name="startBlock" type="number" required></label>
+          <label>End block<input name="endBlock" type="number" required></label>
+          <label><input name="includeTransactions" type="checkbox"> Include transaction hashes</label>
+          <label><input name="includeTraces" type="checkbox"> Download traces</label>
+          <div class="actions">
+            <button type="submit">Retrieve Blocks</button>
+          </div>
+        </form>
+        <pre class="result"></pre>
+      </section>
+
+      <section id="trace-transaction">
+        <h2>Trace Transaction</h2>
+        <form id="trace-transaction-form">
+          <label>Transaction hash<input name="txHash" type="text" placeholder="0x..." required></label>
+          <div class="actions">
+            <button type="submit">Trace Transaction</button>
+          </div>
+        </form>
+        <pre class="result"></pre>
+      </section>
+
+      <section id="transaction-cache">
+        <h2>Transaction Cache</h2>
+        <form id="transaction-cache-form">
+          <label>Start block (optional)<input name="startBlock" type="number" placeholder=""></label>
+          <label>End block (optional)<input name="endBlock" type="number" placeholder=""></label>
+          <label><input name="withTimestamp" type="checkbox"> Include timestamps</label>
+          <div class="actions">
+            <button type="submit">Fetch Cache</button>
+          </div>
+        </form>
+        <pre class="result"></pre>
+      </section>
+
+      <section id="send-userop">
+        <h2>Send User Operation</h2>
+        <form id="send-userop-form">
+          <label>UserOperation JSON
+            <textarea name="userOp" placeholder='{"sender":"0x...","callData":"0x"}' required></textarea>
+          </label>
+          <div class="actions">
+            <button type="submit">Send User Operation</button>
+          </div>
+        </form>
+        <pre class="result"></pre>
+      </section>
+
+      <section id="userop-status">
+        <h2>UserOp Status</h2>
+        <form id="userop-status-form">
+          <label>UserOp hash<input name="userOpHash" type="text" placeholder="0x..." required></label>
+          <label>Max attempts<input name="maxAttempts" type="number" placeholder="20"></label>
+          <label>Delay (ms)<input name="delayMs" type="number" placeholder="3000"></label>
+          <div class="actions">
+            <button type="submit">Check Status</button>
+          </div>
+        </form>
+        <pre class="result"></pre>
+      </section>
+
+      <section id="transaction-status">
+        <h2>Transaction Status</h2>
+        <form id="transaction-status-form">
+          <label>Transaction hash<input name="txHash" type="text" placeholder="0x..." required></label>
+          <label>Max attempts<input name="maxAttempts" type="number" placeholder="20"></label>
+          <label>Delay (ms)<input name="delayMs" type="number" placeholder="3000"></label>
+          <div class="actions">
+            <button type="submit">Check Receipt</button>
+          </div>
+        </form>
+        <pre class="result"></pre>
+      </section>
+
+      <section id="userop-hash">
+        <h2>UserOp Hash</h2>
+        <form id="userop-hash-form">
+          <label>UserOperation JSON<textarea name="userOp" placeholder='{"sender":"0x..."}' required></textarea></label>
+          <label>Entry point address<input name="entryPointAddress" type="text" placeholder="0x..." required></label>
+          <label>Chain ID<input name="chainId" type="number" placeholder="80002" required></label>
+          <div class="actions">
+            <button type="submit">Calculate Hash</button>
+          </div>
+        </form>
+        <pre class="result"></pre>
+      </section>
+
+      <section id="pack-userop">
+        <h2>Pack UserOp</h2>
+        <form id="pack-userop-form">
+          <label>UserOperation JSON<textarea name="userOp" placeholder='{"sender":"0x..."}' required></textarea></label>
+          <div class="actions">
+            <button type="submit">Pack UserOp</button>
+          </div>
+        </form>
+        <pre class="result"></pre>
+      </section>
+    </div>
+    </main>
+  </div>
+
+  <script>
+    const defaultBaseUrl = window.location.origin || 'http://localhost:4000';
+
+    function getBaseUrl() {
+      const input = document.getElementById('base-url');
+      const value = (input.value || '').trim();
+      if (!value) {
+        return defaultBaseUrl;
+      }
+      return value.endsWith('/') ? value.slice(0, -1) : value;
+    }
+
+    function formatResult(data) {
+      if (data === undefined) {
+        return 'No response body';
+      }
+      if (typeof data === 'string') {
+        try {
+          const parsed = JSON.parse(data);
+          return JSON.stringify(parsed, null, 2);
+        } catch (err) {
+          return data;
+        }
+      }
+      return JSON.stringify(data, null, 2);
+    }
+
+    async function sendRequest(options) {
+      const { path, method = 'POST', body } = options;
+      const base = getBaseUrl();
+      const url = new URL(path, base).toString();
+      const init = { method, headers: { 'Content-Type': 'application/json' } };
+      if (method.toUpperCase() !== 'GET' && body !== undefined) {
+        init.body = JSON.stringify(body);
+      }
+      if (method.toUpperCase() === 'GET') {
+        delete init.headers['Content-Type'];
+      }
+      const res = await fetch(url, init);
+      const text = await res.text();
+      let payload;
+      if (text) {
+        try {
+          payload = JSON.parse(text);
+        } catch (err) {
+          payload = text;
+        }
+      }
+      if (!res.ok) {
+        const message = payload && payload.error ? payload.error : res.statusText || 'Request failed';
+        const error = new Error(message);
+        error.payload = payload;
+        error.status = res.status;
+        throw error;
+      }
+      return payload;
+    }
+
+    function registerForm(formId, builder) {
+      const form = document.getElementById(formId);
+      if (!form) return;
+      const resultEl = form.parentElement.querySelector('.result');
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (resultEl) {
+          resultEl.textContent = 'Loading...';
+        }
+        try {
+          const request = builder(new FormData(form));
+          const response = await sendRequest(request);
+          if (resultEl) {
+            resultEl.textContent = formatResult(response ?? '');
+          }
+        } catch (err) {
+          const message = err.payload ? formatResult(err.payload) : err.message;
+          if (resultEl) {
+            resultEl.textContent = `Error: ${message}`;
+          }
+        }
+      });
+    }
+
+    function parseJsonInput(value, fieldName) {
+      const trimmed = (value || '').trim();
+      if (!trimmed) {
+        throw new Error(`Field ${fieldName} is required`);
+      }
+      try {
+        return JSON.parse(trimmed);
+      } catch (err) {
+        throw new Error(`Invalid JSON in ${fieldName}`);
+      }
+    }
+
+    function optionalField(formData, key) {
+      const value = (formData.get(key) || '').trim();
+      return value ? value : undefined;
+    }
+
+    function checkboxValue(formData, key) {
+      return formData.get(key) === 'on';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const inputBase = document.getElementById('base-url');
+      if (inputBase && !inputBase.value) {
+        inputBase.value = defaultBaseUrl;
+      }
+
+      registerForm('smart-account-form', (data) => ({
+        path: '/api/identity/smart-accounts',
+        method: 'POST',
+        body: {
+          secret: data.get('secret'),
+          countId: data.get('countId') ? Number(data.get('countId')) : 0,
+          salt: data.get('salt') ? Number(data.get('salt')) : 1,
+          register: checkboxValue(data, 'register'),
+          nullifier: optionalField(data, 'nullifier'),
+        },
+      }));
+
+      registerForm('register-user-form', (data) => ({
+        path: '/api/identity/register',
+        method: 'POST',
+        body: {
+          smartAccountAddress: data.get('smartAccountAddress'),
+          secret: data.get('secret'),
+          nullifier: optionalField(data, 'nullifier'),
+        },
+      }));
+
+      registerForm('generate-proof-form', (data) => ({
+        path: '/api/identity/proof',
+        method: 'POST',
+        body: {
+          smartAccountAddress: data.get('smartAccountAddress'),
+          secret: data.get('secret'),
+          nullifier: optionalField(data, 'nullifier'),
+        },
+      }));
+
+      registerForm('deploy-user-data-form', (data) => ({
+        path: '/api/identity/user-data/deploy',
+        method: 'POST',
+        body: {
+          smartAccountAddress: data.get('smartAccountAddress'),
+          secret: data.get('secret'),
+          mode: data.get('mode'),
+          nullifier: optionalField(data, 'nullifier'),
+          autoRegister: checkboxValue(data, 'autoRegister'),
+        },
+      }));
+
+      registerForm('update-user-data-form', (data) => ({
+        path: '/api/identity/user-data/update',
+        method: 'POST',
+        body: {
+          smartAccountAddress: data.get('smartAccountAddress'),
+          userDataAddress: data.get('userDataAddress'),
+          secret: data.get('secret'),
+          mode: data.get('mode'),
+          nullifier: optionalField(data, 'nullifier'),
+        },
+      }));
+
+      registerForm('simulate-single-form', (data) => ({
+        path: '/api/simulation/single-user',
+        method: 'POST',
+        body: {
+          secret: data.get('secret'),
+          mode: data.get('mode'),
+        },
+      }));
+
+      registerForm('simulate-multiple-form', (data) => ({
+        path: '/api/simulation/multiple-users',
+        method: 'POST',
+        body: {
+          wallets: parseJsonInput(data.get('wallets'), 'wallets textarea'),
+          mode: data.get('mode'),
+        },
+      }));
+
+      registerForm('generate-wallets-form', (data) => ({
+        path: '/api/simulation/wallets',
+        method: 'POST',
+        body: {
+          count: data.get('count') ? Number(data.get('count')) : 10,
+          generateSecret: checkboxValue(data, 'generateSecret'),
+          fundWallets: checkboxValue(data, 'fundWallets'),
+        },
+      }));
+
+      registerForm('get-wallets-form', (data) => {
+        const customPath = optionalField(data, 'path');
+        const query = customPath ? `?path=${encodeURIComponent(customPath)}` : '';
+        return {
+          path: `/api/simulation/wallets${query}`,
+          method: 'GET',
+        };
+      });
+
+      registerForm('retrieve-blocks-form', (data) => ({
+        path: '/api/simulation/blocks',
+        method: 'POST',
+        body: {
+          startBlock: Number(data.get('startBlock')),
+          endBlock: Number(data.get('endBlock')),
+          includeTransactions: checkboxValue(data, 'includeTransactions'),
+          includeTraces: checkboxValue(data, 'includeTraces'),
+        },
+      }));
+
+      registerForm('trace-transaction-form', (data) => ({
+        path: '/api/simulation/transactions/trace',
+        method: 'POST',
+        body: {
+          txHash: data.get('txHash'),
+        },
+      }));
+
+      registerForm('transaction-cache-form', (data) => {
+        const params = new URLSearchParams();
+        const startBlock = optionalField(data, 'startBlock');
+        const endBlock = optionalField(data, 'endBlock');
+        const withTimestamp = checkboxValue(data, 'withTimestamp');
+        if (startBlock !== undefined) params.set('startBlock', startBlock);
+        if (endBlock !== undefined) params.set('endBlock', endBlock);
+        if (withTimestamp) params.set('withTimestamp', '1');
+        const query = params.toString() ? `?${params.toString()}` : '';
+        return {
+          path: `/api/simulation/transactions/cache${query}`,
+          method: 'GET',
+        };
+      });
+
+      registerForm('send-userop-form', (data) => ({
+        path: '/api/operations/send-user-op',
+        method: 'POST',
+        body: {
+          userOp: parseJsonInput(data.get('userOp'), 'userOp textarea'),
+        },
+      }));
+
+      registerForm('userop-status-form', (data) => ({
+        path: '/api/operations/user-op-status',
+        method: 'POST',
+        body: {
+          userOpHash: data.get('userOpHash'),
+          maxAttempts: data.get('maxAttempts') ? Number(data.get('maxAttempts')) : undefined,
+          delayMs: data.get('delayMs') ? Number(data.get('delayMs')) : undefined,
+        },
+      }));
+
+      registerForm('transaction-status-form', (data) => ({
+        path: '/api/operations/transaction-status',
+        method: 'POST',
+        body: {
+          txHash: data.get('txHash'),
+          maxAttempts: data.get('maxAttempts') ? Number(data.get('maxAttempts')) : undefined,
+          delayMs: data.get('delayMs') ? Number(data.get('delayMs')) : undefined,
+        },
+      }));
+
+      registerForm('userop-hash-form', (data) => ({
+        path: '/api/operations/user-op-hash',
+        method: 'POST',
+        body: {
+          userOp: parseJsonInput(data.get('userOp'), 'userOp textarea'),
+          entryPointAddress: data.get('entryPointAddress'),
+          chainId: Number(data.get('chainId')),
+        },
+      }));
+
+      registerForm('pack-userop-form', (data) => ({
+        path: '/api/operations/pack-user-op',
+        method: 'POST',
+        body: {
+          userOp: parseJsonInput(data.get('userOp'), 'userOp textarea'),
+        },
+      }));
+    });
+  </script>
+</body>
+</html>

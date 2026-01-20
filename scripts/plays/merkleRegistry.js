@@ -1,5 +1,5 @@
 const { ethers } = require("hardhat");
-const { getRegistryAddress } = require("../isDeployed.js");
+const { getRegistryAddress } = require("../deploy/isDeployed.js");
 
 async function main() {
     const registryAddress = await getRegistryAddress();

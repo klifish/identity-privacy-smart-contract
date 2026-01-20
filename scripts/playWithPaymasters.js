@@ -1,5 +1,5 @@
 const { ethers } = require('hardhat');
-const { getVerifyingPaymsaterAddress } = require('./isDeployed.js');
+const { getVerifyingPaymsaterAddress } = require('./deploy/isDeployed.js');
 
 async function play() {
     const verifyingPaymasterAddress = await getVerifyingPaymsaterAddress();

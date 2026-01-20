@@ -1,6 +1,4 @@
-const { setupHasher, hashLeftRightNew } = require("./utilities/hasher")
-const { getRegistryAddress } = require("./isDeployed.js")
-const ffjavascript = require("ffjavascript");
+const { hashLeftRightNew } = require("./utilities/hasher")
 const API_URL = process.env.API_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const alchemyProvider = new ethers.JsonRpcProvider(API_URL);
@@ -21,25 +19,6 @@ async function buildZeros(hasher, levels, zeroElement) {
     }
 
     return _zeros;
-
-    const RegistryContract = await ethers.getContractFactory("MerkleRegistry", signer);
-    const registry = await RegistryContract.attach(await getRegistryAddress());
-
-    for (let i = 0; i <= levels; i++) {
-        zero_i = await registry.zeros(i);
-        console.log(zero_i.toString(16))
-    }
-
 }
 
 module.exports = { buildZeros }
-
-// async function main() {
-//     const hasher = await setupHasher()
-//     await buildZeros(hasher, 20, 0)
-// }
-
-// main().then(() => process.exit(0)).catch(error => {
-//     console.error(error);
-//     process.exit(1);
-// });

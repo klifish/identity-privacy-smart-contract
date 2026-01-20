@@ -5,12 +5,10 @@ const { ethers } = require("hardhat");
 const utils = require('./utils');
 const { createSmartAccount, getSender } = require('./userManagement/createSmartAccount');
 const { calculateLeaf, registerUserWithLeaf, generateProof } = require('./registerUser');
-const { getVerifyingPaymsaterAddress, getFirstRunnerAddress, getAccountFactoryAddress } = require('./isDeployed');
+const { getVerifyingPaymsaterAddress, getFirstRunnerAddress, getAccountFactoryAddress } = require('./deploy/isDeployed');
 const { getUserOpHash, fillAndSign, packUserOp, fillAndPcak, simulateValidation, fillUserOp, getDefaultUserOp, getCallData } = require('../scripts/userOp');
 const fs = require("fs");
-const MOCK_VALID_UNTIL = '0x00000000deadbeef'
-const MOCK_VALID_AFTER = '0x0000000000001234'
-const ENTRY_POINT_ADDRESS = process.env.ENTRY_POINT;
+const { MOCK_VALID_UNTIL, MOCK_VALID_AFTER, ENTRY_POINT_ADDRESS } = require('./sharedConstants');
 const entryPointAbi = JSON.parse(fs.readFileSync("abi/entryPoint.json", "utf8")).abi;
 const { alchemyProvider, signer } = require('./constants');
 const { get } = require("http");
@@ -65,7 +63,7 @@ async function main() {
 
     const hash = await verifyingPaymaster.getHash(packedUserOp, MOCK_VALID_UNTIL, MOCK_VALID_AFTER);
 
-    const sig = await signer.signMessage(ethers.getBytes(hash));
+    const sig = await signer.signMessage(ethers.getBytes(hash)); //used for paymaster
     // console.log("userOperation", userOperation);
     // delete userOperation.nonce;
     const UserOp = await fillUserOp({
@@ -93,6 +91,7 @@ async function main() {
     runner.once("ValidateSignature", (userOpHash, proofHash, result, event) => {
         console.log("Caught ValidateSignature:", userOpHash, proofHash, result);
     });
+
     const tx = await runner.preVerifySignature(userOperation.signature, userOpHashLocal);
     const receipt = await tx.wait();
     console.log("Transaction hash:", receipt.hash);

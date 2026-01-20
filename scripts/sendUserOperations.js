@@ -2,20 +2,18 @@
 const { ethers } = require('hardhat');
 
 const { generateProof, registerUser } = require('./registerUser');
-const { getVerifyingPaymsaterAddress, getFirstRunnerAddress, getAccountFactoryAddress } = require('./isDeployed');
+const { getVerifyingPaymsaterAddress, getFirstRunnerAddress, getAccountFactoryAddress } = require('./deploy/isDeployed');
 const { depositToRunner, withdrawAllFromRunner } = require('./runnerInteraction');
 const { getUserOpHash, getDefaultUserOp, getCallData, fillUserOp, packUserOp } = require('./userOp');
 
 const fs = require("fs");
 
 const entryPointAbi = JSON.parse(fs.readFileSync("abi/entryPoint.json", "utf8")).abi;
-const ENTRY_POINT_ADDRESS = process.env.ENTRY_POINT;
+const { MOCK_VALID_UNTIL, MOCK_VALID_AFTER, ENTRY_POINT_ADDRESS } = require('./sharedConstants');
 
 const API_URL = process.env.API_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const secret = "hello world"
-const MOCK_VALID_UNTIL = '0x00000000deadbeef'
-const MOCK_VALID_AFTER = '0x0000000000001234'
 
 const alchemyProvider = new ethers.JsonRpcProvider(API_URL);
 
