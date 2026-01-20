@@ -17,8 +17,10 @@
 const { expect } = require('chai');
 const { ethers, network } = require('hardhat');
 const circomlibjs = require('circomlibjs');
+const path = require('path');
 const { IdentityClient, calculateLeaf } = require('../../src/identity');
 const { computePedersenHash } = require('../../src/utils');
+const { ZKPClient } = require('../../src/zkp');
 
 // Contract ABIs for direct testing
 const MyAccountFactoryABI = [
@@ -30,6 +32,7 @@ const MyAccountFactoryABI = [
 const MerkleRegistryABI = [
   'function registerUser(uint256 leaf) external',
   'function isKnownRoot(uint256 root) external view returns (bool)',
+  'function verify(uint[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[2] calldata _pubSignals) external view returns (bool)',
   'function roots(uint256) external view returns (uint256)',
   'function currentRootIndex() external view returns (uint32)',
   'event UserRegistered(uint256 leaf, uint32 index)',
@@ -458,6 +461,175 @@ describe('Identity Module - Integration Tests', function () {
     });
   });
 
+  describe('proveRegistration - ZKP verification', function () {
+    let zkpTestSmartAccountAddress;
+    let zkpTestSecret;
+    const zkpTestNullifier = 0n;
+    const circuitsPath = path.join(__dirname, '..', '..', 'build', 'circuits');
+
+    before(async function () {
+      // Create and register a user for ZKP tests
+      zkpTestSecret = `zkp${Date.now() % 100000}`;
+      const result = await helpers.createSmartAccount(zkpTestSecret);
+      zkpTestSmartAccountAddress = result.address;
+      await helpers.registerUser(zkpTestSmartAccountAddress, zkpTestSecret, zkpTestNullifier);
+      console.log('ZKP test user registered at:', zkpTestSmartAccountAddress);
+    });
+
+    it('should generate a valid registration proof', async function () {
+      if (useDirectContracts) {
+        // For direct contracts, use ZKPClient directly
+        const leaves = await helpers.getRegisteredLeaves();
+        const zkpClient = new ZKPClient({ circuitsPath });
+
+        const result = await zkpClient.generateRegistrationProof({
+          smartAccountAddress: zkpTestSmartAccountAddress,
+          secret: zkpTestSecret,
+          nullifier: zkpTestNullifier,
+          leaves,
+        });
+
+        expect(result).to.have.property('proof');
+        expect(result).to.have.property('proofComponents');
+        expect(result).to.have.property('root');
+        expect(result.proofComponents).to.have.property('pA');
+        expect(result.proofComponents).to.have.property('pB');
+        expect(result.proofComponents).to.have.property('pC');
+        expect(result.proofComponents).to.have.property('pubSignals');
+        console.log('Registration proof generated successfully');
+        console.log('Merkle root:', result.root.toString().substring(0, 20) + '...');
+      } else {
+        const result = await identityClient.proveRegistration(
+          zkpTestSmartAccountAddress,
+          zkpTestSecret,
+          zkpTestNullifier,
+          { circuitsPath }
+        );
+
+        expect(result).to.have.property('proof');
+        expect(result).to.have.property('root');
+        expect(result.proof).to.have.property('pA');
+        expect(result.proof).to.have.property('pB');
+        expect(result.proof).to.have.property('pC');
+        expect(result.proof).to.have.property('pubSignals');
+        console.log('Registration proof generated successfully');
+        console.log('Merkle root:', result.root.toString().substring(0, 20) + '...');
+      }
+    });
+
+    it('should verify registration proof on-chain', async function () {
+      if (useDirectContracts) {
+        const leaves = await helpers.getRegisteredLeaves();
+        const zkpClient = new ZKPClient({ circuitsPath });
+
+        const proofResult = await zkpClient.generateRegistrationProof({
+          smartAccountAddress: zkpTestSmartAccountAddress,
+          secret: zkpTestSecret,
+          nullifier: zkpTestNullifier,
+          leaves,
+        });
+
+        const { pA, pB, pC, pubSignals } = proofResult.proofComponents;
+        const isValid = await registry.verify(pA, pB, pC, pubSignals);
+        expect(isValid).to.be.true;
+        console.log('On-chain verification passed');
+      } else {
+        const proofResult = await identityClient.proveRegistration(
+          zkpTestSmartAccountAddress,
+          zkpTestSecret,
+          zkpTestNullifier,
+          { circuitsPath }
+        );
+
+        const isValid = await identityClient.verifyRegistration(proofResult.proof);
+        expect(isValid).to.be.true;
+        console.log('On-chain verification passed');
+      }
+    });
+
+    it('should complete full prove and verify workflow', async function () {
+      if (useDirectContracts) {
+        this.skip(); // proveAndVerifyRegistration only available via IdentityClient
+      }
+
+      const result = await identityClient.proveAndVerifyRegistration(
+        zkpTestSmartAccountAddress,
+        zkpTestSecret,
+        zkpTestNullifier,
+        { circuitsPath }
+      );
+
+      expect(result.isValid).to.be.true;
+      expect(result).to.have.property('proof');
+      expect(result).to.have.property('root');
+      console.log('Full prove and verify workflow completed');
+      console.log('Verification result:', result.isValid);
+    });
+
+    it('should fail verification with wrong secret', async function () {
+      const wrongSecret = 'wrong-secret-12345';
+
+      try {
+        if (useDirectContracts) {
+          const leaves = await helpers.getRegisteredLeaves();
+          const zkpClient = new ZKPClient({ circuitsPath });
+
+          // This should fail because the wrong secret produces a different leaf
+          // that is not in the Merkle tree
+          await zkpClient.generateRegistrationProof({
+            smartAccountAddress: zkpTestSmartAccountAddress,
+            secret: wrongSecret,
+            nullifier: zkpTestNullifier,
+            leaves,
+          });
+          expect.fail('Should have thrown an error');
+        } else {
+          await identityClient.proveRegistration(
+            zkpTestSmartAccountAddress,
+            wrongSecret,
+            zkpTestNullifier,
+            { circuitsPath }
+          );
+          expect.fail('Should have thrown an error');
+        }
+      } catch (error) {
+        // Expected: proof generation should fail because leaf is not in tree
+        expect(error).to.exist;
+        console.log('Correctly failed with wrong secret:', error.message.substring(0, 50) + '...');
+      }
+    });
+
+    it('should fail verification with wrong nullifier', async function () {
+      const wrongNullifier = 999999n;
+
+      try {
+        if (useDirectContracts) {
+          const leaves = await helpers.getRegisteredLeaves();
+          const zkpClient = new ZKPClient({ circuitsPath });
+
+          await zkpClient.generateRegistrationProof({
+            smartAccountAddress: zkpTestSmartAccountAddress,
+            secret: zkpTestSecret,
+            nullifier: wrongNullifier,
+            leaves,
+          });
+          expect.fail('Should have thrown an error');
+        } else {
+          await identityClient.proveRegistration(
+            zkpTestSmartAccountAddress,
+            zkpTestSecret,
+            wrongNullifier,
+            { circuitsPath }
+          );
+          expect.fail('Should have thrown an error');
+        }
+      } catch (error) {
+        expect(error).to.exist;
+        console.log('Correctly failed with wrong nullifier:', error.message.substring(0, 50) + '...');
+      }
+    });
+  });
+
   describe('Full workflow', function () {
     it('should complete full identity registration workflow', async function () {
       const userSecret = `fw${Date.now() % 10000}`;
@@ -490,6 +662,42 @@ describe('Identity Module - Integration Tests', function () {
       const isKnown = await helpers.isKnownRoot(currentRoot);
       expect(isKnown).to.be.true;
       console.log('Current Merkle root is valid');
+    });
+
+    it('should complete full workflow with ZKP verification', async function () {
+      const circuitsPath = path.join(__dirname, '..', '..', 'build', 'circuits');
+      const userSecret = `zkpfw${Date.now() % 10000}`;
+      const nullifier = 0n;
+
+      // Step 1: Create smart account
+      const accountResult = await helpers.createSmartAccount(userSecret);
+      expect(accountResult.deployed).to.be.true;
+      console.log('Step 1: Smart account created at:', accountResult.address);
+
+      // Step 2: Register user
+      const registerResult = await helpers.registerUser(accountResult.address, userSecret, nullifier);
+      expect(registerResult.success).to.be.true;
+      console.log('Step 2: User registered successfully');
+
+      // Step 3: Generate ZKP proof of registration
+      const leaves = await helpers.getRegisteredLeaves();
+      const zkpClient = new ZKPClient({ circuitsPath });
+      const proofResult = await zkpClient.generateRegistrationProof({
+        smartAccountAddress: accountResult.address,
+        secret: userSecret,
+        nullifier: nullifier,
+        leaves,
+      });
+      expect(proofResult).to.have.property('proofComponents');
+      console.log('Step 3: ZKP proof generated');
+
+      // Step 4: Verify proof on-chain
+      const { pA, pB, pC, pubSignals } = proofResult.proofComponents;
+      const isValid = await registry.verify(pA, pB, pC, pubSignals);
+      expect(isValid).to.be.true;
+      console.log('Step 4: On-chain verification passed');
+
+      console.log('Full workflow with ZKP verification completed successfully!');
     });
 
     it('should support multiple users registration', async function () {

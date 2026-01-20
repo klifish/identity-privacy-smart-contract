@@ -8,7 +8,9 @@
 const { ethers } = require('ethers');
 const circomlibjs = require('circomlibjs');
 const ffjavascript = require('ffjavascript');
+const path = require('path');
 const { pedersenHashMultipleInputs, computePedersenHash } = require('./utils');
+const { ZKPClient } = require('./zkp');
 
 // Contract ABIs (minimal interfaces)
 const MyAccountFactoryABI = [
@@ -19,6 +21,9 @@ const MyAccountFactoryABI = [
 const MerkleRegistryABI = [
   'function registerUser(uint256 leaf) external',
   'function isKnownRoot(uint256 root) external view returns (bool)',
+  'function verify(uint[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[2] calldata _pubSignals) external view returns (bool)',
+  'function roots(uint256) external view returns (uint256)',
+  'function currentRootIndex() external view returns (uint32)',
   'event UserRegistered(uint256 indexed index, uint256 leaf)',
 ];
 
@@ -159,6 +164,77 @@ class IdentityClient {
     );
     return sortedEvents.map((event) => event.args.leaf);
   }
+
+  /**
+   * Get current Merkle root from registry
+   * @returns {Promise<bigint>}
+   */
+  async getCurrentRoot() {
+    const currentIndex = await this.registry.currentRootIndex();
+    return this.registry.roots(currentIndex);
+  }
+
+  /**
+   * Generate a zero-knowledge proof that the user is registered
+   * @param {string} smartAccountAddress - Smart account address
+   * @param {string} secret - User secret
+   * @param {bigint} nullifier - Nullifier value
+   * @param {Object} options - Options
+   * @param {string} options.circuitsPath - Path to circuits build folder
+   * @returns {Promise<{proof: Object, root: bigint, nullifierHash: string}>}
+   */
+  async proveRegistration(smartAccountAddress, secret, nullifier, options = {}) {
+    const circuitsPath = options.circuitsPath || path.join(__dirname, '..', 'build', 'circuits');
+
+    // Get all registered leaves
+    const leaves = await this.getRegisteredLeaves();
+
+    // Create ZKP client and generate proof
+    const zkpClient = new ZKPClient({ circuitsPath });
+    const result = await zkpClient.generateRegistrationProof({
+      smartAccountAddress,
+      secret,
+      nullifier,
+      leaves,
+    });
+
+    return {
+      proof: result.proofComponents,
+      serializedProof: result.proof,
+      root: result.root,
+      publicInputs: result.publicInputs,
+    };
+  }
+
+  /**
+   * Verify a registration proof on-chain
+   * @param {Object} proof - Proof components { pA, pB, pC, pubSignals }
+   * @returns {Promise<boolean>}
+   */
+  async verifyRegistration(proof) {
+    const { pA, pB, pC, pubSignals } = proof;
+    return this.registry.verify(pA, pB, pC, pubSignals);
+  }
+
+  /**
+   * Complete workflow: generate proof and verify on-chain
+   * @param {string} smartAccountAddress - Smart account address
+   * @param {string} secret - User secret
+   * @param {bigint} nullifier - Nullifier value
+   * @param {Object} options - Options
+   * @returns {Promise<{isValid: boolean, proof: Object, root: bigint}>}
+   */
+  async proveAndVerifyRegistration(smartAccountAddress, secret, nullifier, options = {}) {
+    const proofResult = await this.proveRegistration(smartAccountAddress, secret, nullifier, options);
+    const isValid = await this.verifyRegistration(proofResult.proof);
+
+    return {
+      isValid,
+      proof: proofResult.proof,
+      root: proofResult.root,
+      publicInputs: proofResult.publicInputs,
+    };
+  }
 }
 
 /**
@@ -205,9 +281,36 @@ async function calculateLeaf(smartAccountAddress, secret, nullifier) {
   return babyjub.F.toObject(hP[1]);
 }
 
+/**
+ * Prove registration (standalone function)
+ * @param {Object} config - Configuration
+ * @param {string} smartAccountAddress - Smart account address
+ * @param {string} secret - User secret
+ * @param {bigint} nullifier - Nullifier
+ * @param {Object} options - Options
+ * @returns {Promise<Object>}
+ */
+async function proveRegistration(config, smartAccountAddress, secret, nullifier, options = {}) {
+  const client = new IdentityClient(config);
+  return client.proveRegistration(smartAccountAddress, secret, nullifier, options);
+}
+
+/**
+ * Verify registration proof on-chain (standalone function)
+ * @param {Object} config - Configuration
+ * @param {Object} proof - Proof components
+ * @returns {Promise<boolean>}
+ */
+async function verifyRegistration(config, proof) {
+  const client = new IdentityClient(config);
+  return client.verifyRegistration(proof);
+}
+
 module.exports = {
   IdentityClient,
   createSmartAccount,
   registerUser,
   calculateLeaf,
+  proveRegistration,
+  verifyRegistration,
 };
