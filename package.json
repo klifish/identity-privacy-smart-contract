@@ -78,7 +78,7 @@
     "build": "npm run build:circuit",
     "deploy": "npx hardhat run scripts/deploy/deploy.js --network polygonAmoy",
     "runner:create": "npx hardhat run scripts/userManagement/createRunner.js --network polygonAmoy",
-    "start:api": "node api/server.js"
+    "start:api": "HARDHAT_CONFIG=./hardhat.config.js node api/server.js"
   },
   "author": "",
   "license": "ISC",
