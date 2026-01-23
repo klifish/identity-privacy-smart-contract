@@ -63,11 +63,11 @@ class ZKPClient {
    * @param {bigint} nullifier - Nullifier value
    * @returns {Promise<bigint>} - Leaf value
    */
-  async calculateLeaf(smartAccountAddress, secret, nullifier) {
+  async calculateLeaf(secret, nullifier) {
     const secretBuff = new TextEncoder().encode(secret);
     const secretBigInt = ffjavascript.utils.leBuff2int(secretBuff);
 
-    const src = [smartAccountAddress, secretBigInt, nullifier];
+    const src = [secretBigInt, nullifier];
     const srcHash = await pedersenHashMultipleInputs(src);
 
     const babyjub = await circomlibjs.buildBabyjub();
@@ -85,13 +85,13 @@ class ZKPClient {
    * @returns {Promise<{proof: string, publicInputs: Array}>}
    */
   async generateRegistrationProof(params) {
-    const { smartAccountAddress, secret, nullifier, leaves } = params;
+    const { secret, nullifier, leaves } = params;
 
     const wasmPath = path.join(this.circuitsPath, 'register_js', 'register.wasm');
     const zkeyPath = path.join(this.circuitsPath, 'register_final.zkey');
 
     // Calculate the user's leaf
-    const leaf = await this.calculateLeaf(smartAccountAddress, secret, nullifier);
+    const leaf = await this.calculateLeaf(secret, nullifier);
 
     // Build Merkle tree
     const hasher = await this.initHasher();
@@ -117,7 +117,6 @@ class ZKPClient {
       secret: secretBigInt,
       pathElements: merkleProof.pathElements,
       pathIndices: merkleProof.pathIndices,
-      smartContractWalletAddress: smartAccountAddress,
     };
 
     // Generate proof

@@ -57,16 +57,15 @@ class IdentityClient {
 
   /**
    * Calculate Merkle tree leaf from user credentials
-   * @param {string} smartAccountAddress - Smart account address
    * @param {string} secret - User secret
    * @param {bigint} nullifier - Nullifier value
    * @returns {Promise<bigint>} - Leaf value
    */
-  async calculateLeaf(smartAccountAddress, secret, nullifier) {
+  async calculateLeaf(secret, nullifier) {
     const secretBuff = new TextEncoder().encode(secret);
     const secretBigInt = ffjavascript.utils.leBuff2int(secretBuff);
 
-    const src = [smartAccountAddress, secretBigInt, nullifier];
+    const src = [secretBigInt, nullifier];
     const srcHash = await pedersenHashMultipleInputs(src);
 
     const babyjub = await circomlibjs.buildBabyjub();
@@ -134,13 +133,12 @@ class IdentityClient {
 
   /**
    * Register user to Merkle tree
-   * @param {string} smartAccountAddress - Smart account address
    * @param {string} secret - User secret
    * @param {bigint} nullifier - Nullifier value
    * @returns {Promise<{success: boolean, leaf: bigint, alreadyRegistered: boolean}>}
    */
-  async registerUser(smartAccountAddress, secret, nullifier) {
-    const leaf = await this.calculateLeaf(smartAccountAddress, secret, nullifier);
+  async registerUser(secret, nullifier) {
+    const leaf = await this.calculateLeaf(secret, nullifier);
     const result = await this.registerUserWithLeaf(leaf);
     return { ...result, leaf };
   }
@@ -177,14 +175,13 @@ class IdentityClient {
 
   /**
    * Generate a zero-knowledge proof that the user is registered
-   * @param {string} smartAccountAddress - Smart account address
    * @param {string} secret - User secret
    * @param {bigint} nullifier - Nullifier value
    * @param {Object} options - Options
    * @param {string} options.circuitsPath - Path to circuits build folder
    * @returns {Promise<{proof: Object, root: bigint, nullifierHash: string}>}
    */
-  async proveRegistration(smartAccountAddress, secret, nullifier, options = {}) {
+  async proveRegistration(secret, nullifier, options = {}) {
     const circuitsPath = options.circuitsPath || path.join(__dirname, '..', 'build', 'circuits');
 
     // Get all registered leaves
@@ -193,7 +190,6 @@ class IdentityClient {
     // Create ZKP client and generate proof
     const zkpClient = new ZKPClient({ circuitsPath });
     const result = await zkpClient.generateRegistrationProof({
-      smartAccountAddress,
       secret,
       nullifier,
       leaves,
@@ -219,14 +215,13 @@ class IdentityClient {
 
   /**
    * Complete workflow: generate proof and verify on-chain
-   * @param {string} smartAccountAddress - Smart account address
    * @param {string} secret - User secret
    * @param {bigint} nullifier - Nullifier value
    * @param {Object} options - Options
    * @returns {Promise<{isValid: boolean, proof: Object, root: bigint}>}
    */
-  async proveAndVerifyRegistration(smartAccountAddress, secret, nullifier, options = {}) {
-    const proofResult = await this.proveRegistration(smartAccountAddress, secret, nullifier, options);
+  async proveAndVerifyRegistration(secret, nullifier, options = {}) {
+    const proofResult = await this.proveRegistration(secret, nullifier, options);
     const isValid = await this.verifyRegistration(proofResult.proof);
 
     return {
@@ -253,28 +248,26 @@ async function createSmartAccount(config, secret, options = {}) {
 /**
  * Register user (standalone function)
  * @param {Object} config - Configuration
- * @param {string} smartAccountAddress - Smart account address
  * @param {string} secret - User secret
  * @param {bigint} nullifier - Nullifier
  * @returns {Promise<Object>}
  */
-async function registerUser(config, smartAccountAddress, secret, nullifier) {
+async function registerUser(config, secret, nullifier) {
   const client = new IdentityClient(config);
-  return client.registerUser(smartAccountAddress, secret, nullifier);
+  return client.registerUser(secret, nullifier);
 }
 
 /**
  * Calculate leaf (standalone function)
- * @param {string} smartAccountAddress - Smart account address
  * @param {string} secret - User secret
  * @param {bigint} nullifier - Nullifier
  * @returns {Promise<bigint>}
  */
-async function calculateLeaf(smartAccountAddress, secret, nullifier) {
+async function calculateLeaf(secret, nullifier) {
   const secretBuff = new TextEncoder().encode(secret);
   const secretBigInt = ffjavascript.utils.leBuff2int(secretBuff);
 
-  const src = [smartAccountAddress, secretBigInt, nullifier];
+  const src = [secretBigInt, nullifier];
   const srcHash = await pedersenHashMultipleInputs(src);
 
   const babyjub = await circomlibjs.buildBabyjub();
@@ -285,15 +278,14 @@ async function calculateLeaf(smartAccountAddress, secret, nullifier) {
 /**
  * Prove registration (standalone function)
  * @param {Object} config - Configuration
- * @param {string} smartAccountAddress - Smart account address
  * @param {string} secret - User secret
  * @param {bigint} nullifier - Nullifier
  * @param {Object} options - Options
  * @returns {Promise<Object>}
  */
-async function proveRegistration(config, smartAccountAddress, secret, nullifier, options = {}) {
+async function proveRegistration(config, secret, nullifier, options = {}) {
   const client = new IdentityClient(config);
-  return client.proveRegistration(smartAccountAddress, secret, nullifier, options);
+  return client.proveRegistration(secret, nullifier, options);
 }
 
 /**

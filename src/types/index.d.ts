@@ -65,7 +65,7 @@ export declare class IdentityClient {
   constructor(config: SDKConfig & ContractConfig);
 
   /** Calculate Merkle tree leaf from credentials */
-  calculateLeaf(smartAccountAddress: string, secret: string, nullifier: bigint): Promise<bigint>;
+  calculateLeaf(secret: string, nullifier: bigint): Promise<bigint>;
 
   /** Get predicted smart account address */
   getSender(commitment: bigint | string, salt?: number): Promise<string>;
@@ -78,7 +78,6 @@ export declare class IdentityClient {
 
   /** Register user to Merkle tree */
   registerUser(
-    smartAccountAddress: string,
     secret: string,
     nullifier: bigint
   ): Promise<RegisterUserResult>;
@@ -194,7 +193,6 @@ export interface ProofComponents {
 }
 
 export interface RegistrationProofParams {
-  smartAccountAddress: string;
   secret: string;
   nullifier: bigint;
   leaves: bigint[];
@@ -214,7 +212,7 @@ export declare class ZKPClient {
   initHasher(): Promise<{ hash: (left: bigint | string, right: bigint | string) => string }>;
 
   /** Calculate Merkle tree leaf from credentials */
-  calculateLeaf(smartAccountAddress: string, secret: string, nullifier: bigint): Promise<bigint>;
+  calculateLeaf(secret: string, nullifier: bigint): Promise<bigint>;
 
   /** Generate registration proof (Merkle tree membership) */
   generateRegistrationProof(params: RegistrationProofParams): Promise<ProofResult>;
@@ -348,7 +346,6 @@ declare const sdk: {
     createSmartAccount: typeof IdentityClient.prototype.createSmartAccount;
     registerUser: typeof IdentityClient.prototype.registerUser;
     calculateLeaf: (
-      smartAccountAddress: string,
       secret: string,
       nullifier: bigint
     ) => Promise<bigint>;

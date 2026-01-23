@@ -25,11 +25,19 @@ contract Runner is BaseAccount, Initializable {
 
     mapping(bytes32 => bool) public verifiedProofs;
     mapping(bytes32 => bytes32) public proofHashToUserOpHash;
+    // Anti-replay: nullifierHash bound to userOpHash.
+    // This avoids relying on circuit public signals while still preventing per-op replay.
+    mapping(bytes32 => bool) public usedNullifiers;
+    mapping(bytes32 => bytes32) public proofHashToNullifierHash;
     event ContractDeployed(address indexed newContract);
     event ValidateSignature(
         bytes32 indexed userOpHash,
         bytes32 indexed proofHash,
         bool isPreverification
+    );
+    event NullifierMarked(
+        bytes32 indexed nullifierHash,
+        bytes32 indexed proofHash
     );
 
     constructor(IEntryPoint anEntryPoint, IRegistry aRegistry) {
@@ -40,6 +48,12 @@ contract Runner is BaseAccount, Initializable {
     }
 
     event SignatureVerified(bool isValid);
+
+    // Signature encoding versions:
+    // v1: abi.encode(uint[2] pA, uint[2][2] pB, uint[2] pC, uint[2] pubSignals)
+    // v2: v1 + bytes32 embeddedUserOpHash
+    uint256 private constant _SIG_V1_LEN = 10 * 32; // 2 + 4 + 2 + 2 = 10 words
+    uint256 private constant _SIG_V2_LEN = 11 * 32; // v1 + 1 word
 
     receive() external payable {}
 
@@ -128,7 +142,36 @@ contract Runner is BaseAccount, Initializable {
         );
     }
 
-    function verifyProof(bytes calldata signature) public returns (bool) {
+    function _deserializeProofPublicSignalsAndEmbeddedOpHash(
+        bytes calldata signature
+    )
+        internal
+        pure
+        returns (
+            uint[2] memory _pA,
+            uint[2][2] memory _pB,
+            uint[2] memory _pC,
+            uint[2] memory _pubSignals,
+            bytes32 embeddedUserOpHash,
+            bool hasEmbeddedUserOpHash
+        )
+    {
+        if (signature.length == _SIG_V2_LEN) {
+            (_pA, _pB, _pC, _pubSignals, embeddedUserOpHash) = abi.decode(
+                signature,
+                (uint[2], uint[2][2], uint[2], uint[2], bytes32)
+            );
+            hasEmbeddedUserOpHash = true;
+        } else {
+            (_pA, _pB, _pC, _pubSignals) = _deserializeProofAndPublicSignals(
+                signature
+            );
+            embeddedUserOpHash = bytes32(0);
+            hasEmbeddedUserOpHash = false;
+        }
+    }
+
+    function verifyProof(bytes calldata signature) public view returns (bool) {
         return _verifyProof(signature);
     }
 
@@ -139,8 +182,10 @@ contract Runner is BaseAccount, Initializable {
             uint[2] memory _pA,
             uint[2][2] memory _pB,
             uint[2] memory _pC,
-            uint[2] memory _pubSignals
-        ) = _deserializeProofAndPublicSignals(signature);
+            uint[2] memory _pubSignals,
+            ,
+
+        ) = _deserializeProofPublicSignalsAndEmbeddedOpHash(signature);
         bool result = _registry.verify(_pA, _pB, _pC, _pubSignals);
 
         // emit SignatureVerified(result);
@@ -165,7 +210,7 @@ contract Runner is BaseAccount, Initializable {
 
     function validateSignature(
         PackedUserOperation calldata userOp,
-        bytes32 userOpHash
+        bytes32 /* userOpHash */
     ) public virtual returns (uint256 validationData) {
         bytes32 proofHash = keccak256(userOp.signature);
         require(verifiedProofs[proofHash], "Signature not pre-verified");
@@ -178,8 +223,53 @@ contract Runner is BaseAccount, Initializable {
     ) external {
         require(_verifyProof(signature), "Invalid signature");
         bytes32 proofHash = keccak256(signature);
+
+        // If the signature embeds a userOpHash (v2), enforce it matches the provided userOpHash.
+        // This prevents a third party from rebinding an observed proof to a different operation.
+        (
+            ,
+            ,
+            ,
+            uint[2] memory _unusedPubSignals,
+            bytes32 embeddedUserOpHash,
+            bool hasEmbedded
+        ) = _deserializeProofPublicSignalsAndEmbeddedOpHash(signature);
+        // silence unused variable warning (pubSignals not used after v2 binding change)
+        if (_unusedPubSignals[0] == 0) {
+            // no-op
+        }
+        if (hasEmbedded) {
+            require(
+                embeddedUserOpHash == userOpHash,
+                "Embedded userOpHash mismatch"
+            );
+        } else {
+            // Backward compatibility: v1 signatures can be front-run/rebound.
+            // Prefer upgrading clients to v2.
+            require(
+                signature.length == _SIG_V1_LEN,
+                "Invalid signature length"
+            );
+        }
+
+        // Idempotency: allow re-calling with the same binding, but prevent rebinding.
+        if (verifiedProofs[proofHash]) {
+            require(
+                proofHashToUserOpHash[proofHash] == userOpHash,
+                "Proof already bound to different operation"
+            );
+            return;
+        }
+
+        bytes32 nullifierHash = keccak256(abi.encodePacked(userOpHash));
+        require(!usedNullifiers[nullifierHash], "Nullifier already used");
+        usedNullifiers[nullifierHash] = true;
+
         verifiedProofs[proofHash] = true;
         proofHashToUserOpHash[proofHash] = userOpHash;
+        proofHashToNullifierHash[proofHash] = nullifierHash;
+
+        emit NullifierMarked(nullifierHash, proofHash);
 
         emit ValidateSignature(userOpHash, proofHash, true);
     }

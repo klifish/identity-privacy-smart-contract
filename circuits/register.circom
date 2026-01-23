@@ -29,25 +29,20 @@ include "merkleTree.circom";
 // }
 
 template WalletAndSecretHasher() {
-    signal input smartContractWalletAddress;
     signal input secret;
     signal input nullifier;
     signal output commitment;
 
-    component smartContractWalletAddressBits = Num2Bits(256);
     component secretBits = Num2Bits(256);
     component nullifierBits = Num2Bits(256);
     
-    smartContractWalletAddressBits.in <== smartContractWalletAddress;
     secretBits.in <== secret;
     nullifierBits.in <== nullifier;
 
-    component WSHasher = Pedersen(256*3);
+    component WSHasher = Pedersen(256*2);
     for (var i = 0; i < 256; i++) {
-        WSHasher.in[i] <== smartContractWalletAddressBits.out[i];
-        // log(smartContractWalletAddressBits.out[i]);
-        WSHasher.in[i + 256] <== secretBits.out[i];
-        WSHasher.in[i + 512] <== nullifierBits.out[i];
+        WSHasher.in[i] <== secretBits.out[i];
+        WSHasher.in[i + 256] <== nullifierBits.out[i];
     }
     
     commitment <== WSHasher.out[1];
@@ -68,8 +63,6 @@ template Register(levels) {
     signal input pathElements[levels];
     signal input pathIndices[levels];
 
-    signal input smartContractWalletAddress;
-
     // component hasher = CommitmentHasher();
     // hasher.nullifier <== nullifier;
     // hasher.secret <== secret;
@@ -78,7 +71,6 @@ template Register(levels) {
     component leafCommitmentHasher = WalletAndSecretHasher();
     leafCommitmentHasher.nullifier <== nullifier;
     leafCommitmentHasher.secret <== secret;
-    leafCommitmentHasher.smartContractWalletAddress <== smartContractWalletAddress;
     // leafCommitmentHasher.secret <== smartContractWalletAddress + hasher.commitment;
 
     component tree = MerkleTreeChecker(levels);
