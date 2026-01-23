@@ -25,8 +25,9 @@ contract Runner is BaseAccount, Initializable {
 
     mapping(bytes32 => bool) public verifiedProofs;
     mapping(bytes32 => bytes32) public proofHashToUserOpHash;
-    // Anti-replay: nullifierHash bound to userOpHash.
-    // This avoids relying on circuit public signals while still preventing per-op replay.
+    // Anti-replay: nullifierHash extracted from proof public signals.
+    // NOTE: This contract treats pubSignals[1] as the nullifierHash.
+    // If the circuit changes, update this index.
     mapping(bytes32 => bool) public usedNullifiers;
     mapping(bytes32 => bytes32) public proofHashToNullifierHash;
     event ContractDeployed(address indexed newContract);
