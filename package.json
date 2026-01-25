@@ -48,12 +48,12 @@
     "url": "https://github.com/klifish/identity-privacy-smart-contract.git"
   },
   "scripts": {
-    "test": "mocha 'test/sdk/**/*.test.js' --timeout 60000",
-    "test:sdk": "mocha 'test/sdk/**/*.test.js' --timeout 60000",
-    "test:utils": "mocha 'test/sdk/utils.test.js' --timeout 60000",
-    "test:identity": "mocha 'test/sdk/identity.test.js' --timeout 60000",
-    "test:userOp": "mocha 'test/sdk/userOp.test.js' --timeout 60000",
-    "test:contracts": "mocha 'test/sdk/contracts.test.js' --timeout 60000",
+    "test": "npm run test:sdk",
+    "test:sdk": "npm run test:utils && npm run test:identity && npm run test:userOp && npm run test:contracts",
+    "test:utils": "npx hardhat test test/sdk/utils.test.js",
+    "test:identity": "npx hardhat test test/sdk/identity.test.js",
+    "test:userOp": "npx hardhat test test/sdk/userOp.test.js",
+    "test:contracts": "npx hardhat test test/sdk/contracts.test.js",
     "test:coverage": "nyc npm test",
     "build:circuit:compile:register": "mkdir -p build/circuits && npx circom2 circuits/register.circom --r1cs --wasm --sym -o build/circuits",
     "build:circuit:compile:commitment": "mkdir -p build/circuits && npx circom2 circuits/commitment.circom --r1cs --wasm --sym -o build/circuits",

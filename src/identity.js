@@ -12,6 +12,10 @@ const path = require('path');
 const { pedersenHashMultipleInputs, computePedersenHash } = require('./utils');
 const { ZKPClient } = require('./zkp');
 
+const BN254_FIELD_PRIME = BigInt(
+  '21888242871839275222246405745257275088548364400416034343698204186575808495617'
+);
+
 // Contract ABIs (minimal interfaces)
 const MyAccountFactoryABI = [
   'function createAccount(uint256 commitment, uint256 salt) external returns (address)',
@@ -61,11 +65,17 @@ class IdentityClient {
    * @param {bigint} nullifier - Nullifier value
    * @returns {Promise<bigint>} - Leaf value
    */
-  async calculateLeaf(secret, nullifier) {
-    const secretBuff = new TextEncoder().encode(secret);
-    const secretBigInt = ffjavascript.utils.leBuff2int(secretBuff);
+  async calculateLeaf(secretOrAddress, maybeSecret, maybeNullifier) {
+    const { secret, nullifier } = resolveSecretAndNullifier(
+      secretOrAddress,
+      maybeSecret,
+      maybeNullifier
+    );
 
-    const src = [secretBigInt, nullifier];
+    const secretBigInt = normalizeToFieldElement(parseSecretToBigInt(secret));
+    const nullifierBigInt = normalizeToFieldElement(BigInt(nullifier));
+
+    const src = [secretBigInt, nullifierBigInt];
     const srcHash = await pedersenHashMultipleInputs(src);
 
     const babyjub = await circomlibjs.buildBabyjub();
@@ -137,7 +147,12 @@ class IdentityClient {
    * @param {bigint} nullifier - Nullifier value
    * @returns {Promise<{success: boolean, leaf: bigint, alreadyRegistered: boolean}>}
    */
-  async registerUser(secret, nullifier) {
+  async registerUser(secretOrAddress, maybeSecret, maybeNullifier) {
+    const { secret, nullifier } = resolveSecretAndNullifier(
+      secretOrAddress,
+      maybeSecret,
+      maybeNullifier
+    );
     const leaf = await this.calculateLeaf(secret, nullifier);
     const result = await this.registerUserWithLeaf(leaf);
     return { ...result, leaf };
@@ -181,7 +196,12 @@ class IdentityClient {
    * @param {string} options.circuitsPath - Path to circuits build folder
    * @returns {Promise<{proof: Object, root: bigint, nullifierHash: string}>}
    */
-  async proveRegistration(secret, nullifier, options = {}) {
+  async proveRegistration(secretOrAddress, maybeSecret, maybeNullifier, options = {}) {
+    const { secret, nullifier } = resolveSecretAndNullifier(
+      secretOrAddress,
+      maybeSecret,
+      maybeNullifier
+    );
     const circuitsPath = options.circuitsPath || path.join(__dirname, '..', 'build', 'circuits');
 
     // Get all registered leaves
@@ -252,8 +272,13 @@ async function createSmartAccount(config, secret, options = {}) {
  * @param {bigint} nullifier - Nullifier
  * @returns {Promise<Object>}
  */
-async function registerUser(config, secret, nullifier) {
+async function registerUser(config, secretOrAddress, maybeSecret, maybeNullifier) {
   const client = new IdentityClient(config);
+  const { secret, nullifier } = resolveSecretAndNullifier(
+    secretOrAddress,
+    maybeSecret,
+    maybeNullifier
+  );
   return client.registerUser(secret, nullifier);
 }
 
@@ -263,11 +288,17 @@ async function registerUser(config, secret, nullifier) {
  * @param {bigint} nullifier - Nullifier
  * @returns {Promise<bigint>}
  */
-async function calculateLeaf(secret, nullifier) {
-  const secretBuff = new TextEncoder().encode(secret);
-  const secretBigInt = ffjavascript.utils.leBuff2int(secretBuff);
+async function calculateLeaf(secretOrAddress, maybeSecret, maybeNullifier) {
+  const { secret, nullifier } = resolveSecretAndNullifier(
+    secretOrAddress,
+    maybeSecret,
+    maybeNullifier
+  );
 
-  const src = [secretBigInt, nullifier];
+  const secretBigInt = normalizeToUint256(parseSecretToBigInt(secret));
+  const nullifierBigInt = normalizeToUint256(BigInt(nullifier));
+
+  const src = [secretBigInt, nullifierBigInt];
   const srcHash = await pedersenHashMultipleInputs(src);
 
   const babyjub = await circomlibjs.buildBabyjub();
@@ -283,8 +314,13 @@ async function calculateLeaf(secret, nullifier) {
  * @param {Object} options - Options
  * @returns {Promise<Object>}
  */
-async function proveRegistration(config, secret, nullifier, options = {}) {
+async function proveRegistration(config, secretOrAddress, maybeSecret, maybeNullifier, options = {}) {
   const client = new IdentityClient(config);
+  const { secret, nullifier } = resolveSecretAndNullifier(
+    secretOrAddress,
+    maybeSecret,
+    maybeNullifier
+  );
   return client.proveRegistration(secret, nullifier, options);
 }
 
@@ -307,3 +343,29 @@ module.exports = {
   proveRegistration,
   verifyRegistration,
 };
+
+function resolveSecretAndNullifier(secretOrAddress, maybeSecret, maybeNullifier) {
+  if (arguments.length >= 3 && typeof maybeNullifier !== 'undefined') {
+    return { secret: maybeSecret, nullifier: maybeNullifier };
+  }
+  return { secret: secretOrAddress, nullifier: maybeSecret };
+}
+
+function normalizeToFieldElement(value) {
+  let v = BigInt(value) % BN254_FIELD_PRIME;
+  if (v < 0n) v += BN254_FIELD_PRIME;
+  return v;
+}
+
+function parseSecretToBigInt(secret) {
+  if (typeof secret === 'bigint') return secret;
+  const s = String(secret);
+  const hexMatch = s.match(/^(0x)?[0-9a-fA-F]+$/);
+  if (hexMatch) {
+    const hex = s.startsWith('0x') || s.startsWith('0X') ? s.slice(2) : s;
+    if (hex.length === 0) return 0n;
+    return BigInt(`0x${hex}`);
+  }
+  const secretBuff = new TextEncoder().encode(s);
+  return ffjavascript.utils.leBuff2int(secretBuff);
+}

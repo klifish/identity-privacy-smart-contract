@@ -14,6 +14,22 @@ const circomlibjs = require('circomlibjs');
 const MerkleTree = require('fixed-merkle-tree').MerkleTree;
 const { pedersenHashMultipleInputs, groth16ExportSolidityCallData } = require('./utils');
 
+const FIELD_SIZE = BigInt(
+  '21888242871839275222246405745257275088548364400416034343698204186575808495617'
+);
+
+function hashLeftRightSync(hasher, left, right) {
+  const { mimcsponge, F } = hasher;
+  const leftBigInt = BigInt(left);
+  const rightBigInt = BigInt(right);
+
+  if (leftBigInt >= FIELD_SIZE) throw new Error('_left should be inside the field');
+  if (rightBigInt >= FIELD_SIZE) throw new Error('_right should be inside the field');
+
+  const hash = mimcsponge.multiHash([leftBigInt, rightBigInt], 0, 1);
+  return F.toObject(hash);
+}
+
 /**
  * ZKP Client for generating and verifying proofs
  */
@@ -37,9 +53,8 @@ class ZKPClient {
     if (!this.hasher) {
       const mimcsponge = await circomlibjs.buildMimcSponge();
       this.hasher = {
-        hash: (left, right) => {
-          return mimcsponge.F.toString(mimcsponge.multiHash([BigInt(left), BigInt(right)]));
-        },
+        mimcsponge,
+        F: mimcsponge.F,
       };
     }
     return this.hasher;
@@ -53,7 +68,7 @@ class ZKPClient {
    */
   async hashLeftRight(left, right) {
     const hasher = await this.initHasher();
-    return hasher.hash(left, right);
+    return hashLeftRightSync(hasher, left, right);
   }
 
   /**
@@ -64,10 +79,10 @@ class ZKPClient {
    * @returns {Promise<bigint>} - Leaf value
    */
   async calculateLeaf(secret, nullifier) {
-    const secretBuff = new TextEncoder().encode(secret);
-    const secretBigInt = ffjavascript.utils.leBuff2int(secretBuff);
+    const secretBigInt = normalizeToFieldElement(parseSecretToBigInt(secret));
+    const nullifierBigInt = normalizeToFieldElement(BigInt(nullifier));
 
-    const src = [secretBigInt, nullifier];
+    const src = [secretBigInt, nullifierBigInt];
     const srcHash = await pedersenHashMultipleInputs(src);
 
     const babyjub = await circomlibjs.buildBabyjub();
@@ -90,21 +105,11 @@ class ZKPClient {
     const wasmPath = path.join(this.circuitsPath, 'register_js', 'register.wasm');
     const zkeyPath = path.join(this.circuitsPath, 'register_final.zkey');
 
-    // Calculate the user's leaf
-    const leaf = await this.calculateLeaf(secret, nullifier);
-
-    // Build Merkle tree
-    const hasher = await this.initHasher();
-    const tree = new MerkleTree(this.merkleTreeLevel, leaves, {
-      hashFunction: (left, right) => hasher.hash(left, right),
-    });
-
-    // Get Merkle proof
-    const merkleProof = tree.proof(leaf);
+    const merkleProof = await this.buildMerkleProof({ secret, nullifier, leaves });
 
     // Prepare circuit input
-    const secretBuff = new TextEncoder().encode(secret);
-    const secretBigInt = ffjavascript.utils.leBuff2int(secretBuff);
+    const secretBigInt = normalizeToFieldElement(parseSecretToBigInt(secret));
+    const nullifierBigInt = normalizeToFieldElement(BigInt(nullifier));
 
     const input = {
       root: merkleProof.pathRoot,
@@ -113,14 +118,18 @@ class ZKPClient {
       relayer: '50',
       fee: '10',
       refund: '5',
-      nullifier: nullifier,
+      nullifier: nullifierBigInt,
       secret: secretBigInt,
       pathElements: merkleProof.pathElements,
       pathIndices: merkleProof.pathIndices,
     };
 
     // Generate proof
+    const t0 = Date.now();
+    console.log('[zkp] fullProve start', { wasmPath, zkeyPath, leaves: leaves.length });
+    console.log('[zkp] input', input);
     const { proof, publicSignals } = await snarkjs.groth16.fullProve(input, wasmPath, zkeyPath);
+    console.log('[zkp] fullProve done', { ms: Date.now() - t0 });
 
     // Export to Solidity format
     const { pA, pB, pC, pubSignals } = await groth16ExportSolidityCallData(proof, publicSignals);
@@ -136,6 +145,32 @@ class ZKPClient {
       proofComponents: { pA, pB, pC, pubSignals },
       publicInputs: publicSignals,
       root: merkleProof.pathRoot,
+    };
+  }
+
+  /**
+   * Build Merkle proof without generating a SNARK
+   * @param {Object} params - Proof parameters
+   * @returns {Promise<{leaf: bigint, pathRoot: bigint, pathElements: Array, pathIndices: Array, leafIndex: number}>}
+   */
+  async buildMerkleProof(params) {
+    const { secret, nullifier, leaves } = params;
+
+    const leaf = await this.calculateLeaf(secret, nullifier);
+    const hasher = await this.initHasher();
+    const tree = new MerkleTree(this.merkleTreeLevel, leaves, {
+      hashFunction: (left, right) => hashLeftRightSync(hasher, left, right),
+    });
+
+    const merkleProof = tree.proof(leaf);
+    const leafIndex = tree.indexOf(leaf);
+
+    return {
+      leaf,
+      pathRoot: merkleProof.pathRoot,
+      pathElements: merkleProof.pathElements,
+      pathIndices: merkleProof.pathIndices,
+      leafIndex,
     };
   }
 
@@ -182,6 +217,25 @@ class ZKPClient {
     const vkey = JSON.parse(fs.readFileSync(vkeyPath, 'utf-8'));
     return snarkjs.groth16.verify(vkey, publicSignals, proof);
   }
+}
+
+function normalizeToFieldElement(value) {
+  let v = BigInt(value) % FIELD_SIZE;
+  if (v < 0n) v += FIELD_SIZE;
+  return v;
+}
+
+function parseSecretToBigInt(secret) {
+  if (typeof secret === 'bigint') return secret;
+  const s = String(secret);
+  const hexMatch = s.match(/^(0x)?[0-9a-fA-F]+$/);
+  if (hexMatch) {
+    const hex = s.startsWith('0x') || s.startsWith('0X') ? s.slice(2) : s;
+    if (hex.length === 0) return 0n;
+    return BigInt(`0x${hex}`);
+  }
+  const secretBuff = new TextEncoder().encode(s);
+  return ffjavascript.utils.leBuff2int(secretBuff);
 }
 
 /**

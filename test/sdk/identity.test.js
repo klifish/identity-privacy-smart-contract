@@ -46,55 +46,39 @@ describe('Identity Module - Unit Tests', function () {
 
   describe('calculateLeaf', function () {
     it('should calculate leaf from credentials', async function () {
-      const address = '0x1234567890123456789012345678901234567890';
       const secret = 'test-secret';
       const nullifier = 0n;
 
-      const leaf = await calculateLeaf(address, secret, nullifier);
+      const leaf = await calculateLeaf(secret, nullifier);
 
       expect(typeof leaf).to.equal('bigint');
       expect(leaf > 0n).to.be.true;
     });
 
     it('should produce consistent results for same inputs', async function () {
-      const address = '0x1234567890123456789012345678901234567890';
       const secret = 'my-secret';
       const nullifier = 1n;
 
-      const leaf1 = await calculateLeaf(address, secret, nullifier);
-      const leaf2 = await calculateLeaf(address, secret, nullifier);
+      const leaf1 = await calculateLeaf(secret, nullifier);
+      const leaf2 = await calculateLeaf(secret, nullifier);
 
       expect(leaf1).to.equal(leaf2);
     });
 
-    it('should produce different leaves for different addresses', async function () {
-      const address1 = '0x1234567890123456789012345678901234567890';
-      const address2 = '0x0987654321098765432109876543210987654321';
-      const secret = 'same-secret';
-      const nullifier = 0n;
-
-      const leaf1 = await calculateLeaf(address1, secret, nullifier);
-      const leaf2 = await calculateLeaf(address2, secret, nullifier);
-
-      expect(leaf1).to.not.equal(leaf2);
-    });
-
     it('should produce different leaves for different secrets', async function () {
-      const address = '0x1234567890123456789012345678901234567890';
       const nullifier = 0n;
 
-      const leaf1 = await calculateLeaf(address, 'secret1', nullifier);
-      const leaf2 = await calculateLeaf(address, 'secret2', nullifier);
+      const leaf1 = await calculateLeaf('secret1', nullifier);
+      const leaf2 = await calculateLeaf('secret2', nullifier);
 
       expect(leaf1).to.not.equal(leaf2);
     });
 
     it('should produce different leaves for different nullifiers', async function () {
-      const address = '0x1234567890123456789012345678901234567890';
       const secret = 'same-secret';
 
-      const leaf1 = await calculateLeaf(address, secret, 0n);
-      const leaf2 = await calculateLeaf(address, secret, 1n);
+      const leaf1 = await calculateLeaf(secret, 0n);
+      const leaf2 = await calculateLeaf(secret, 1n);
 
       expect(leaf1).to.not.equal(leaf2);
     });
@@ -161,17 +145,17 @@ describe('Identity Module - Integration Tests', function () {
       return identityClient.createSmartAccount(secret, options);
     },
 
-    async calculateLeafHelper(address, secret, nullifier) {
-      return calculateLeaf(address, secret, nullifier);
+    async calculateLeafHelper(secret, nullifier) {
+      return calculateLeaf(secret, nullifier);
     },
 
-    async registerUser(smartAccountAddress, secret, nullifier) {
+    async registerUser(secret, nullifier) {
       if (useDirectContracts) {
-        const leaf = await calculateLeaf(smartAccountAddress, secret, nullifier);
+        const leaf = await calculateLeaf(secret, nullifier);
         const result = await helpers.registerUserWithLeaf(leaf);
         return { ...result, leaf };
       }
-      return identityClient.registerUser(smartAccountAddress, secret, nullifier);
+      return identityClient.registerUser(secret, nullifier);
     },
 
     async registerUserWithLeaf(leaf) {
@@ -369,7 +353,7 @@ describe('Identity Module - Integration Tests', function () {
     });
 
     it('should register a user successfully', async function () {
-      const result = await helpers.registerUser(testSmartAccountAddress, testSecret, testNullifier);
+      const result = await helpers.registerUser(testSecret, testNullifier);
 
       expect(result.success).to.be.true;
       expect(result.alreadyRegistered).to.be.false;
@@ -377,7 +361,7 @@ describe('Identity Module - Integration Tests', function () {
     });
 
     it('should detect already registered user', async function () {
-      const result = await helpers.registerUser(testSmartAccountAddress, testSecret, testNullifier);
+      const result = await helpers.registerUser(testSecret, testNullifier);
 
       expect(result.success).to.be.true;
       expect(result.alreadyRegistered).to.be.true;
@@ -385,7 +369,7 @@ describe('Identity Module - Integration Tests', function () {
 
     it('should register different users with different nullifiers', async function () {
       const newNullifier = 999n;
-      const result = await helpers.registerUser(testSmartAccountAddress, testSecret, newNullifier);
+      const result = await helpers.registerUser(testSecret, newNullifier);
 
       expect(result.success).to.be.true;
       expect(result.alreadyRegistered).to.be.false;
@@ -394,11 +378,10 @@ describe('Identity Module - Integration Tests', function () {
 
   describe('registerUserWithLeaf', function () {
     it('should register a user with a pre-calculated leaf', async function () {
-      const address = '0x1234567890123456789012345678901234567890';
       const secret = `lf${Date.now() % 10000}`;
       const nullifier = 123n;
 
-      const leaf = await helpers.calculateLeafHelper(address, secret, nullifier);
+      const leaf = await helpers.calculateLeafHelper(secret, nullifier);
       const result = await helpers.registerUserWithLeaf(leaf);
 
       expect(result.success).to.be.true;
@@ -406,11 +389,10 @@ describe('Identity Module - Integration Tests', function () {
     });
 
     it('should detect already registered leaf', async function () {
-      const address = '0x0987654321098765432109876543210987654321';
       const secret = `dup${Date.now() % 10000}`;
       const nullifier = 456n;
 
-      const leaf = await helpers.calculateLeafHelper(address, secret, nullifier);
+      const leaf = await helpers.calculateLeafHelper(secret, nullifier);
 
       const result1 = await helpers.registerUserWithLeaf(leaf);
       expect(result1.alreadyRegistered).to.be.false;
@@ -434,10 +416,9 @@ describe('Identity Module - Integration Tests', function () {
     it('should include newly registered leaves', async function () {
       const leavesBefore = await helpers.getRegisteredLeaves();
 
-      const address = '0x1111111111111111111111111111111111111111';
       const secret = `nl${Date.now() % 10000}`;
       const nullifier = 789n;
-      const newLeaf = await helpers.calculateLeafHelper(address, secret, nullifier);
+      const newLeaf = await helpers.calculateLeafHelper(secret, nullifier);
       await helpers.registerUserWithLeaf(newLeaf);
 
       const leavesAfter = await helpers.getRegisteredLeaves();
@@ -449,10 +430,9 @@ describe('Identity Module - Integration Tests', function () {
 
   describe('isKnownRoot', function () {
     it('should return true for valid root after registration', async function () {
-      const address = '0x2222222222222222222222222222222222222222';
       const secret = `rt${Date.now() % 10000}`;
       const nullifier = 111n;
-      await helpers.registerUser(address, secret, nullifier);
+      await helpers.registerUser(secret, nullifier);
 
       const currentIndex = await registry.currentRootIndex();
       const currentRoot = await registry.roots(currentIndex);
@@ -479,7 +459,7 @@ describe('Identity Module - Integration Tests', function () {
       zkpTestSecret = `zkp${Date.now() % 100000}`;
       const result = await helpers.createSmartAccount(zkpTestSecret);
       zkpTestSmartAccountAddress = result.address;
-      await helpers.registerUser(zkpTestSmartAccountAddress, zkpTestSecret, zkpTestNullifier);
+      await helpers.registerUser(zkpTestSecret, zkpTestNullifier);
       console.log('ZKP test user registered at:', zkpTestSmartAccountAddress);
     });
 
@@ -506,12 +486,9 @@ describe('Identity Module - Integration Tests', function () {
         console.log('Registration proof generated successfully');
         console.log('Merkle root:', result.root.toString().substring(0, 20) + '...');
       } else {
-        const result = await identityClient.proveRegistration(
-          zkpTestSmartAccountAddress,
-          zkpTestSecret,
-          zkpTestNullifier,
-          { circuitsPath }
-        );
+        const result = await identityClient.proveRegistration(zkpTestSecret, zkpTestNullifier, {
+          circuitsPath,
+        });
 
         expect(result).to.have.property('proof');
         expect(result).to.have.property('root');
@@ -541,12 +518,9 @@ describe('Identity Module - Integration Tests', function () {
         expect(isValid).to.be.true;
         console.log('On-chain verification passed');
       } else {
-        const proofResult = await identityClient.proveRegistration(
-          zkpTestSmartAccountAddress,
-          zkpTestSecret,
-          zkpTestNullifier,
-          { circuitsPath }
-        );
+        const proofResult = await identityClient.proveRegistration(zkpTestSecret, zkpTestNullifier, {
+          circuitsPath,
+        });
 
         const isValid = await identityClient.verifyRegistration(proofResult.proof);
         expect(isValid).to.be.true;
@@ -591,12 +565,7 @@ describe('Identity Module - Integration Tests', function () {
           });
           expect.fail('Should have thrown an error');
         } else {
-          await identityClient.proveRegistration(
-            zkpTestSmartAccountAddress,
-            wrongSecret,
-            zkpTestNullifier,
-            { circuitsPath }
-          );
+          await identityClient.proveRegistration(wrongSecret, zkpTestNullifier, { circuitsPath });
           expect.fail('Should have thrown an error');
         }
       } catch (error) {
@@ -622,12 +591,7 @@ describe('Identity Module - Integration Tests', function () {
           });
           expect.fail('Should have thrown an error');
         } else {
-          await identityClient.proveRegistration(
-            zkpTestSmartAccountAddress,
-            zkpTestSecret,
-            wrongNullifier,
-            { circuitsPath }
-          );
+          await identityClient.proveRegistration(zkpTestSecret, wrongNullifier, { circuitsPath });
           expect.fail('Should have thrown an error');
         }
       } catch (error) {
@@ -648,12 +612,12 @@ describe('Identity Module - Integration Tests', function () {
       console.log('Smart account created at:', accountResult.address);
 
       // Step 2: Calculate leaf
-      const leaf = await helpers.calculateLeafHelper(accountResult.address, userSecret, nullifier);
+      const leaf = await helpers.calculateLeafHelper(userSecret, nullifier);
       expect(typeof leaf).to.equal('bigint');
       console.log('Calculated leaf:', leaf.toString().substring(0, 20) + '...');
 
       // Step 3: Register user
-      const registerResult = await helpers.registerUser(accountResult.address, userSecret, nullifier);
+      const registerResult = await helpers.registerUser(userSecret, nullifier);
       expect(registerResult.success).to.be.true;
       expect(registerResult.alreadyRegistered).to.be.false;
       console.log('User registered successfully');
@@ -682,7 +646,7 @@ describe('Identity Module - Integration Tests', function () {
       console.log('Step 1: Smart account created at:', accountResult.address);
 
       // Step 2: Register user
-      const registerResult = await helpers.registerUser(accountResult.address, userSecret, nullifier);
+      const registerResult = await helpers.registerUser(userSecret, nullifier);
       expect(registerResult.success).to.be.true;
       console.log('Step 2: User registered successfully');
 
@@ -721,7 +685,7 @@ describe('Identity Module - Integration Tests', function () {
         const accountResult = await helpers.createSmartAccount(user.secret);
         expect(accountResult.deployed).to.be.true;
 
-        const registerResult = await helpers.registerUser(accountResult.address, user.secret, user.nullifier);
+        const registerResult = await helpers.registerUser(user.secret, user.nullifier);
         expect(registerResult.success).to.be.true;
         registeredLeaves.push(registerResult.leaf);
       }
@@ -733,4 +697,14 @@ describe('Identity Module - Integration Tests', function () {
       console.log(`Successfully registered ${users.length} users`);
     });
   });
+});
+
+after(function () {
+  if (!process.env.DEBUG_HANDLES) {
+    return;
+  }
+  const handles = process._getActiveHandles().map((handle) => handle.constructor.name);
+  const requests = process._getActiveRequests().map((req) => req.constructor.name);
+  console.log('[debug] active handles:', handles);
+  console.log('[debug] active requests:', requests);
 });

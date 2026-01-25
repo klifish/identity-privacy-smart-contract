@@ -4,6 +4,7 @@
  */
 
 const { ethers } = require('ethers');
+const snarkjs = require('snarkjs');
 const circomlibjs = require('circomlibjs');
 const ffjavascript = require('ffjavascript');
 
@@ -166,16 +167,20 @@ function p256(n) {
  * @returns {Promise<Object>} - Object with pA, pB, pC, pubSignals
  */
 async function groth16ExportSolidityCallData(proof, publicSignals) {
-  const proofUnstringified = ffjavascript.utils.unstringifyBigInts(proof);
-  const pubUnstringified = ffjavascript.utils.unstringifyBigInts(publicSignals);
+  const calldata = await snarkjs.groth16.exportSolidityCallData(proof, publicSignals);
+  const argv = calldata
+    .replace(/"|\[|\]|\s/g, '')
+    .split(',')
+    .filter((x) => x.length > 0)
+    .map((x) => BigInt(x).toString());
 
-  const pA = [p256(proofUnstringified.pi_a[0]), p256(proofUnstringified.pi_a[1])];
+  const pA = [argv[0], argv[1]];
   const pB = [
-    [p256(proofUnstringified.pi_b[0][1]), p256(proofUnstringified.pi_b[0][0])],
-    [p256(proofUnstringified.pi_b[1][1]), p256(proofUnstringified.pi_b[1][0])],
+    [argv[2], argv[3]],
+    [argv[4], argv[5]],
   ];
-  const pC = [p256(proofUnstringified.pi_c[0]), p256(proofUnstringified.pi_c[1])];
-  const pubSignals = pubUnstringified.map(p256);
+  const pC = [argv[6], argv[7]];
+  const pubSignals = argv.slice(8);
 
   return { pA, pB, pC, pubSignals };
 }
