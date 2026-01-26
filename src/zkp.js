@@ -127,7 +127,6 @@ class ZKPClient {
     // Generate proof
     const t0 = Date.now();
     console.log('[zkp] fullProve start', { wasmPath, zkeyPath, leaves: leaves.length });
-    console.log('[zkp] input', input);
     const { proof, publicSignals } = await snarkjs.groth16.fullProve(input, wasmPath, zkeyPath);
     console.log('[zkp] fullProve done', { ms: Date.now() - t0 });
 
